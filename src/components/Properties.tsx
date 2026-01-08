@@ -61,25 +61,30 @@ const Properties = () => {
 
           {/* Category Tabs - Restored to original simpler style */}
         </div>
-        <div className="sticky top-[80px] z-40 flex justify-center w-full px-2 mb-8 pointer-events-none">
-          <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
-            {categories.map((category) => (
-              <button
-                key={category}
-                id={`category-${category}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedCategory(category);
-                }}
-                className={`flex-1 py-2.5 rounded-xl text-[10px] xs:text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
-                  selectedCategory === category
-                    ? "bg-primary text-primary-foreground shadow-lg"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {categoryLabels[category]}
-              </button>
-            ))}
+        <div className="sticky top-[80px] z-40 w-full mb-8 pointer-events-none">
+          {/* Subtle separator line for mobile */}
+          <div className="h-[1px] w-full bg-border/40 mb-3 block md:hidden" />
+          
+          <div className="flex justify-center w-full px-2">
+            <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  id={`category-${category}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedCategory(category);
+                  }}
+                  className={`flex-1 py-2.5 rounded-xl text-[10px] xs:text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+                    selectedCategory === category
+                      ? "bg-primary text-primary-foreground shadow-lg"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {categoryLabels[category]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
