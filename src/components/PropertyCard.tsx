@@ -91,6 +91,8 @@ const PropertyCard = ({
   };
 
   const handleNavigate = () => {
+    // Save current scroll position before navigating
+    sessionStorage.setItem("homeScrollPosition", window.scrollY.toString());
     navigate(`/property/${navigationId}`);
   };
 

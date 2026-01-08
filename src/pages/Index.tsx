@@ -5,8 +5,29 @@ import Destinations from "@/components/Destinations";
 import Properties from "@/components/Properties";
 import FloatingContact from "@/components/FloatingContact";
 import Footer from "@/components/Footer";
+import { useEffect } from "react";
 
 const Index = () => {
+  useEffect(() => {
+    // We use a small delay to ensure all property cards have rendered
+    // and the page height is correct before restoring scroll
+    const savedPosition = sessionStorage.getItem("homeScrollPosition");
+    if (savedPosition) {
+      const restoreScroll = () => {
+        window.scrollTo({
+          top: parseInt(savedPosition),
+          behavior: "instant"
+        });
+        // Clear it once restored so regular refreshes start at top
+        sessionStorage.removeItem("homeScrollPosition");
+      };
+      
+      // Delay slightly to allow content/images to render
+      const timeoutId = setTimeout(restoreScroll, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, []);
+
   return (
     <>
       <Helmet>
