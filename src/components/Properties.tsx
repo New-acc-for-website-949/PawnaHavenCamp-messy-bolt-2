@@ -63,7 +63,7 @@ const Properties = () => {
         </div>
         <div className="sticky top-[80px] z-40 w-full mb-8 pointer-events-none">
           {/* Subtle separator line for mobile */}
-          <div className="h-[1px] w-full bg-border/40 mb-1 block md:hidden" />
+          <div className="h-[0.5px] w-full bg-border/10 mb-0.5 block md:hidden" />
           
           <div className="flex justify-center w-full px-2">
             <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
