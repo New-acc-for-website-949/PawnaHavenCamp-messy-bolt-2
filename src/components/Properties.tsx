@@ -60,12 +60,17 @@ const Properties = () => {
           </div>
 
           {/* Category Tabs - Restored to original simpler style */}
-          <div className="sticky top-[80px] z-40 inline-flex p-1 bg-secondary/80 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl">
+        </div>
+        <div className="sticky top-[80px] z-40 flex justify-center w-full px-2 mb-8 pointer-events-none">
+          <div className="inline-flex p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl overflow-x-auto no-scrollbar max-w-full pointer-events-auto">
             {categories.map((category) => (
               <button
                 key={category}
                 id={`category-${category}`}
-                onClick={() => setSelectedCategory(category)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedCategory(category);
+                }}
                 className={`px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   selectedCategory === category
                     ? "bg-primary text-primary-foreground shadow-lg"
