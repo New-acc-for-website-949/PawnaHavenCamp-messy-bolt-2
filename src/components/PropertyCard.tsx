@@ -126,9 +126,15 @@ const PropertyCard = ({
             {displayImages.map((img, index) => (
               <div key={index} className="flex-shrink-0 w-full h-full relative">
                 <img
-                  src={getOptimizedImageUrl(img, 800)}
+                  src={getOptimizedImageUrl(img, 400)}
                   alt={title}
-                  className="w-full h-full object-cover"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  className="w-full h-full object-cover transition-opacity duration-300 opacity-0"
+                  onLoad={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.classList.remove('opacity-0');
+                    target.classList.add('opacity-100');
+                  }}
                 />
               </div>
             ))}
