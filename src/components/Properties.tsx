@@ -46,7 +46,7 @@ const Properties = () => {
 
   return (
     <section id="properties" className="py-12 md:py-20">
-      <div className="container mx-auto px-1">
+      <div className="container mx-auto px-2">
         {/* Simplified Section Header with Original Toggle Style */}
         <div className="flex flex-col items-center mb-12">
           <div className="mb-8 text-center">
