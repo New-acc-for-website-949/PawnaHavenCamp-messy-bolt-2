@@ -14,6 +14,7 @@ const DemoPayment = () => {
   const [step, setStep] = useState<"options" | "processing" | "success">("options");
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [paymentInfo, setPaymentInfo] = useState<any>(null);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   
   const bookingData = location.state?.bookingData;
   const amount = location.state?.amount || "2,000";
@@ -71,22 +72,16 @@ const DemoPayment = () => {
           const commonHeader = `*🏡 LOONCAMP E-TICKET*\n📍 *Property:* ${propertyName}\n🔖 *Booking ID:* ${ticketId}\n\n`;
           const commonFooter = `\n🔗 *Ticket Link:* ${ticketUrl}\n📍 *Location:* ${mapLink}\nHost: LoonCamp.shop | +${TEST_NUMBER}`;
 
-          const messages = [
-            // 1. Guest Notification
-            `${commonHeader}👤 *Guest:* ${bookingData.name}\n📅 *Check-in:* ${bookingData.checkIn}\n💰 *Paid:* ₹${bookingData.advanceAmount}\n🔴 *DUE:* ₹${dueAmount}${commonFooter}`,
-            // 2. Property Owner Notification
-            `*NEW BOOKING ALERT (OWNER)*\n${commonHeader}👤 *Guest:* ${bookingData.name}\n📅 *Check-in:* ${bookingData.checkIn}\n💰 *Adv Received:* ₹${bookingData.advanceAmount}\n🚩 *Action:* Prepare property for guest Arrival.\n🔗 *Ticket Link:* ${ticketUrl}`,
-            // 3. Admin/Host Notification
-            `*BOOKING CONFIRMATION (ADMIN)*\n${commonHeader}👤 *Guest:* ${bookingData.name}\n💰 *Total:* ₹${bookingData.totalPrice}\n✅ *Payment:* SUCCESS (Paytm)\n🆔 *Order ID:* ${orderId}\n🔗 *Ticket Link:* ${ticketUrl}`
-          ];
-
-          // Execute triple notification sequence
-          messages.forEach((msg, index) => {
-            setTimeout(() => {
-              const whatsappUrl = `https://api.whatsapp.com/send?phone=${TEST_NUMBER}&text=${encodeURIComponent(msg)}`;
-              window.open(whatsappUrl, "_blank");
-            }, index * 2000); // 2s delay between messages to avoid browser pop-up blocking
-          });
+          const guestMsg = `${commonHeader}👤 *Guest:* ${bookingData.name}\n📅 *Check-in:* ${bookingData.checkIn}\n💰 *Paid:* ₹${bookingData.advanceAmount}\n🔴 *DUE:* ₹${dueAmount}${commonFooter}`;
+          
+          // Use a more reliable way to open WhatsApp
+          const whatsappUrl = `https://api.whatsapp.com/send?phone=${TEST_NUMBER}&text=${encodeURIComponent(guestMsg)}`;
+          
+          // Store the URL to show a button if auto-open is blocked
+          setWhatsappLink(whatsappUrl);
+          
+          // Try to open automatically
+          window.open(whatsappUrl, "_blank");
         }
       } catch (err) {
         console.error("Failed to generate ticket:", err);
@@ -121,6 +116,20 @@ const DemoPayment = () => {
             bookingData={bookingData} 
             paymentInfo={paymentInfo}
           />
+          
+          {whatsappLink && (
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+              <p className="text-sm text-green-800 mb-3 font-medium text-pretty">
+                WhatsApp notification not sent? Click below to receive your ticket on WhatsApp.
+              </p>
+              <Button 
+                onClick={() => window.open(whatsappLink, "_blank")}
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-xl"
+              >
+                Send Ticket to WhatsApp
+              </Button>
+            </div>
+          )}
           
           <div className="text-center">
             <Button variant="link" onClick={() => navigate("/")} className="text-muted-foreground">
