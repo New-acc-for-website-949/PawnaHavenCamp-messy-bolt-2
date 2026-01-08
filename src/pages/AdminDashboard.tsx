@@ -7,12 +7,10 @@ import {
   Home, 
   Building2, 
   Calendar, 
-  Settings,
   Plus,
   Loader2,
   LayoutDashboard,
   TrendingUp,
-  Users,
   MapPin,
   Star,
   ArrowRight,
@@ -20,47 +18,53 @@ import {
   Eye,
   Edit3,
   Trash2,
-  MoreVertical,
-  ChevronRight
+  ChevronRight,
+  MessageSquare,
+  Phone,
+  Search,
+  CheckCircle2,
+  XCircle,
+  Clock
 } from 'lucide-react';
 import AdminPropertyForm from '@/components/AdminPropertyForm';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [properties, setProperties] = useState<any[]>([]);
+  const [categorySettings, setCategorySettings] = useState<any[]>([]);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
-  const [stats, setStats] = useState({
-    properties: 0,
-    bookings: 0,
-    activeProperties: 0,
-    totalViews: 0,
-  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const fetchProperties = async (token: string) => {
+  const fetchData = async (token: string) => {
     try {
-      const response = await fetch('/api/properties/list', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const result = await response.json();
+      const [propRes, settingsRes] = await Promise.all([
+        fetch('/api/properties/list', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('/api/properties/settings/categories', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ]);
       
-      if (result.success) {
-        const propertiesData = result.data || [];
-        setProperties(propertiesData);
-        setStats({
-          properties: propertiesData.length,
-          bookings: Math.floor(Math.random() * 50) + 10,
-          activeProperties: propertiesData.filter((p: any) => p.is_active).length,
-          totalViews: Math.floor(Math.random() * 5000) + 1000,
-        });
+      const propResult = await propRes.json();
+      const settingsResult = await settingsRes.json();
+      
+      if (propResult.success) {
+        setProperties(propResult.data || []);
+      }
+      if (settingsResult.success) {
+        setCategorySettings(settingsResult.data || []);
       }
     } catch (error) {
-      console.error('Fetch stats error:', error);
+      console.error('Fetch error:', error);
     }
   };
 
@@ -75,7 +79,7 @@ const AdminDashboard = () => {
       }
 
       setUser(JSON.parse(adminData));
-      await fetchProperties(token);
+      await fetchData(token);
       setIsLoading(false);
     };
 
@@ -92,10 +96,51 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
-  const handleDeleteProperty = async (id: string) => {
+  const handleToggleCategory = async (category: string, isClosed: boolean) => {
+    let reason = '';
+    let closedFrom = '';
+
+    if (!isClosed) {
+      const r = window.prompt('Enter Closure Reason:', 'Maintenance');
+      if (r === null) return;
+      reason = r;
+      
+      const d = window.prompt('Enter Closure Date/Period (e.g., 10th Jan):', '');
+      if (d === null) return;
+      closedFrom = d;
+    }
+    
     const token = localStorage.getItem('adminToken');
     try {
-      const response = await fetch(`/api/properties/${id}`, {
+      const response = await fetch(`/api/properties/settings/categories/${category}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          is_closed: !isClosed,
+          closed_reason: reason,
+          closed_from: closedFrom,
+          closed_to: closedFrom
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        fetchData(token!);
+        toast({ title: `Category ${!isClosed ? 'closed' : 'opened'} successfully` });
+      }
+    } catch (error) {
+      toast({ title: 'Failed to update category status', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteProperty = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this property?')) return;
+    
+    const token = localStorage.getItem('adminToken');
+    try {
+      const response = await fetch(`/api/properties/delete/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -104,32 +149,47 @@ const AdminDashboard = () => {
       const result = await response.json();
       if (result.success) {
         toast({ title: 'Property deleted successfully' });
-        fetchProperties(token!);
+        fetchData(token!);
       }
     } catch (error) {
       toast({ title: 'Error deleting property', variant: 'destructive' });
     }
   };
 
-  const handleEditProperty = (property: any) => {
-    setEditingProperty(property);
-    setShowPropertyForm(true);
+  const handleToggleStatus = async (id: number, field: string, currentValue: boolean) => {
+    const token = localStorage.getItem('adminToken');
+    try {
+      const response = await fetch(`/api/properties/toggle-status/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ field, value: !currentValue })
+      });
+      const result = await response.json();
+      if (result.success) {
+        fetchData(token!);
+        toast({ title: 'Status updated successfully' });
+      }
+    } catch (error) {
+      toast({ title: 'Failed to update status', variant: 'destructive' });
+    }
   };
 
-  const handleFormSuccess = () => {
-    setShowPropertyForm(false);
-    setEditingProperty(null);
-    const token = localStorage.getItem('adminToken');
-    if (token) fetchProperties(token);
-  };
+  const filteredProperties = properties.filter(p => {
+    const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
+    const title = p.title || '';
+    const location = p.location || '';
+    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          location.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="relative">
-          <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-          <Loader2 className="w-12 h-12 animate-spin text-primary relative z-10" />
-        </div>
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -138,7 +198,11 @@ const AdminDashboard = () => {
     return (
       <AdminPropertyForm
         property={editingProperty}
-        onSuccess={handleFormSuccess}
+        onSuccess={() => {
+          setShowPropertyForm(false);
+          setEditingProperty(null);
+          fetchData(localStorage.getItem('adminToken')!);
+        }}
         onCancel={() => {
           setShowPropertyForm(false);
           setEditingProperty(null);
@@ -147,251 +211,160 @@ const AdminDashboard = () => {
     );
   }
 
-  const statCards = [
-    {
-      title: 'Total Properties',
-      value: stats.properties,
-      icon: Building2,
-      color: 'primary',
-      gradient: 'from-primary/20 to-primary/5',
-    },
-    {
-      title: 'Active Listings',
-      value: stats.activeProperties,
-      icon: TrendingUp,
-      color: 'emerald',
-      gradient: 'from-emerald-500/20 to-emerald-500/5',
-    },
-    {
-      title: 'Total Bookings',
-      value: stats.bookings,
-      icon: Calendar,
-      color: 'blue',
-      gradient: 'from-blue-500/20 to-blue-500/5',
-    },
-    {
-      title: 'Page Views',
-      value: stats.totalViews.toLocaleString(),
-      icon: Eye,
-      color: 'violet',
-      gradient: 'from-violet-500/20 to-violet-500/5',
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/3 rounded-full blur-3xl" />
-      </div>
-
       {/* Header */}
       <header className="glass-dark border-b border-border/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center shadow-gold">
-                <LayoutDashboard className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-display text-xl font-semibold text-foreground">LoonCamp Admin</h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">Property Management</p>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center shadow-gold">
+              <LayoutDashboard className="w-5 h-5 text-primary-foreground" />
             </div>
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border/50">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-sm text-muted-foreground">{user?.email}</span>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleLogout}
-                className="rounded-xl border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
+            <h1 className="font-display text-xl font-semibold text-foreground">LoonCamp Admin</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => window.open('tel:+918669505727')}>
+              <Phone className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => window.open('https://wa.me/918669505727')}>
+              <MessageSquare className="w-5 h-5" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="rounded-xl">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {/* Welcome Section */}
-        <div className="mb-8 animate-fade-up">
-          <h2 className="font-display text-3xl font-semibold text-foreground mb-2">
-            Welcome back, <span className="text-gradient-gold">Admin</span>
-          </h2>
-          <p className="text-muted-foreground">Here's what's happening with your properties today.</p>
-        </div>
-
-        {/* Stats Grid */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Category Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statCards.map((stat, index) => (
-            <div 
-              key={stat.title}
-              className={`glass rounded-2xl border border-border/50 p-6 hover:border-primary/30 transition-all duration-500 hover:shadow-gold animate-fade-up`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color === 'primary' ? 'text-primary' : stat.color === 'emerald' ? 'text-emerald-500' : stat.color === 'blue' ? 'text-blue-500' : 'text-violet-500'}`} />
-                </div>
-                <Sparkles className="w-4 h-4 text-primary/50" />
+          <div className="glass rounded-2xl border border-border/50 p-6">
+            <p className="text-sm text-muted-foreground mb-1">Total Properties</p>
+            <p className="text-3xl font-bold text-foreground">{properties.length}</p>
+          </div>
+          {categorySettings.map(setting => (
+            <div key={setting.category} className={`glass rounded-2xl border border-border/50 p-6 ${setting.is_closed ? 'opacity-60' : ''}`}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold capitalize">{setting.category}</p>
+                <Button 
+                  size="sm" 
+                  variant={setting.is_closed ? "default" : "destructive"}
+                  className="h-7 rounded-lg text-[10px]"
+                  onClick={() => handleToggleCategory(setting.category, setting.is_closed)}
+                >
+                  {setting.is_closed ? 'Open' : 'Close'}
+                </Button>
               </div>
-              <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
-              <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${setting.is_closed ? 'bg-destructive' : 'bg-emerald-500'}`} />
+                <span className="text-xs text-muted-foreground">{setting.is_closed ? 'Closed' : 'Active'}</span>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="glass rounded-2xl border border-border/50 p-6 mb-8 animate-fade-up delay-200">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <Star className="w-5 h-5 text-primary" />
-              Quick Actions
-            </h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button 
-              onClick={() => setShowPropertyForm(true)}
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-primary to-gold-dark p-4 text-left transition-all duration-500 hover:shadow-gold-lg hover:-translate-y-1"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] duration-1000" />
-              <Plus className="w-6 h-6 text-primary-foreground mb-2" />
-              <p className="font-semibold text-primary-foreground">Add Property</p>
-              <p className="text-xs text-primary-foreground/70">Create new listing</p>
-            </button>
-            
-            <button className="group rounded-xl bg-secondary/50 border border-border/50 p-4 text-left transition-all duration-300 hover:border-primary/30 hover:bg-secondary">
-              <Building2 className="w-6 h-6 text-foreground mb-2 group-hover:text-primary transition-colors" />
-              <p className="font-semibold text-foreground">Properties</p>
-              <p className="text-xs text-muted-foreground">{stats.properties} total</p>
-            </button>
-            
-            <button className="group rounded-xl bg-secondary/50 border border-border/50 p-4 text-left transition-all duration-300 hover:border-primary/30 hover:bg-secondary">
-              <Calendar className="w-6 h-6 text-foreground mb-2 group-hover:text-primary transition-colors" />
-              <p className="font-semibold text-foreground">Bookings</p>
-              <p className="text-xs text-muted-foreground">{stats.bookings} pending</p>
-            </button>
-            
-            <button className="group rounded-xl bg-secondary/50 border border-border/50 p-4 text-left transition-all duration-300 hover:border-primary/30 hover:bg-secondary">
-              <Settings className="w-6 h-6 text-foreground mb-2 group-hover:text-primary transition-colors" />
-              <p className="font-semibold text-foreground">Settings</p>
-              <p className="text-xs text-muted-foreground">Configure site</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Properties List */}
-        <div className="glass rounded-2xl border border-border/50 p-6 animate-fade-up delay-300">
-          <div className="flex items-center justify-between mb-6">
+        {/* Properties Section */}
+        <div className="glass rounded-2xl border border-border/50 p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              Your Properties
+              Properties Management
             </h3>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowPropertyForm(true)}
-              className="text-primary hover:text-primary hover:bg-primary/10"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add New
-            </Button>
-          </div>
-
-          {properties.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center mx-auto mb-4">
-                <Building2 className="w-8 h-8 text-muted-foreground" />
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search properties..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 h-10 rounded-xl bg-secondary/30"
+                />
               </div>
-              <h4 className="text-lg font-semibold text-foreground mb-2">No properties yet</h4>
-              <p className="text-muted-foreground mb-4">Get started by adding your first property</p>
               <Button onClick={() => setShowPropertyForm(true)} className="rounded-xl bg-gradient-to-r from-primary to-gold-dark">
                 <Plus className="w-4 h-4 mr-2" />
-                Add Property
+                New Property
               </Button>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {properties.map((property, index) => (
-                <div 
-                  key={property.id}
-                  className="group flex items-center gap-4 p-4 rounded-xl bg-secondary/30 border border-border/30 hover:border-primary/30 hover:bg-secondary/50 transition-all duration-300"
-                >
-                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+          </div>
+
+          <Tabs value={activeCategory} onValueChange={setActiveCategory} className="mb-6">
+            <TabsList className="bg-secondary/30 p-1 rounded-xl">
+              <TabsTrigger value="all" className="rounded-lg px-6">All</TabsTrigger>
+              <TabsTrigger value="camping" className="rounded-lg px-6">Camping</TabsTrigger>
+              <TabsTrigger value="cottage" className="rounded-lg px-6">Cottage</TabsTrigger>
+              <TabsTrigger value="villa" className="rounded-lg px-6">Villa</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="space-y-4">
+            {filteredProperties.map((property) => (
+              <div key={property.id} className="group glass rounded-2xl border border-border/30 p-4 hover:border-primary/30 transition-all">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="w-full sm:w-32 h-24 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
                     {property.images?.[0] ? (
-                      <img 
-                        src={property.images[0]} 
-                        alt={property.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={property.images[0].image_url || property.images[0]} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Building2 className="w-6 h-6 text-muted-foreground" />
-                      </div>
+                      <div className="w-full h-full flex items-center justify-center"><Building2 className="w-8 h-8 text-muted-foreground" /></div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-foreground truncate">{property.name}</h4>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {property.location}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${property.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-muted text-muted-foreground'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h4 className="font-semibold text-foreground truncate text-lg">{property.title}</h4>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => window.open(`/property/${property.slug}`)}><Eye className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => { setEditingProperty(property); setShowPropertyForm(true); }}><Edit3 className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDeleteProperty(property.id)}><Trash2 className="w-4 h-4" /></Button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground mb-3">
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {property.location}</span>
+                      <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-500 fill-yellow-500" /> {property.rating}</span>
+                      <span className="font-semibold text-foreground">₹{property.price}</span>
+                      <span className="flex items-center gap-1 text-[10px]"><Clock className="w-3 h-3" /> {property.check_in_time} - {property.check_out_time}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className={`h-7 rounded-lg text-[10px] ${property.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-destructive/10 text-destructive'}`}
+                        onClick={() => handleToggleStatus(property.id, 'is_active', property.is_active)}
+                      >
+                        {property.is_active ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <XCircle className="w-3 h-3 mr-1" />}
                         {property.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">₹{property.price?.toLocaleString()}/night</span>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className={`h-7 rounded-lg text-[10px] ${property.is_available ? 'bg-blue-500/10 text-blue-400' : 'bg-orange-500/10 text-orange-400'}`}
+                        onClick={() => handleToggleStatus(property.id, 'is_available', property.is_available)}
+                      >
+                        {property.is_available ? 'Available' : 'Booked'}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className={`h-7 rounded-lg text-[10px] ${property.is_top_selling ? 'bg-yellow-500/10 text-yellow-400' : 'bg-secondary text-muted-foreground'}`}
+                        onClick={() => handleToggleStatus(property.id, 'is_top_selling', property.is_top_selling)}
+                      >
+                        Top Selling
+                      </Button>
+                      <Button variant="ghost" className="h-7 px-2 rounded-lg text-[10px] bg-secondary/50" onClick={() => window.open(`tel:${property.owner_mobile}`)}><Phone className="w-3 h-3 mr-1" /> Call Owner</Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                      onClick={() => navigate(`/property/${property.slug || property.id}`)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                      onClick={() => handleEditProperty(property)}
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => handleDeleteProperty(property.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Back to Site */}
-        <div className="mt-8 text-center animate-fade-up delay-400">
-          <button 
-            onClick={() => navigate('/')}
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors elegant-underline"
-          >
-            <Home className="w-4 h-4" />
+        <div className="mt-8 text-center">
+          <Button variant="ghost" onClick={() => navigate('/')} className="text-muted-foreground hover:text-primary">
+            <Home className="w-4 h-4 mr-2" />
             Back to Website
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
       </main>
     </div>
