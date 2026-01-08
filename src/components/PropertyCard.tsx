@@ -136,15 +136,15 @@ const PropertyCard = ({
           
           {/* Availability Badge */}
           <div 
-            className={`absolute top-4 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-black tracking-tighter uppercase shadow-[0_4px_12px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] bg-gradient-to-b from-neutral-800 to-neutral-950 border border-white/10 backdrop-blur-md transform-gpu hover:scale-105 transition-transform duration-300 ${
+            className={`absolute top-3 left-3 z-20 px-2 py-0.5 rounded-full text-[7px] font-black tracking-tighter uppercase shadow-lg bg-black border border-white/5 backdrop-blur-sm transform-gpu transition-transform duration-300 ${
               isAvailable 
-                ? "text-[#00FF00]" 
-                : "text-[#FF8C00]"
+                ? "text-green-500" 
+                : "text-orange-500"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isAvailable ? "bg-[#00FF00] shadow-[0_0_6px_#00FF00]" : "bg-[#FF8C00] shadow-[0_0_6px_#FF8C00]"}`} />
-              <span className={isAvailable ? "drop-shadow-[0_0_8px_rgba(0,255,0,0.8)]" : "drop-shadow-[0_0_8px_rgba(255,140,0,0.8)]"}>
+            <div className="flex items-center gap-1">
+              <div className={`w-1 h-1 rounded-full animate-pulse ${isAvailable ? "bg-green-500" : "bg-orange-500"}`} />
+              <span>
                 {isAvailable ? "Available" : "Booked"}
               </span>
             </div>
@@ -152,7 +152,7 @@ const PropertyCard = ({
 
           {/* Top Rated Badge */}
           {isTopSelling && (
-            <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground border-none text-[10px] px-2 py-1 z-20 shadow-lg">
+            <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground border-none text-[10px] px-2 py-1 z-20 shadow-lg">
               <Star className="w-2.5 h-2.5 mr-1 fill-current" />
               TOP RATED
             </Badge>
