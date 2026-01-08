@@ -75,6 +75,35 @@ const PropertyCard = ({
     navigate(`/property/${navigationId}`);
   };
 
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
+  };
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: title,
+        url: window.location.origin + `/property/${navigationId}`,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.origin + `/property/${navigationId}`);
+    }
+  };
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const phone = "+918669505727";
+    const message = encodeURIComponent(`Hi, I'm interested in booking ${title}`);
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
+
   return (
     <div className="group cursor-pointer px-3 mb-6" onClick={handleNavigate}>
       <div className="bg-card rounded-[32px] overflow-hidden border border-border/10 hover:border-primary/30 transition-all duration-300 shadow-sm">
