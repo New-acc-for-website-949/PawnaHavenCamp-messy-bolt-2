@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { PWAInstallButton } from "./PWAInstallButton";
 import logoImage from "/assets/logo.png";
 
 const Header = () => {
@@ -166,6 +167,7 @@ const Header = () => {
               <Phone className="w-5 h-5 text-primary" />
               <span className="font-medium">+91 88060 92609</span>
             </a>
+            <PWAInstallButton variant="menu" />
             <Button
               onClick={() => scrollToSection("#properties")}
               className="bg-gradient-to-r from-primary to-gold-light text-primary-foreground font-semibold w-full mt-2"
