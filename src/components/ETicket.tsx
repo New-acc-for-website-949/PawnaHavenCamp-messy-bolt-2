@@ -72,41 +72,41 @@ export function ETicket({ bookingData, paymentInfo }: ETicketProps) {
         </div>
 
         <CardContent className="p-4 sm:p-6 space-y-4">
-          {/* Guest Info - Compact */}
+          {/* Guest Info - High Contrast */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-0.5">
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-1">
+              <span className="text-[10px] uppercase tracking-widest text-foreground/80 font-black flex items-center gap-1">
                 <User className="w-2.5 h-2.5" /> Guest Name
               </span>
-              <p className="font-bold text-sm truncate text-foreground">{bookingData.name}</p>
+              <p className="font-bold text-base text-foreground drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.05)]">{bookingData.name}</p>
             </div>
             <div className="space-y-0.5 text-right">
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold flex items-center justify-end gap-1">
+              <span className="text-[10px] uppercase tracking-widest text-foreground/80 font-black flex items-center justify-end gap-1">
                 <Phone className="w-2.5 h-2.5" /> Contact Number
               </span>
-              <p className="font-bold text-sm text-foreground">{bookingData.mobile}</p>
+              <p className="font-bold text-base text-foreground drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.05)]">{bookingData.mobile}</p>
             </div>
           </div>
 
-          <div className="h-px bg-border/40" />
+          <div className="h-px bg-foreground/10" />
 
-          {/* Dates Section - More Compact */}
+          {/* Dates Section - High Contrast */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-primary">
-                <Calendar className="w-3.5 h-3.5" />
-                <span className="text-[9px] uppercase tracking-widest font-black">Check-In</span>
+                <Calendar className="w-4 h-4" />
+                <span className="text-[10px] uppercase tracking-widest font-black">Check-In</span>
               </div>
-              <p className="font-bold text-sm leading-tight text-foreground">{bookingData.checkIn}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">11:00 AM</p>
+              <p className="font-bold text-base leading-tight text-foreground drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.05)]">{bookingData.checkIn}</p>
+              <p className="text-[11px] text-foreground/70 font-bold">11:00 AM</p>
             </div>
             <div className="space-y-1 text-right">
               <div className="flex items-center gap-1.5 text-primary justify-end">
-                <span className="text-[9px] uppercase tracking-widest font-black">Check-Out</span>
-                <Calendar className="w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-widest font-black">Check-Out</span>
+                <Calendar className="w-4 h-4" />
               </div>
-              <p className="font-bold text-sm leading-tight text-foreground">{bookingData.checkOut}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">10:00 AM</p>
+              <p className="font-bold text-base leading-tight text-foreground drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.05)]">{bookingData.checkOut}</p>
+              <p className="text-[11px] text-foreground/70 font-bold">10:00 AM</p>
             </div>
           </div>
 
