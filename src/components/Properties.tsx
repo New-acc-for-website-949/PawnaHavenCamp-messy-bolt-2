@@ -91,7 +91,7 @@ const Properties = () => {
           {/* Subtle separator line for mobile */}
           <div className="h-[0.5px] w-full bg-border/10 mb-0.5 block md:hidden" />
           
-          <div className="flex flex-col items-center w-full px-2 gap-2">
+          <div className="flex flex-col items-center w-full px-2 gap-1.5">
             <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
               {categories.map((category) => (
                 <button
@@ -113,7 +113,7 @@ const Properties = () => {
             </div>
 
             {/* Price Filter - Redesigned as horizontal buttons */}
-            <div className={`w-full transition-all duration-300 pointer-events-auto mt-2 ${isSticky ? "opacity-100 translate-y-0 h-auto" : "opacity-0 -translate-y-2 h-0 overflow-hidden md:opacity-100 md:translate-y-0 md:h-auto"}`}>
+            <div className={`w-full transition-all duration-300 pointer-events-auto mt-0.5 ${isSticky ? "opacity-100 translate-y-0 h-auto" : "opacity-0 -translate-y-2 h-0 overflow-hidden md:opacity-100 md:translate-y-0 md:h-auto"}`}>
               <div className="flex w-full p-1 bg-background/40 backdrop-blur-md rounded-xl border border-border/20 gap-1 shadow-inner">
                 {priceFilters.map((filter) => (
                   <button
@@ -131,7 +131,7 @@ const Properties = () => {
               </div>
               
               {/* Association Indicator */}
-              <div className="flex justify-center mt-1">
+              <div className="flex justify-center mt-0.5">
                 <div className="w-1 h-1 rounded-full bg-primary/20 animate-pulse" />
               </div>
             </div>
