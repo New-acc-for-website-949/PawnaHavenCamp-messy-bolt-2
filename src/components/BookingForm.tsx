@@ -13,10 +13,11 @@ interface BookingFormProps {
   propertyName: string;
   propertyId: string;
   pricePerPerson: number;
+  propertyCategory?: string;
   onClose?: () => void;
 }
 
-export function BookingForm({ propertyName, propertyId, pricePerPerson, onClose }: BookingFormProps) {
+export function BookingForm({ propertyName, propertyId, pricePerPerson, propertyCategory = "camping", onClose }: BookingFormProps) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -34,15 +35,38 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, onClose 
   const [totalPrice, setTotalPrice] = useState(0);
   const [advanceAmount, setAdvanceAmount] = useState(0);
 
+  const isVilla = propertyCategory?.toLowerCase() === "villa";
+
   useEffect(() => {
+    let days = 1;
+    if (formData.checkIn && formData.checkOut) {
+      const diffTime = Math.abs(formData.checkOut.getTime() - formData.checkIn.getTime());
+      days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (days < 1) days = 1;
+    }
+
     const totalPersons = (formData.vegPersons || 0) + (formData.nonVegPersons || 0);
-    const total = totalPersons * pricePerPerson;
+    const total = totalPersons * pricePerPerson * (isVilla ? days : 1);
     setTotalPrice(total);
     setAdvanceAmount(Math.round(total * 0.3)); // 30% advance
     
     // Update main persons count to match total of food preferences
     setFormData(prev => ({ ...prev, persons: totalPersons }));
-  }, [formData.vegPersons, formData.nonVegPersons, pricePerPerson]);
+  }, [formData.vegPersons, formData.nonVegPersons, formData.checkIn, formData.checkOut, pricePerPerson, isVilla]);
+
+  const handleCheckInSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    const nextDay = new Date(date);
+    nextDay.setDate(date.getDate() + 1);
+    
+    setFormData(prev => ({
+      ...prev,
+      checkIn: date,
+      checkOut: isVilla ? (prev.checkOut && prev.checkOut > date ? prev.checkOut : nextDay) : nextDay
+    }));
+    setIsCheckInOpen(false);
+  };
 
   const handleBook = () => {
     if (!formData.name || !formData.mobile || !formData.checkIn || !formData.checkOut) {
@@ -117,11 +141,9 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, onClose 
                 <Calendar
                   mode="single"
                   selected={formData.checkIn}
-                  onSelect={(date) => {
-                    setFormData({ ...formData, checkIn: date });
-                    setIsCheckInOpen(false);
-                  }}
+                  onSelect={handleCheckInSelect}
                   initialFocus
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                   className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
@@ -129,32 +151,47 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, onClose 
           </div>
           <div className="grid gap-2">
             <Label>Check-out</Label>
-            <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "justify-start text-left font-normal",
-                    !formData.checkOut && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.checkOut ? format(formData.checkOut, "MMM d, yyyy") : <span>Pick date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={formData.checkOut}
-                  onSelect={(date) => {
-                    setFormData({ ...formData, checkOut: date });
-                    setIsCheckOutOpen(false);
-                  }}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            {isVilla ? (
+              <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !formData.checkOut && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.checkOut ? format(formData.checkOut, "MMM d, yyyy") : <span>Pick date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.checkOut}
+                    onSelect={(date) => {
+                      setFormData({ ...formData, checkOut: date });
+                      setIsCheckOutOpen(false);
+                    }}
+                    disabled={(date) => {
+                      if (!formData.checkIn) return true;
+                      const minDate = new Date(formData.checkIn);
+                      minDate.setDate(formData.checkIn.getDate() + 1);
+                      const maxDate = new Date(formData.checkIn);
+                      maxDate.setDate(formData.checkIn.getDate() + 7);
+                      return date < minDate || date > maxDate;
+                    }}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center gap-2 cursor-not-allowed opacity-70">
+                <CalendarIcon className="h-4 w-4" />
+                {formData.checkOut ? format(formData.checkOut, "MMM d, yyyy") : "Next day"}
+              </div>
+            )}
           </div>
         </div>
         
