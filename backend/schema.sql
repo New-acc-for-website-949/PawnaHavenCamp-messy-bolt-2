@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS properties (
   is_top_selling BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   is_available BOOLEAN DEFAULT true,
-  contact VARCHAR(255) DEFAULT '+91 8669505727',
+  contact VARCHAR(255) DEFAULT '+91 8806092609',
   owner_mobile VARCHAR(20),
   map_link TEXT,
   amenities TEXT NOT NULL,

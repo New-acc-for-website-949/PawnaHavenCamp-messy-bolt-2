@@ -24,7 +24,8 @@ const PropertyForm = () => {
     is_top_selling: false,
     is_active: true,
     is_available: true,
-    contact: '+91 8669505727',
+    contact: '+91 8806092609',
+    property_category: 'affordable',
     owner_mobile: '',
     amenities: [''],
     activities: [''],
@@ -65,7 +66,8 @@ const PropertyForm = () => {
           is_top_selling: property.is_top_selling || false,
           is_active: property.is_active !== undefined ? property.is_active : true,
           is_available: property.is_available !== undefined ? property.is_available : true,
-          contact: property.contact || '+91 8669505727',
+          contact: property.contact || '+91 8806092609',
+          property_category: property.property_category || 'affordable',
           owner_mobile: property.owner_mobile || '',
           amenities: property.amenities?.length > 0 ? property.amenities : [''],
           activities: property.activities?.length > 0 ? property.activities : [''],
@@ -227,6 +229,15 @@ const PropertyForm = () => {
                 <option value="camping">Camping</option>
                 <option value="cottage">Cottage</option>
                 <option value="villa">Villa</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Property Category (Filter) *</label>
+              <select name="property_category" value={formData.property_category || 'affordable'} onChange={handleChange} required>
+                <option value="affordable">Affordable</option>
+                <option value="premium">Premium</option>
+                <option value="luxury">Luxury</option>
               </select>
             </div>
 

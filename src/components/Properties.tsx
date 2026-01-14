@@ -4,16 +4,37 @@ import { propertyAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const categoryLabels: Record<string, string> = {
-  all: "All",
+  all: "All Stays",
   camping: "Camping",
   villa: "Villa",
   cottage: "Cottage",
 };
 
+const priceFilterLabels: Record<string, string> = {
+  all: "All Price Range",
+  affordable: "Affordable",
+  premium: "Premium",
+  luxury: "Luxury",
+};
+
 const Properties = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedPriceFilter, setSelectedPriceFilter] = useState("all");
+  const [isSticky, setIsSticky] = useState(false);
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const stickyPoint = document.getElementById("sticky-marker");
+      if (stickyPoint) {
+        const rect = stickyPoint.getBoundingClientRect();
+        setIsSticky(rect.top <= 80); // Adjusted for sticky top
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -25,6 +46,7 @@ const Properties = () => {
             priceNote: p.price_note,
             isAvailable: p.is_available,
             isTopSelling: p.is_top_selling,
+            propertyCategory: p.property_category || "affordable",
             image: p.images && p.images.length > 0 ? p.images[0].image_url : "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80",
             images: p.images && p.images.length > 0 ? p.images.map((img: any) => img.image_url) : ["https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80"]
           }));
@@ -39,11 +61,14 @@ const Properties = () => {
     fetchProperties();
   }, []);
 
-  const filteredProperties = selectedCategory === "all"
-    ? properties
-    : properties.filter((p) => p.category === selectedCategory);
+  const filteredProperties = properties.filter((p) => {
+    const categoryMatch = selectedCategory === "all" || p.category === selectedCategory;
+    const priceMatch = selectedPriceFilter === "all" || p.propertyCategory === selectedPriceFilter;
+    return categoryMatch && priceMatch;
+  });
 
   const categories = ["all", "camping", "cottage", "villa"];
+  const priceFilters = ["all", "affordable", "premium", "luxury"];
 
   return (
     <section id="properties" className="py-12 md:py-20">
@@ -58,14 +83,15 @@ const Properties = () => {
               Explore Our <span className="text-gradient-gold italic">Collections</span>
             </h2>
           </div>
-
-          {/* Category Tabs - Restored to original simpler style */}
         </div>
+
+        <div id="sticky-marker" className="h-1 w-full" />
+        
         <div className="sticky top-[80px] z-40 w-full mb-8 pointer-events-none">
           {/* Subtle separator line for mobile */}
           <div className="h-[0.5px] w-full bg-border/10 mb-0.5 block md:hidden" />
           
-          <div className="flex justify-center w-full px-2">
+          <div className="flex flex-col items-center w-full px-2 gap-2">
             <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
               {categories.map((category) => (
                 <button
@@ -84,6 +110,21 @@ const Properties = () => {
                   {categoryLabels[category]}
                 </button>
               ))}
+            </div>
+
+            {/* Price Filter Dropdown - Only visible on mobile when sticky */}
+            <div className={`w-full transition-all duration-300 pointer-events-auto ${isSticky ? "opacity-100 translate-y-0 h-auto" : "opacity-0 -translate-y-2 h-0 overflow-hidden md:opacity-100 md:translate-y-0 md:h-auto"}`}>
+              <select
+                value={selectedPriceFilter}
+                onChange={(e) => setSelectedPriceFilter(e.target.value)}
+                className="w-full bg-secondary/90 backdrop-blur-md border border-border/30 rounded-xl px-4 py-2.5 text-xs font-semibold text-foreground focus:outline-none shadow-lg appearance-none text-center"
+              >
+                {priceFilters.map((filter) => (
+                  <option key={filter} value={filter}>
+                    {priceFilterLabels[filter]}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
