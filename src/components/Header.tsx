@@ -168,6 +168,7 @@ const Header = () => {
               <span className="font-medium">+91 88060 92609</span>
             </a>
             <PWAInstallButton variant="menu" />
+            <div className="lg:hidden h-1" /> {/* Spacer */}
             <Button
               onClick={() => scrollToSection("#properties")}
               className="bg-gradient-to-r from-primary to-gold-light text-primary-foreground font-semibold w-full mt-2"

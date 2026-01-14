@@ -56,7 +56,11 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
     }
   };
 
-  if (!isVisible && !window.location.search.includes('force-pwa')) return null;
+  if (!isVisible && !window.location.search.includes('force-pwa')) {
+    console.log('PWA button hidden: isVisible is false');
+    // For debugging: showing a small hint in the console
+    return null;
+  }
 
   if (variant === 'menu') {
     return (
