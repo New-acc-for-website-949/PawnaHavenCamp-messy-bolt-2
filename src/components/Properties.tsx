@@ -91,7 +91,7 @@ const Properties = () => {
           {/* Subtle separator line for mobile */}
           <div className="h-[0.5px] w-full bg-border/10 mb-0.5 block md:hidden" />
           
-          <div className="flex flex-col items-center w-full px-2 gap-1.5">
+          <div className="flex flex-col items-center w-full px-2 gap-1">
             <div className="flex w-full p-1 bg-secondary/90 rounded-2xl backdrop-blur-md border border-border/30 shadow-xl pointer-events-auto">
               {categories.map((category) => (
                 <button
@@ -113,15 +113,15 @@ const Properties = () => {
             </div>
 
             {/* Price Filter - Redesigned as horizontal buttons */}
-            <div className={`w-full transition-all duration-300 pointer-events-auto mt-0.5 ${isSticky ? "opacity-100 translate-y-0 h-auto" : "opacity-0 -translate-y-2 h-0 overflow-hidden md:opacity-100 md:translate-y-0 md:h-auto"}`}>
-              <div className="flex w-full p-1 bg-background/40 backdrop-blur-md rounded-xl border border-border/20 gap-1 shadow-inner">
+            <div className={`w-full transition-all duration-300 pointer-events-auto mt-0 ${isSticky ? "opacity-100 translate-y-0 h-auto" : "opacity-0 -translate-y-2 h-0 overflow-hidden md:opacity-100 md:translate-y-0 md:h-auto"}`}>
+              <div className="flex w-full p-0.5 bg-background/40 backdrop-blur-md rounded-xl border border-border/20 gap-0.5 shadow-inner">
                 {priceFilters.map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setSelectedPriceFilter(filter)}
-                    className={`flex-1 py-1.5 rounded-lg text-[9px] xs:text-[10px] font-bold transition-all duration-300 uppercase tracking-wider ${
+                    className={`flex-1 py-1 rounded-lg text-[9px] xs:text-[10px] font-bold transition-all duration-300 uppercase tracking-wider ${
                       selectedPriceFilter === filter
-                        ? "bg-gold text-white shadow-sm scale-[1.02]"
+                        ? "bg-gold text-white shadow-sm scale-[1.01]"
                         : "text-muted-foreground/70 hover:text-primary hover:bg-secondary/50"
                     }`}
                   >
@@ -131,7 +131,7 @@ const Properties = () => {
               </div>
               
               {/* Association Indicator */}
-              <div className="flex justify-center mt-0.5">
+              <div className="flex justify-center mt-0">
                 <div className="w-1 h-1 rounded-full bg-primary/20 animate-pulse" />
               </div>
             </div>
