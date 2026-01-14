@@ -175,8 +175,8 @@ const PropertyDetails = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-0 pb-4">
-                  <div className="flex justify-center w-full px-2">
-                    <div className="w-full max-w-[350px] sm:max-w-md md:max-w-lg bg-background rounded-2xl border shadow-sm p-2">
+                  <div className="flex justify-center w-full px-0">
+                    <div className="w-full bg-background rounded-2xl border shadow-sm p-1 sm:p-2">
                       <Calendar
                         mode="single"
                         className="w-full"
@@ -194,12 +194,12 @@ const PropertyDetails = () => {
                           nav_button_next: "absolute right-1",
                           table: "w-full border-collapse",
                           head_row: "flex w-full justify-between mb-1",
-                          head_cell: "text-muted-foreground rounded-md w-8 sm:w-10 md:w-12 font-normal text-[0.75rem] uppercase",
+                          head_cell: "text-muted-foreground rounded-md w-[14%] font-normal text-[0.7rem] sm:text-[0.75rem] uppercase text-center",
                           row: "flex w-full mt-2 justify-between",
-                          cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
+                          cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent w-[14%]",
                           day: cn(
                             buttonVariants({ variant: "ghost" }),
-                            "h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-primary/10 transition-colors"
+                            "h-10 w-full sm:h-10 sm:w-10 md:h-12 md:w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-primary/10 transition-colors"
                           ),
                           day_today: "bg-accent text-accent-foreground",
                           day_outside: "text-muted-foreground opacity-50",
