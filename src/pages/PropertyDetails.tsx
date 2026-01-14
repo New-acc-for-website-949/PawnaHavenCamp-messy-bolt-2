@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { 
@@ -173,11 +173,20 @@ const PropertyDetails = () => {
                     Villa Availability Calendar
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <div className="flex justify-center overflow-x-auto">
+                <AccordionContent className="px-0 pb-4">
+                  <div className="flex justify-center w-full overflow-hidden">
                     <Calendar
                       mode="single"
-                      className="rounded-md border shadow-sm bg-background pointer-events-none max-w-full"
+                      className="rounded-md border shadow-sm bg-background pointer-events-none w-full max-w-full sm:max-w-md md:max-w-lg"
+                      classNames={{
+                        months: "w-full",
+                        month: "w-full space-y-4",
+                        table: "w-full border-collapse space-y-1",
+                        head_row: "flex w-full justify-between",
+                        row: "flex w-full mt-2 justify-between",
+                        cell: "h-9 w-9 md:h-12 md:w-12 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+                        day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 md:h-12 md:w-12 p-0 font-normal aria-selected:opacity-100"),
+                      }}
                       disabled={(date) => {
                         const day = date.getDate();
                         return day === 15 || day === 16 || day === 20 || date < new Date();
