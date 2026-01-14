@@ -46,6 +46,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
     is_top_selling: false,
     is_active: true,
     is_available: true,
+    max_capacity: '4',
     contact: '+91 8806092609',
     owner_mobile: '',
     amenities: [''],
@@ -74,6 +75,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
         is_top_selling: property.is_top_selling ?? false,
         is_active: property.is_active ?? true,
         is_available: property.is_available ?? true,
+        max_capacity: property.max_capacity?.toString() || property.capacity?.toString() || '4',
         contact: property.contact || '+91 8806092609',
         owner_mobile: property.owner_mobile || '',
         amenities: property.amenities?.length ? property.amenities : [''],
@@ -99,6 +101,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
       ...formData,
       rating: parseFloat(formData.rating) || 4.5,
       capacity: parseInt(formData.capacity) || 4,
+      max_capacity: parseInt(formData.max_capacity) || parseInt(formData.capacity) || 4,
       amenities: formData.amenities.filter(a => a.trim()),
       activities: formData.activities.filter(a => a.trim()),
       highlights: formData.highlights.filter(h => h.trim()),
@@ -319,7 +322,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="capacity">Max Capacity *</Label>
+                <Label htmlFor="capacity">Capacity *</Label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -332,6 +335,23 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                   />
                 </div>
               </div>
+
+              {formData.category === 'villa' && (
+                <div className="space-y-2">
+                  <Label htmlFor="max_capacity">Max Capacity *</Label>
+                  <div className="relative">
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="max_capacity"
+                      type="number"
+                      value={formData.max_capacity}
+                      onChange={(e) => setFormData({ ...formData, max_capacity: e.target.value })}
+                      className="h-12 pl-10 bg-secondary/50 rounded-xl"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="rating">Rating (0-5) *</Label>

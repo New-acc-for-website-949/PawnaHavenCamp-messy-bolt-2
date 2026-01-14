@@ -14,17 +14,23 @@ interface BookingFormProps {
   propertyId: string;
   pricePerPerson: number;
   propertyCategory?: string;
+  maxCapacity?: number;
   onClose?: () => void;
 }
 
-export function BookingForm({ propertyName, propertyId, pricePerPerson, propertyCategory = "camping", onClose }: BookingFormProps) {
+export function BookingForm({ 
+  propertyName, 
+  propertyId, 
+  pricePerPerson, 
+  propertyCategory = "camping", 
+  maxCapacity = 4,
+  onClose 
+}: BookingFormProps) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
     persons: 1,
-    vegPersons: 1,
-    nonVegPersons: 0,
     checkIn: undefined as Date | undefined,
     checkOut: undefined as Date | undefined,
   });
@@ -45,14 +51,10 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, property
       if (days < 1) days = 1;
     }
 
-    const totalPersons = (formData.vegPersons || 0) + (formData.nonVegPersons || 0);
-    const total = totalPersons * pricePerPerson * (isVilla ? days : 1);
+    const total = formData.persons * pricePerPerson * (isVilla ? days : 1);
     setTotalPrice(total);
     setAdvanceAmount(Math.round(total * 0.3)); // 30% advance
-    
-    // Update main persons count to match total of food preferences
-    setFormData(prev => ({ ...prev, persons: totalPersons }));
-  }, [formData.vegPersons, formData.nonVegPersons, formData.checkIn, formData.checkOut, pricePerPerson, isVilla]);
+  }, [formData.persons, formData.checkIn, formData.checkOut, pricePerPerson, isVilla]);
 
   const handleCheckInSelect = (date: Date | undefined) => {
     if (!date) return;
@@ -74,7 +76,7 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, property
       return;
     }
 
-    if ((formData.vegPersons || 0) + (formData.nonVegPersons || 0) === 0) {
+    if (formData.persons === 0) {
       alert("Please enter number of persons");
       return;
     }
@@ -197,43 +199,28 @@ export function BookingForm({ propertyName, propertyId, pricePerPerson, property
         
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="vegPersons">Veg Persons</Label>
+            <Label htmlFor="persons">Number of Persons</Label>
             <Input 
-              id="vegPersons" 
-              type="text" 
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={formData.vegPersons === 0 ? "" : formData.vegPersons}
+              id="persons" 
+              type="number" 
+              min="1"
+              max={maxCapacity}
+              value={formData.persons}
               onChange={(e) => {
-                const val = e.target.value;
-                if (val === "" || /^[0-9]+$/.test(val)) {
-                  setFormData({ ...formData, vegPersons: val === "" ? 0 : parseInt(val) });
+                const val = parseInt(e.target.value);
+                if (!isNaN(val) && val <= maxCapacity) {
+                  setFormData({ ...formData, persons: val });
+                } else if (e.target.value === "") {
+                  setFormData({ ...formData, persons: 0 });
                 }
               }}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="nonVegPersons">Non-Veg Persons</Label>
-            <Input 
-              id="nonVegPersons" 
-              type="text" 
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={formData.nonVegPersons === 0 ? "" : formData.nonVegPersons}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === "" || /^[0-9]+$/.test(val)) {
-                  setFormData({ ...formData, nonVegPersons: val === "" ? 0 : parseInt(val) });
-                }
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-2">
-          <Label>Total Persons</Label>
-          <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
-            {formData.persons} Persons
+            <Label>Max Capacity</Label>
+            <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
+              {maxCapacity} Persons
+            </div>
           </div>
         </div>
 

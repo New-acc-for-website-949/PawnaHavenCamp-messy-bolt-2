@@ -187,6 +187,7 @@ const PropertyDetails = () => {
                 propertyId={propertyData.id}
                 pricePerPerson={parseInt(propertyData.price.replace(/[^\d]/g, "")) || 0}
                 propertyCategory={propertyData.category}
+                maxCapacity={propertyData.max_capacity || propertyData.capacity}
               />
             </DialogContent>
           </Dialog>
