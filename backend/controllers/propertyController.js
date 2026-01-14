@@ -237,6 +237,8 @@ const createProperty = async (req, res) => {
       contact,
       owner_mobile,
       map_link,
+      veg_persons,
+      non_veg_persons,
       amenities,
       activities,
       highlights,
@@ -265,8 +267,8 @@ const createProperty = async (req, res) => {
       `INSERT INTO properties (
         title, slug, description, category, location, rating, price, price_note,
         capacity, check_in_time, check_out_time, status, is_top_selling, is_active, is_available,
-        contact, owner_mobile, map_link, amenities, activities, highlights, policies, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, CURRENT_TIMESTAMP)
+        contact, owner_mobile, map_link, veg_persons, non_veg_persons, amenities, activities, highlights, policies, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, CURRENT_TIMESTAMP)
       RETURNING *`,
       [
         title,
@@ -287,6 +289,8 @@ const createProperty = async (req, res) => {
         contact || '+91 8669505727',
         owner_mobile,
         map_link,
+        veg_persons || 0,
+        non_veg_persons || 0,
         typeof amenities === 'string' ? amenities : JSON.stringify(amenities || []),
         typeof activities === 'string' ? activities : JSON.stringify(activities || []),
         typeof highlights === 'string' ? highlights : JSON.stringify(highlights || []),
@@ -362,6 +366,8 @@ const updateProperty = async (req, res) => {
       contact,
       owner_mobile,
       map_link,
+      veg_persons,
+      non_veg_persons,
       amenities,
       activities,
       highlights,
@@ -478,6 +484,16 @@ const updateProperty = async (req, res) => {
     if (map_link !== undefined) {
       updates.push(`map_link = $${paramCount}`);
       values.push(map_link);
+      paramCount++;
+    }
+    if (veg_persons !== undefined) {
+      updates.push(`veg_persons = $${paramCount}`);
+      values.push(veg_persons);
+      paramCount++;
+    }
+    if (non_veg_persons !== undefined) {
+      updates.push(`non_veg_persons = $${paramCount}`);
+      values.push(non_veg_persons);
       paramCount++;
     }
     if (amenities !== undefined) {

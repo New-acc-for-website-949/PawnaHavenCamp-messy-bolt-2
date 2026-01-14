@@ -26,6 +26,8 @@ const PropertyForm = () => {
     is_available: true,
     contact: '+91 8669505727',
     owner_mobile: '',
+    veg_persons: 0,
+    non_veg_persons: 0,
     amenities: [''],
     activities: [''],
     highlights: [''],
@@ -67,6 +69,8 @@ const PropertyForm = () => {
           is_available: property.is_available !== undefined ? property.is_available : true,
           contact: property.contact || '+91 8669505727',
           owner_mobile: property.owner_mobile || '',
+          veg_persons: property.veg_persons || 0,
+          non_veg_persons: property.non_veg_persons || 0,
           amenities: property.amenities?.length > 0 ? property.amenities : [''],
           activities: property.activities?.length > 0 ? property.activities : [''],
           highlights: property.highlights?.length > 0 ? property.highlights : [''],
@@ -292,6 +296,20 @@ const PropertyForm = () => {
               <label>Contact Phone (WhatsApp) *</label>
               <input type="text" name="contact" value={formData.contact} onChange={handleChange} required />
             </div>
+
+            <div className="form-group">
+              <label>No. of Veg Persons</label>
+              <input type="number" name="veg_persons" value={formData.veg_persons} onChange={handleChange} min="0" />
+            </div>
+
+            <div className="form-group">
+              <label>No. of Non-Veg Persons</label>
+              <input type="number" name="non_veg_persons" value={formData.non_veg_persons} onChange={handleChange} min="0" />
+            </div>
+          </div>
+
+          <div className="child-policy-note" style={{ padding: '10px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '4px', marginBottom: '20px', color: '#0369a1' }}>
+            <strong>Note:</strong> Children below 5 years have free stay.
           </div>
 
           <div className="form-group">
