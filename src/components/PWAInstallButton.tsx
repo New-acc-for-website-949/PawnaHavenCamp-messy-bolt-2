@@ -22,14 +22,14 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
 
     if (window.matchMedia('(display-mode: standalone)').matches) {
       console.log('App is already installed/running in standalone mode');
-      // setIsVisible(false);
-      // return;
+      setIsVisible(false);
+      return;
     }
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // For debugging: Force visibility if requested
-    if (window.location.search.includes('force-pwa') || true) {
+    // Initial check for visibility
+    if (window.location.search.includes('force-pwa')) {
       setIsVisible(true);
     }
 
@@ -40,26 +40,32 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      // If we don't have the prompt, show instructions for iOS
+      // If we don't have the prompt, check if it's already installed or if it's iOS
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
         alert("To install: Tap the Share button (square with arrow) and select 'Add to Home Screen'.");
+      } else {
+        alert("Installation prompt not available. Please try refreshing or using a supported browser (Chrome, Edge).");
       }
       return;
     }
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setIsVisible(false);
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        setIsVisible(false);
+      }
+    } catch (error) {
+      console.error('PWA install error:', error);
     }
   };
 
-  if (!isVisible && !window.location.search.includes('force-pwa')) {
-    console.log('PWA button hidden: isVisible is false');
-    // For debugging: showing a small hint in the console
+  // Only hide if we aren't forcing it AND the browser hasn't said we can install yet
+  if (!isVisible && !window.location.search.includes('force-pwa') && !deferredPrompt) {
     return null;
   }
 
