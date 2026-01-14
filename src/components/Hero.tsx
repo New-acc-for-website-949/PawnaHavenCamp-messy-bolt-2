@@ -4,6 +4,7 @@ import heroImage from "@/assets/hero-resort.jpg";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { PWAInstallButton } from "./PWAInstallButton";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -37,10 +38,13 @@ const Hero = () => {
       {/* Content */}
       <div className="container mx-auto px-6 relative z-10 pt-32 sm:pt-20">
         <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm mb-8 opacity-0 animate-fade-up">
-            <Star className="w-4 h-4 text-primary fill-primary" />
-            <span className="text-sm font-medium text-primary">Premium Luxury Stays</span>
+          {/* Badge & PWA Install */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 opacity-0 animate-fade-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm">
+              <Star className="w-4 h-4 text-primary fill-primary" />
+              <span className="text-sm font-medium text-primary">Premium Luxury Stays</span>
+            </div>
+            <PWAInstallButton variant="hero" />
           </div>
 
           {/* Main Title */}

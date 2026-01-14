@@ -24,7 +24,6 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <PWAInstallButton />
         <BrowserRouter>
           <ScrollRestoration />
           <Routes>

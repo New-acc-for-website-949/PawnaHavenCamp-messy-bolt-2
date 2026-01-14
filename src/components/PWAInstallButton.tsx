@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PWAInstallButtonProps {
-  variant?: 'floating' | 'menu';
+  variant?: 'floating' | 'menu' | 'hero';
   className?: string;
 }
 
@@ -61,6 +61,21 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
     console.log('PWA button hidden: isVisible is false');
     // For debugging: showing a small hint in the console
     return null;
+  }
+
+  if (variant === 'hero') {
+    return (
+      <Button 
+        onClick={handleInstallClick}
+        className={cn(
+          "inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm hover:scale-105 active:scale-95 transition-all duration-300 group h-auto",
+          className
+        )}
+      >
+        <Download className="w-4 h-4 text-primary animate-bounce group-hover:animate-none" />
+        <span className="text-sm font-medium text-primary uppercase tracking-wider">Install App</span>
+      </Button>
+    );
   }
 
   if (variant === 'menu') {
