@@ -32,6 +32,7 @@ interface AdminPropertyFormProps {
 
 const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -55,9 +56,8 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
     activities: [''],
     highlights: [''],
     policies: [''],
-    images: [''],
+    images: [] as string[],
   });
-  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,15 +80,8 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
 
       const result = await response.json();
       if (result.success) {
-        // Find first empty image slot or add new
-        const emptyIndex = formData.images.findIndex(img => !img.trim());
-        if (emptyIndex !== -1) {
-          const newImages = [...formData.images];
-          newImages[emptyIndex] = result.url;
-          setFormData({ ...formData, images: newImages });
-        } else {
-          setFormData({ ...formData, images: [...formData.images, result.url] });
-        }
+        // Add new image to the list
+        setFormData(prev => ({ ...prev, images: [...prev.images.filter(img => img.trim()), result.url] }));
         toast({ title: 'Image uploaded successfully' });
       } else {
         toast({ title: 'Upload failed', description: result.message, variant: 'destructive' });
@@ -125,7 +118,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
         activities: property.activities?.length ? property.activities : [''],
         highlights: property.highlights?.length ? property.highlights : [''],
         policies: property.policies?.length ? property.policies : [''],
-        images: property.images?.length ? property.images.map((img: any) => typeof img === 'string' ? img : img.image_url) : [''],
+        images: property.images?.length ? property.images.map((img: any) => typeof img === 'string' ? img : img.image_url) : [],
       });
     }
   }, [property]);
@@ -550,7 +543,10 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     type="button"
                     variant="ghost"
                     size="icon"
-                    onClick={() => removeArrayItem('images', index)}
+                    onClick={() => {
+                      const newImages = formData.images.filter((_, i) => i !== index);
+                      setFormData(prev => ({ ...prev, images: newImages }));
+                    }}
                     className="h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
                   >
                     <Trash2 className="w-4 h-4" />
