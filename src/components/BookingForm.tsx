@@ -127,55 +127,50 @@ export function BookingForm({
   };
 
   return (
-    <div className="space-y-4 py-0 pb-20 md:pb-0">
-      <div className="grid gap-4 max-h-[60vh] md:max-h-[50vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-        <div className="grid gap-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input 
-            id="name" 
-            placeholder="Enter your name" 
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
+    <div className="space-y-4 py-0 pb-10 md:pb-0">
+      <div className="grid gap-4 pr-1">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-1.5">
+            <Label htmlFor="name">Full Name</Label>
+            <Input 
+              id="name" 
+              placeholder="Your name" 
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="h-11"
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="mobile">Mobile Number</Label>
+            <Input 
+              id="mobile" 
+              type="tel"
+              inputMode="tel"
+              placeholder="Mobile" 
+              value={formData.mobile}
+              onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+              className="h-11"
+            />
+          </div>
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="mobile">Mobile Number</Label>
-          <Input 
-            id="mobile" 
-            type="tel"
-            inputMode="tel"
-            placeholder="Enter mobile number" 
-            value={formData.mobile}
-            onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="referral">Referral Code (Optional)</Label>
-          <Input 
-            id="referral" 
-            placeholder="Use Referral Code to get 5% discount on your booking" 
-            value={(formData as any).referralCode || ""}
-            onChange={(e) => setFormData({ ...formData, referralCode: e.target.value } as any)}
-            className="border-primary/30 focus:border-primary"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="grid gap-2">
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-1.5">
             <Label>Check-in</Label>
             <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "justify-start text-left font-normal",
+                    "h-11 justify-start text-left font-normal px-3",
                     !formData.checkIn && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.checkIn ? format(formData.checkIn, "MMM d, yyyy") : <span>Pick date</span>}
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">{formData.checkIn ? format(formData.checkIn, "MMM d") : "Date"}</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={formData.checkIn}
@@ -195,7 +190,7 @@ export function BookingForm({
               </PopoverContent>
             </Popover>
           </div>
-          <div className="grid gap-2">
+          <div className="grid gap-1.5">
             <Label>Check-out</Label>
             {isVilla ? (
               <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
@@ -203,15 +198,15 @@ export function BookingForm({
                   <Button
                     variant="outline"
                     className={cn(
-                      "justify-start text-left font-normal",
+                      "h-11 justify-start text-left font-normal px-3",
                       !formData.checkOut && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.checkOut ? format(formData.checkOut, "MMM d, yyyy") : <span>Pick date</span>}
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    <span className="truncate">{formData.checkOut ? format(formData.checkOut, "MMM d") : "Date"}</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="end">
                   <Calendar
                     mode="single"
                     selected={formData.checkOut}
@@ -237,43 +232,18 @@ export function BookingForm({
                 </PopoverContent>
               </Popover>
             ) : (
-              <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center gap-2 cursor-not-allowed opacity-70">
-                <CalendarIcon className="h-4 w-4" />
-                {formData.checkOut ? format(formData.checkOut, "MMM d, yyyy") : "Next day"}
+              <div className="h-11 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center gap-2 cursor-not-allowed opacity-70">
+                <CalendarIcon className="h-4 w-4 shrink-0" />
+                {formData.checkOut ? format(formData.checkOut, "MMM d") : "Next day"}
               </div>
             )}
           </div>
         </div>
         
-        {isVilla && (
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="availability" className="border-none bg-secondary/30 rounded-2xl overflow-hidden border border-border/50">
-              <AccordionTrigger className="px-4 hover:no-underline py-4">
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-                  <CalendarIcon className="w-4 h-4 text-primary" />
-                  Villa Availability Quick View
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="flex justify-center overflow-x-auto">
-                  <Calendar
-                    mode="single"
-                    className="rounded-md border shadow-sm bg-background pointer-events-none h-auto max-w-full"
-                    disabled={(date) => {
-                      const day = date.getDate();
-                      return day === 15 || day === 16 || day === 20 || date < new Date();
-                    }}
-                  />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        )}
-        
         {isVilla ? (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="persons">Number of Persons</Label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="persons">Persons</Label>
               <Input 
                 id="persons" 
                 type="number" 
@@ -288,20 +258,21 @@ export function BookingForm({
                     setFormData({ ...formData, persons: 0 });
                   }
                 }}
+                className="h-11"
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label>Max Capacity</Label>
-              <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
-                {maxCapacity} Persons
+              <div className="h-11 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
+                {maxCapacity} Guests
               </div>
             </div>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="vegPersons">Veg Persons</Label>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="vegPersons">Veg</Label>
                 <Input 
                   id="vegPersons" 
                   type="text" 
@@ -314,10 +285,11 @@ export function BookingForm({
                       setFormData({ ...formData, vegPersons: val === "" ? 0 : parseInt(val) });
                     }
                   }}
+                  className="h-11"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="nonVegPersons">Non-Veg Persons</Label>
+              <div className="grid gap-1.5">
+                <Label htmlFor="nonVegPersons">Non-Veg</Label>
                 <Input 
                   id="nonVegPersons" 
                   type="text" 
@@ -330,44 +302,55 @@ export function BookingForm({
                       setFormData({ ...formData, nonVegPersons: val === "" ? 0 : parseInt(val) });
                     }
                   }}
+                  className="h-11"
                 />
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label>Total Persons</Label>
-              <div className="h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
+              <div className="h-11 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground flex items-center">
                 {formData.persons} Persons
               </div>
             </div>
-          </>
+          </div>
         )}
 
-        <div className="bg-primary/5 p-3 rounded-xl border border-primary/10">
-          <p className="text-xs text-primary font-medium flex items-center gap-2">
-            <Users className="w-3.5 h-3.5" />
-            Note: Children below 5 years stay for free!
+        <div className="grid gap-1.5">
+          <Label htmlFor="referral">Referral Code (Optional)</Label>
+          <Input 
+            id="referral" 
+            placeholder="Enter code for 5% discount" 
+            value={(formData as any).referralCode || ""}
+            onChange={(e) => setFormData({ ...formData, referralCode: e.target.value } as any)}
+            className="h-11 border-primary/30 focus:border-primary"
+          />
+        </div>
+
+        <div className="bg-primary/5 p-2 rounded-lg border border-primary/10">
+          <p className="text-[10px] text-primary font-medium flex items-center gap-1.5">
+            <Users className="w-3 h-3" />
+            Children below 5 years stay for free!
           </p>
         </div>
       </div>
 
-      <div className="bg-secondary/50 p-4 rounded-2xl space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Total Price:</span>
-          <span className="text-xl font-bold text-primary">₹{totalPrice}</span>
+      <div className="bg-secondary/50 p-3 rounded-xl flex items-center justify-between">
+        <div>
+          <span className="text-xs font-medium block text-muted-foreground">Advance Payment (30%)</span>
+          <span className="text-lg font-bold text-primary">₹{advanceAmount}</span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Advance Payment (30%):</span>
-          <span className="text-lg font-semibold text-primary">₹{advanceAmount}</span>
+        <div className="text-right">
+          <span className="text-[10px] font-medium block text-muted-foreground">Total: ₹{totalPrice}</span>
         </div>
       </div>
 
       <Button 
-        className="w-full h-14 rounded-xl text-lg font-bold gap-2" 
+        className="w-full h-12 rounded-xl text-base font-bold gap-2 shadow-gold" 
         onClick={handleBook}
       >
-        <CreditCard className="w-5 h-5" />
-        Pay Advance & Confirm
+        <CreditCard className="w-4 h-4" />
+        Pay & Confirm
       </Button>
     </div>
   );
