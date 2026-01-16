@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { PWAInstallButton } from "./components/PWAInstallButton";
 import Index from "./pages/Index";
 import PropertyDetails from "./pages/PropertyDetails";
 import VideoGallery from "./pages/VideoGallery";
@@ -13,6 +12,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import DemoPayment from "./pages/DemoPayment";
 import TicketPage from "./pages/TicketPage";
 import InformationPage from "./pages/InformationPage";
+import ReferralPage from "./pages/ReferralPage";
 import NotFound from "./pages/NotFound";
 import ScrollRestoration from "./components/ScrollRestoration";
 
@@ -35,7 +35,7 @@ const App = () => (
             <Route path="/payment/demo" element={<DemoPayment />} />
             <Route path="/ticket/:ticketId" element={<TicketPage />} />
             <Route path="/info/:type" element={<InformationPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/referral" element={<ReferralPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

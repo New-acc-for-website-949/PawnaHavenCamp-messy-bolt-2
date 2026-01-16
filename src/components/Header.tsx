@@ -20,11 +20,16 @@ const Header = () => {
   const navLinks = [
     { name: "Properties", href: "#properties" },
     { name: "Destinations", href: "#destinations" },
+    { name: "Referral Earning", href: "/referral", isExternal: true },
     { name: "About", href: "#about" },
   ];
 
-  const scrollToSection = (href: string) => {
+  const scrollToSection = (href: string, isExternal?: boolean) => {
     setIsMenuOpen(false);
+    if (isExternal) {
+      window.location.href = href;
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -102,10 +107,10 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-10">
-            {navLinks.map((link) => (
+            {navLinks.map((link: any) => (
               <button
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => scrollToSection(link.href, link.isExternal)}
                 className="text-sm font-medium text-foreground/70 hover:text-primary elegant-underline transition-colors duration-300"
               >
                 {link.name}
@@ -153,10 +158,10 @@ const Header = () => {
       >
         <div className="container mx-auto px-6 py-8">
           <nav className="flex flex-col gap-6">
-            {navLinks.map((link) => (
+            {navLinks.map((link: any) => (
               <button
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => scrollToSection(link.href, link.isExternal)}
                 className="text-lg font-medium text-foreground/80 hover:text-primary text-left transition-colors"
               >
                 {link.name}

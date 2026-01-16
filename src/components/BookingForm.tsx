@@ -149,6 +149,16 @@ export function BookingForm({
             onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
           />
         </div>
+        <div className="grid gap-2">
+          <Label htmlFor="referral">Referral Code (Optional)</Label>
+          <Input 
+            id="referral" 
+            placeholder="Use Referral Code to get 5% discount on your booking" 
+            value={(formData as any).referralCode || ""}
+            onChange={(e) => setFormData({ ...formData, referralCode: e.target.value } as any)}
+            className="border-primary/30 focus:border-primary"
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label>Check-in</Label>
