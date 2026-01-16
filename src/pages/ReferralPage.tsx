@@ -1,5 +1,5 @@
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { 
   Trophy, 
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const ReferralPage = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<"options" | "leaderboard">("options");
 
   const referralData = [
@@ -55,7 +56,10 @@ const ReferralPage = () => {
               </div>
             </Card>
 
-            <Card className="p-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer group rounded-2xl shadow-gold flex items-center gap-2">
+            <Card 
+              onClick={() => navigate("/referral/generate")}
+              className="p-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer group rounded-2xl shadow-gold flex items-center gap-2"
+            >
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">
                 <Zap className="w-4 h-4" />
               </div>
