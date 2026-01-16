@@ -1,22 +1,47 @@
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import Index from "./pages/Index";
-import PropertyDetails from "./pages/PropertyDetails";
-import VideoGallery from "./pages/VideoGallery";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import DemoPayment from "./pages/DemoPayment";
-import TicketPage from "./pages/TicketPage";
-import InformationPage from "./pages/InformationPage";
-import ReferralPage from "./pages/ReferralPage";
-import NotFound from "./pages/NotFound";
 import ScrollRestoration from "./components/ScrollRestoration";
+import LogoLoader from "./components/LogoLoader";
+
+// Lazy load pages for transition effect
+const Index = lazy(() => import("./pages/Index"));
+const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
+const VideoGallery = lazy(() => import("./pages/VideoGallery"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const DemoPayment = lazy(() => import("./pages/DemoPayment"));
+const TicketPage = lazy(() => import("./pages/TicketPage"));
+const InformationPage = lazy(() => import("./pages/InformationPage"));
+const ReferralPage = lazy(() => import("./pages/ReferralPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+// Page wrapper to handle loading state on route changes
+const PageWrapper = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  return (
+    <>
+      {loading && <LogoLoader />}
+      <Suspense fallback={<LogoLoader />}>
+        {children}
+      </Suspense>
+    </>
+  );
+};
 
 const App = () => (
   <HelmetProvider>
@@ -27,16 +52,16 @@ const App = () => (
         <BrowserRouter>
           <ScrollRestoration />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/property/:propertyId" element={<PropertyDetails />} />
-            <Route path="/videos" element={<VideoGallery />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/payment/demo" element={<DemoPayment />} />
-            <Route path="/ticket/:ticketId" element={<TicketPage />} />
-            <Route path="/info/:type" element={<InformationPage />} />
-            <Route path="/referral" element={<ReferralPage />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+            <Route path="/property/:propertyId" element={<PageWrapper><PropertyDetails /></PageWrapper>} />
+            <Route path="/videos" element={<PageWrapper><VideoGallery /></PageWrapper>} />
+            <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+            <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+            <Route path="/payment/demo" element={<PageWrapper><DemoPayment /></PageWrapper>} />
+            <Route path="/ticket/:ticketId" element={<PageWrapper><TicketPage /></PageWrapper>} />
+            <Route path="/info/:type" element={<PageWrapper><InformationPage /></PageWrapper>} />
+            <Route path="/referral" element={<PageWrapper><ReferralPage /></PageWrapper>} />
+            <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
