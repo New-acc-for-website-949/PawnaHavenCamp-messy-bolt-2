@@ -47,8 +47,9 @@ export class PaytmPaymentService {
     const form = document.createElement("form");
     form.method = "POST";
     form.action = targetUrl;
-    // Explicitly set target to _top to break out of any iframes (like Replit's preview)
-    form.target = "_top";
+    // Explicitly set target to _blank to open in a new tab
+    // This is the most reliable way to bypass iframe and cross-origin security restrictions in cloud environments like Replit
+    form.target = "_blank";
     form.enctype = "application/x-www-form-urlencoded";
     form.style.display = "none";
 

@@ -59,11 +59,12 @@ const initiatePaytmPayment = async (req, res) => {
     const callbackUrl = process.env.PAYTM_CALLBACK_URL || `${protocol}://${cleanHost}/api/payments/paytm/callback`;
     const gatewayUrl = process.env.PAYTM_GATEWAY_URL || 'https://securegw-stage.paytm.in/order/process';
     
-    // Disable restrictive security headers for the payment initiation response
-    // to allow the client-side form to submit to the external Paytm domain.
-    res.setHeader('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * data: blob:; frame-ancestors *;");
+    // Completely open security headers for the payment initiation response
+    res.setHeader('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * data: blob:; frame-ancestors *; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src *;");
     res.setHeader('X-Frame-Options', 'ALLOWALL');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (!mid || !website || !industryType || !merchantKey) {
       console.error('Missing Paytm configuration');
