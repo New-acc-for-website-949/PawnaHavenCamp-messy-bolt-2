@@ -39,9 +39,14 @@ export class PaytmPaymentService {
   }
 
   static redirectToPaytm(paytmParams: Record<string, string>, gatewayUrl: string): void {
+    if (!gatewayUrl) {
+      throw new Error("Gateway URL is not configured");
+    }
+
     const form = document.createElement("form");
     form.method = "POST";
     form.action = gatewayUrl;
+    form.enctype = "application/x-www-form-urlencoded";
     form.style.display = "none";
 
     Object.keys(paytmParams).forEach((key) => {
@@ -53,7 +58,21 @@ export class PaytmPaymentService {
     });
 
     document.body.appendChild(form);
-    form.submit();
+    console.log("Submitting payment form to:", gatewayUrl);
+    console.log("Paytm Parameters:", Object.keys(paytmParams));
+
+    try {
+      form.submit();
+      setTimeout(() => {
+        document.body.removeChild(form);
+      }, 1000);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      if (form.parentNode) {
+        document.body.removeChild(form);
+      }
+      throw new Error("Failed to redirect to payment gateway");
+    }
   }
 
   static async initiateAndRedirect(

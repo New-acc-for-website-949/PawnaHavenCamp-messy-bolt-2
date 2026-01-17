@@ -128,6 +128,15 @@ Deno.serve(async (req: Request) => {
 
     const checksum = await PaytmChecksum.generateChecksum(paytmParams, merchantKey);
 
+    console.log("Payment Parameters:", {
+      mid,
+      website,
+      industryType,
+      orderId: paytmOrderId,
+      amount: booking.advance_amount,
+      gatewayUrl,
+    });
+
     const { error: updateError } = await supabaseClient
       .from("bookings")
       .update({ order_id: paytmOrderId })
