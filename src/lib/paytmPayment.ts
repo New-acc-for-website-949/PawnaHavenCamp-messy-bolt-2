@@ -47,6 +47,8 @@ export class PaytmPaymentService {
     const form = document.createElement("form");
     form.method = "POST";
     form.action = targetUrl;
+    // Explicitly set target to _top to break out of any iframes (like Replit's preview)
+    form.target = "_top";
     form.enctype = "application/x-www-form-urlencoded";
     form.style.display = "none";
 
