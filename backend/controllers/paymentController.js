@@ -69,7 +69,7 @@ const initiatePaytmPayment = async (req, res) => {
       CUST_ID: booking.guest_phone,
       MOBILE_NO: booking.guest_phone,
       EMAIL: `${booking.guest_phone}@guest.com`,
-      TXN_AMOUNT: booking.advance_amount.toString(),
+      TXN_AMOUNT: parseFloat(booking.advance_amount).toFixed(2),
       CALLBACK_URL: callbackUrl,
     };
 
