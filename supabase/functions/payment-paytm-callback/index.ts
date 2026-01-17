@@ -159,9 +159,10 @@ Deno.serve(async (req: Request) => {
       booking_status: updateData.booking_status || booking.booking_status,
     });
 
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:5173";
     const redirectUrl = status === "TXN_SUCCESS"
-      ? `https://your-frontend-url.com/payment-success?booking_id=${booking.booking_id}`
-      : `https://your-frontend-url.com/payment-failed?booking_id=${booking.booking_id}`;
+      ? `${frontendUrl}/ticket?booking_id=${booking.booking_id}`
+      : `${frontendUrl}`;
 
     return new Response(
       `

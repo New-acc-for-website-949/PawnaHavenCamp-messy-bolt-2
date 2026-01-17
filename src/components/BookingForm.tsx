@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Users, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PaytmPaymentService } from "@/lib/paytmPayment";
 import {
   Accordion,
   AccordionContent,
@@ -45,6 +46,7 @@ export function BookingForm({
 
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
   const [isCheckOutOpen, setIsCheckOutOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [advanceAmount, setAdvanceAmount] = useState(0);
@@ -89,7 +91,7 @@ export function BookingForm({
     setIsCheckInOpen(false);
   };
 
-  const handleBook = () => {
+  const handleBook = async () => {
     if (!formData.name || !formData.mobile || !formData.checkIn || !formData.checkOut) {
       alert("Please fill all details");
       return;
@@ -107,23 +109,59 @@ export function BookingForm({
       }
     }
 
-    if (onClose) onClose();
-    
-    // Navigate to demo payment page with state
-    navigate("/payment/demo", { 
-      state: { 
-        bookingData: {
-          ...formData,
-          propertyId: propertyId,
-          propertyTitle: propertyName,
-          checkIn: format(formData.checkIn, "PPP"),
-          checkOut: format(formData.checkOut, "PPP"),
-          totalPrice,
-          advanceAmount
+    setIsLoading(true);
+
+    try {
+      if (onClose) onClose();
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const checkInDateTime = new Date(formData.checkIn);
+      checkInDateTime.setHours(14, 0, 0, 0);
+
+      const checkOutDateTime = new Date(formData.checkOut);
+      checkOutDateTime.setHours(11, 0, 0, 0);
+
+      const bookingResponse = await fetch(`${supabaseUrl}/functions/v1/booking-initiate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${supabaseAnonKey}`,
         },
-        amount: advanceAmount.toString()
-      } 
-    });
+        body: JSON.stringify({
+          property_id: propertyId,
+          property_name: propertyName,
+          property_type: isVilla ? "VILLA" : "CAMPING",
+          guest_name: formData.name,
+          guest_phone: formData.mobile,
+          owner_phone: "+918806092609",
+          admin_phone: "+918806092609",
+          checkin_datetime: checkInDateTime.toISOString(),
+          checkout_datetime: checkOutDateTime.toISOString(),
+          advance_amount: advanceAmount,
+          persons: formData.persons || (formData.vegPersons + formData.nonVegPersons),
+          max_capacity: 6,
+        }),
+      });
+
+      if (!bookingResponse.ok) {
+        const error = await bookingResponse.json();
+        throw new Error(error.error || "Failed to create booking");
+      }
+
+      const bookingData = await bookingResponse.json();
+
+      if (!bookingData.booking || !bookingData.booking.booking_id) {
+        throw new Error("Invalid booking response");
+      }
+
+      await PaytmPaymentService.initiateAndRedirect(bookingData.booking.booking_id, "WEB");
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert(`Booking failed: ${error.message}. Please try again.`);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -345,12 +383,13 @@ export function BookingForm({
         </div>
       </div>
 
-      <Button 
-        className="w-full h-12 rounded-xl text-base font-bold gap-2 shadow-gold" 
+      <Button
+        className="w-full h-12 rounded-xl text-base font-bold gap-2 shadow-gold"
         onClick={handleBook}
+        disabled={isLoading}
       >
         <CreditCard className="w-4 h-4" />
-        Pay & Confirm
+        {isLoading ? "Processing..." : "Pay & Confirm"}
       </Button>
     </div>
   );
