@@ -92,7 +92,81 @@ const getETicketById = async (req, res) => {
   }
 };
 
+// Get booking e-ticket (for the new booking flow)
+const getBookingETicket = async (req, res) => {
+  try {
+    const bookingId = req.query.booking_id;
+
+    if (!bookingId) {
+      return res.status(400).json({ error: 'booking_id is required' });
+    }
+
+    const result = await query(
+      'SELECT * FROM bookings WHERE booking_id = $1',
+      [bookingId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    const booking = result.rows[0];
+
+    const now = new Date();
+    const checkoutDate = new Date(booking.checkout_datetime);
+    const isExpired = now > checkoutDate;
+
+    if (isExpired) {
+      return res.status(410).json({
+        error: 'Booking expired',
+        message: 'This booking has expired',
+        booking_id: bookingId,
+        checkout_datetime: booking.checkout_datetime,
+      });
+    }
+
+    if (booking.booking_status !== 'TICKET_GENERATED' &&
+        booking.booking_status !== 'OWNER_CONFIRMED') {
+      return res.status(403).json({
+        error: 'Ticket not available',
+        message: 'E-ticket is not yet available for this booking',
+        current_status: booking.booking_status,
+      });
+    }
+
+    const dueAmount = (booking.total_amount || 0) - booking.advance_amount;
+
+    const ticketData = {
+      booking_id: booking.booking_id,
+      property_name: booking.property_name,
+      guest_name: booking.guest_name,
+      guest_phone: booking.guest_phone,
+      checkin_datetime: booking.checkin_datetime,
+      checkout_datetime: booking.checkout_datetime,
+      advance_amount: booking.advance_amount,
+      due_amount: dueAmount,
+      total_amount: booking.total_amount,
+      owner_name: booking.owner_name,
+      owner_phone: booking.owner_phone,
+      map_link: booking.map_link,
+      property_address: booking.property_address,
+      persons: booking.persons,
+      booking_status: booking.booking_status,
+      created_at: booking.created_at,
+    };
+
+    return res.status(200).json(ticketData);
+  } catch (error) {
+    console.error('Error fetching booking e-ticket:', error);
+    return res.status(500).json({
+      error: 'Internal server error',
+      details: error.message
+    });
+  }
+};
+
 module.exports = {
   createETicket,
-  getETicketById
+  getETicketById,
+  getBookingETicket
 };

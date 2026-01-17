@@ -6,6 +6,8 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const propertyRoutes = require('./routes/properties');
 const eticketRoutes = require('./routes/etickets');
+const bookingRoutes = require('./routes/bookings');
+const paymentRoutes = require('./routes/payments');
 const { pool } = require('./db');
 
 const app = express();
