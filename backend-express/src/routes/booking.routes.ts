@@ -22,7 +22,8 @@ router.post('/initiate', async (req: Request, res: Response) => {
 
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const booking = await bookingService.getBookingById(req.params.id);
+    const bookingId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const booking = await bookingService.getBookingById(bookingId);
 
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' });

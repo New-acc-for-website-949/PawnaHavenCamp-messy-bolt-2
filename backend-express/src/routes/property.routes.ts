@@ -25,7 +25,7 @@ const transformProperty = (property: any) => {
   };
 };
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/public-list', async (req: Request, res: Response) => {
   try {
     const properties = await propertyRepo.findAll();
 
@@ -45,7 +45,8 @@ router.get('/', async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      data: propertiesWithImages
+      data: propertiesWithImages,
+      categorySettings: {}
     });
   } catch (error: any) {
     console.error('Error fetching properties:', error);
@@ -57,9 +58,9 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/:slug', async (req: Request, res: Response) => {
+router.get('/public/:slug', async (req: Request, res: Response) => {
   try {
-    const { slug } = req.params;
+    const slug = Array.isArray(req.params.slug) ? req.params.slug[0] : req.params.slug;
     const property = await propertyRepo.findBySlug(slug);
 
     if (!property) {

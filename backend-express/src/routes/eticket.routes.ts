@@ -6,7 +6,7 @@ const bookingRepo = new BookingRepository();
 
 router.get('/:bookingId', async (req: Request, res: Response) => {
   try {
-    const { bookingId } = req.params;
+    const bookingId = Array.isArray(req.params.bookingId) ? req.params.bookingId[0] : req.params.bookingId;
 
     if (!bookingId) {
       return res.status(400).json({ error: 'booking_id is required' });
