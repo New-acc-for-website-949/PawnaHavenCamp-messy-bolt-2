@@ -128,7 +128,7 @@ export function BookingForm({
         property_type: isVilla ? "VILLA" : "CAMPING",
         guest_name: formData.name,
         guest_phone: formData.mobile,
-        owner_phone: "+918806092609",
+        owner_phone: "+919356874010",
         admin_phone: "+918806092609",
         checkin_datetime: checkInDateTime.toISOString(),
         checkout_datetime: checkOutDateTime.toISOString(),
