@@ -41,9 +41,12 @@ export class PaytmPaymentService {
       throw new Error("Gateway URL is not configured");
     }
 
+    // Ensure the gateway URL is correct
+    const targetUrl = gatewayUrl.startsWith('http') ? gatewayUrl : `https://${gatewayUrl}`;
+
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = gatewayUrl.startsWith('http') ? gatewayUrl : `${window.location.protocol}//${gatewayUrl}`;
+    form.action = targetUrl;
     form.enctype = "application/x-www-form-urlencoded";
     form.style.display = "none";
 

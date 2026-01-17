@@ -58,6 +58,10 @@ const initiatePaytmPayment = async (req, res) => {
     const cleanHost = host.includes('replit.dev') ? host.split(':')[0] : host;
     const callbackUrl = process.env.PAYTM_CALLBACK_URL || `${protocol}://${cleanHost}/api/payments/paytm/callback`;
     const gatewayUrl = process.env.PAYTM_GATEWAY_URL || 'https://securegw-stage.paytm.in/order/process';
+    
+    // Add security headers to allow redirection and form submission
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.paytm.in https://*.paytm.com;");
+    res.setHeader('X-Frame-Options', 'ALLOWALL');
 
     if (!mid || !website || !industryType || !merchantKey) {
       console.error('Missing Paytm configuration');
