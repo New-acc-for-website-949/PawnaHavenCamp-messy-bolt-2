@@ -12,14 +12,13 @@ const TicketPage = () => {
   const { data: ticket, isLoading, error } = useQuery({
     queryKey: ["ticket", bookingId],
     queryFn: async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
       const response = await fetch(
-        `${supabaseUrl}/functions/v1/eticket-get?booking_id=${bookingId}`,
+        `${apiBaseUrl}/api/eticket/${bookingId}`,
         {
           headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
           },
         }
       );

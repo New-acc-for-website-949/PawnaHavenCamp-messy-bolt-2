@@ -114,8 +114,7 @@ export function BookingForm({
     try {
       if (onClose) onClose();
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
       const checkInDateTime = new Date(formData.checkIn);
       checkInDateTime.setHours(14, 0, 0, 0);
@@ -144,11 +143,10 @@ export function BookingForm({
         bookingPayload.nonveg_guest_count = formData.nonVegPersons || 0;
       }
 
-      const bookingResponse = await fetch(`${supabaseUrl}/functions/v1/booking-initiate`, {
+      const bookingResponse = await fetch(`${apiBaseUrl}/api/bookings/initiate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseAnonKey}`,
         },
         body: JSON.stringify(bookingPayload),
       });

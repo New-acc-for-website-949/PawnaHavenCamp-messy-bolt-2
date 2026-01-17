@@ -1,5 +1,4 @@
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 interface PaytmInitiateResponse {
   success: boolean;
@@ -16,12 +15,11 @@ export class PaytmPaymentService {
     channelId: "WEB" | "WAP" = "WEB"
   ): Promise<PaytmInitiateResponse> {
     const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/payment-paytm-initiate`,
+      `${API_BASE_URL}/api/payments/paytm/initiate`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
           booking_id: bookingId,
