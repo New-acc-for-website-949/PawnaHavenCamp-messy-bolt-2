@@ -14,12 +14,15 @@ const PWAInstallButton = () => {
     
     if (isStandalone) {
       setIsInstalled(true);
+      return;
     }
 
     // 2. Listen for the beforeinstallprompt event
     const handler = (e: any) => {
       console.log('PWA: beforeinstallprompt event fired');
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
     };
 
@@ -42,14 +45,19 @@ const PWAInstallButton = () => {
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
+      console.log('PWA: Triggering official prompt');
       // Show the official install prompt
       deferredPrompt.prompt();
+      
+      // Wait for the user to respond to the prompt
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`PWA: User response to install prompt: ${outcome}`);
+      
       if (outcome === 'accepted') {
         setDeferredPrompt(null);
       }
     } else {
+      console.log('PWA: No deferredPrompt, showing instructions');
       // Fallback: Instructions for manual installation if the prompt event hasn't fired
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
