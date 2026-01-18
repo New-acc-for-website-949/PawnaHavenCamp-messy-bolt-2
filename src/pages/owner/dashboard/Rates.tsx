@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const OwnerRates = () => {
@@ -12,7 +13,7 @@ const OwnerRates = () => {
   });
 
   const [customRates, setCustomRates] = useState([
-    { date: 'Jan 26, 2026', price: '4999' }
+    { id: '1', date: '2026-01-26', price: '4999' }
   ]);
 
   const handleSave = () => {
@@ -20,21 +21,30 @@ const OwnerRates = () => {
     toast.success('Rates updated successfully');
   };
 
+  const addSpecialDate = () => {
+    const today = new Date().toISOString().split('T')[0];
+    setCustomRates([...customRates, { id: Math.random().toString(36).substr(2, 9), date: today, price: '0' }]);
+  };
+
+  const removeSpecialDate = (id: string) => {
+    setCustomRates(customRates.filter(r => r.id !== id));
+  };
+
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Prices / Rates</h2>
+      <h2 className="text-xl font-bold text-[#D4AF37]">Prices / Rates</h2>
 
-      <Card>
+      <Card className="bg-[#1A1A1A] border-[#D4AF37]/20">
         <CardHeader>
-          <CardTitle className="text-sm">Base Rates</CardTitle>
+          <CardTitle className="text-sm text-[#D4AF37]">Base Rates</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Weekday Rate (Mon–Thu)</Label>
+            <Label className="text-gray-300">Weekday Rate (Mon–Fri)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">₹</span>
               <Input 
-                className="pl-7" 
+                className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
                 type="number" 
                 value={rates.weekday} 
                 onChange={e => setRates({...rates, weekday: e.target.value})}
@@ -42,11 +52,11 @@ const OwnerRates = () => {
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Weekend Rate (Fri–Sun)</Label>
+            <Label className="text-gray-300">Weekend Rate (Sat–Sun)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">₹</span>
               <Input 
-                className="pl-7" 
+                className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
                 type="number" 
                 value={rates.weekend} 
                 onChange={e => setRates({...rates, weekend: e.target.value})}
@@ -56,33 +66,65 @@ const OwnerRates = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Custom Date Prices</CardTitle>
+      <Card className="bg-[#1A1A1A] border-[#D4AF37]/20">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm text-[#D4AF37]">Special Date Prices</CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={addSpecialDate}
+            className="h-7 text-[10px] border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10"
+          >
+            <Plus className="w-3 h-3 mr-1" /> Add Date
+          </Button>
         </CardHeader>
         <CardContent className="space-y-3">
-          {customRates.map((cr, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
-              <span className="text-sm font-medium">{cr.date}</span>
+          {customRates.map((cr) => (
+            <div key={cr.id} className="flex items-center space-x-2">
+              <Input 
+                type="date" 
+                className="flex-1 bg-black/40 border-[#D4AF37]/20 text-white h-8 text-xs" 
+                value={cr.date}
+                onChange={e => {
+                  const newRates = [...customRates];
+                  const index = newRates.findIndex(r => r.id === cr.id);
+                  newRates[index].date = e.target.value;
+                  setCustomRates(newRates);
+                }}
+              />
               <div className="w-24 relative">
-                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[#D4AF37] text-xs">₹</span>
                 <Input 
-                  className="pl-5 h-8 text-sm" 
+                  className="pl-5 h-8 text-sm bg-black/40 border-[#D4AF37]/20 text-white" 
+                  type="number"
                   value={cr.price} 
                   onChange={e => {
                     const newRates = [...customRates];
-                    newRates[idx].price = e.target.value;
+                    const index = newRates.findIndex(r => r.id === cr.id);
+                    newRates[index].price = e.target.value;
                     setCustomRates(newRates);
                   }}
                 />
               </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-red-400 hover:text-red-300"
+                onClick={() => removeSpecialDate(cr.id)}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
           ))}
-          <Button variant="outline" className="w-full text-xs h-8">+ Add Special Date</Button>
+          {customRates.length === 0 && (
+            <p className="text-center text-xs text-gray-500 py-4">No special dates added</p>
+          )}
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} className="w-full bg-blue-600">Save Rates</Button>
+      <Button onClick={handleSave} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold">
+        Save Rates
+      </Button>
     </div>
   );
 };

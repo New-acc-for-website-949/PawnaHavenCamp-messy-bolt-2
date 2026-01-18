@@ -25,20 +25,20 @@ const OwnerLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-white border-b px-4 py-4 flex flex-col space-y-1">
-        <h1 className="text-lg font-bold text-blue-600">Owner Dashboard</h1>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-gray-900">{ownerData.propertyName}</span>
-          <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">{ownerData.propertyType}</span>
+    <div className="min-h-screen bg-black pb-20">
+      <header className="bg-[#1A1A1A] border-b border-[#D4AF37]/20 px-4 py-6 flex flex-col space-y-2 sticky top-0 z-40 shadow-2xl">
+        <h1 className="text-xs font-bold uppercase tracking-[0.2em] text-[#D4AF37]">Owner Portal</h1>
+        <div className="flex justify-between items-end">
+          <span className="text-xl font-bold text-white leading-none">{ownerData.propertyName}</span>
+          <span className="text-[10px] bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 px-2 py-0.5 rounded uppercase font-bold tracking-tighter">{ownerData.propertyType}</span>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 pt-4">
+      <main className="container mx-auto px-4 pt-6">
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center h-16 px-4 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#1A1A1A] border-t border-[#D4AF37]/20 flex justify-around items-center h-20 px-4 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path === '/owner/dashboard' && location.pathname === '/owner/dashboard');
           return (
@@ -46,12 +46,17 @@ const OwnerLayout = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex flex-col items-center justify-center space-y-1 w-full h-full",
-                isActive ? "text-blue-600" : "text-gray-500"
+                "flex flex-col items-center justify-center space-y-1.5 w-full h-full transition-all duration-300",
+                isActive ? "text-[#D4AF37]" : "text-gray-500 hover:text-gray-300"
               )}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <div className={cn(
+                "p-2 rounded-xl transition-all",
+                isActive ? "bg-[#D4AF37]/10 shadow-[0_0_15px_rgba(212,175,55,0.15)]" : ""
+              )}>
+                <item.icon className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
             </Link>
           );
         })}

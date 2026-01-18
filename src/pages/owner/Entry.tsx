@@ -8,25 +8,30 @@ const OwnerEntry = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">Owner Portal</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-6 space-y-6">
+      <div className="text-center space-y-2 mb-8">
+        <h1 className="text-4xl font-bold text-[#D4AF37] tracking-tight">LoonCamp</h1>
+        <p className="text-xs uppercase tracking-[0.3em] text-gray-500 font-medium">Owner Elite Portal</p>
+      </div>
       
       <Button 
         onClick={() => navigate('/owner/register')}
-        className="w-full h-24 text-xl flex flex-col items-center justify-center space-y-2 bg-blue-600 hover:bg-blue-700"
+        className="w-full h-24 text-lg flex flex-col items-center justify-center space-y-2 bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold shadow-[0_10px_20px_rgba(212,175,55,0.2)]"
       >
         <LayoutDashboard className="w-8 h-8" />
-        <span>Register Property</span>
+        <span className="uppercase tracking-widest">Register Property</span>
       </Button>
 
       <Button 
         onClick={() => navigate('/owner/login')}
         variant="outline"
-        className="w-full h-24 text-xl flex flex-col items-center justify-center space-y-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
+        className="w-full h-24 text-lg flex flex-col items-center justify-center space-y-2 border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 bg-transparent font-bold"
       >
         <LogIn className="w-8 h-8" />
-        <span>Login</span>
+        <span className="uppercase tracking-widest">Login to Dashboard</span>
       </Button>
+      
+      <p className="text-[10px] text-gray-600 uppercase tracking-widest pt-8">Powered by LoonCamp Luxury Stay</p>
     </div>
   );
 };
