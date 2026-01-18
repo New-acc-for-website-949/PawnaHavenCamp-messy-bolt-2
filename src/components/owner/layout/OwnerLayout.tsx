@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Calendar, IndianRupee, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import PWAInstallButton from '../pwa/PWAInstallButton';
 
 const OwnerLayout = () => {
   const navigate = useNavigate();
@@ -30,7 +31,10 @@ const OwnerLayout = () => {
         <h1 className="text-xs font-bold uppercase tracking-[0.2em] text-[#D4AF37]">Owner Portal</h1>
         <div className="flex justify-between items-end">
           <span className="text-xl font-bold text-white leading-none">{ownerData.propertyName}</span>
-          <span className="text-[10px] bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 px-2 py-0.5 rounded uppercase font-bold tracking-tighter">{ownerData.propertyType}</span>
+          <div className="flex items-center space-x-2">
+            <PWAInstallButton />
+            <span className="text-[10px] bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 px-2 py-0.5 rounded uppercase font-bold tracking-tighter">{ownerData.propertyType}</span>
+          </div>
         </div>
       </header>
 

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { LogOut, User, Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import PWAInstallButton from '@/components/owner/pwa/PWAInstallButton';
 
 const OwnerProfile = () => {
   const navigate = useNavigate();
@@ -87,9 +88,12 @@ const OwnerProfile = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-[#D4AF37]">Profile</h2>
-        <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-500 hover:bg-red-500/10">
-          <LogOut className="w-4 h-4 mr-1" /> Logout
-        </Button>
+        <div className="flex items-center space-x-2">
+          <PWAInstallButton />
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-500 hover:bg-red-500/10">
+            <LogOut className="w-4 h-4 mr-1" /> Logout
+          </Button>
+        </div>
       </div>
 
       <Card className="bg-gradient-to-r from-[#1A1A1A] to-black border-[#D4AF37]/30 text-white shadow-2xl">
