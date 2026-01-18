@@ -22,6 +22,14 @@ const GenerateCodePage = lazy(() => import("./pages/GenerateCodePage"));
 const CheckEarningPage = lazy(() => import("./pages/CheckEarningPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Owner Dashboard Pages
+const OwnerLogin = lazy(() => import("./pages/owner/Login"));
+const OwnerLayout = lazy(() => import("./components/owner/layout/OwnerLayout"));
+const OwnerMain = lazy(() => import("./pages/owner/dashboard/Main"));
+const OwnerCalendar = lazy(() => import("./pages/owner/dashboard/Calendar"));
+const OwnerBookings = lazy(() => import("./pages/owner/dashboard/Bookings"));
+const OwnerProfile = lazy(() => import("./pages/owner/dashboard/Profile"));
+
 const queryClient = new QueryClient();
 
 // Page wrapper to handle loading state on route changes
@@ -65,6 +73,16 @@ const App = () => (
             <Route path="/referral" element={<PageWrapper><ReferralPage /></PageWrapper>} />
             <Route path="/referral/generate" element={<PageWrapper><GenerateCodePage /></PageWrapper>} />
             <Route path="/referral/check" element={<PageWrapper><CheckEarningPage /></PageWrapper>} />
+            
+            {/* Owner Routes */}
+            <Route path="/owner" element={<PageWrapper><OwnerLogin /></PageWrapper>} />
+            <Route path="/owner" element={<OwnerLayout />}>
+              <Route path="dashboard" element={<PageWrapper><OwnerMain /></PageWrapper>} />
+              <Route path="calendar" element={<PageWrapper><OwnerCalendar /></PageWrapper>} />
+              <Route path="bookings" element={<PageWrapper><OwnerBookings /></PageWrapper>} />
+              <Route path="profile" element={<PageWrapper><OwnerProfile /></PageWrapper>} />
+            </Route>
+
             <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
           </Routes>
         </BrowserRouter>
