@@ -22,60 +22,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: 'inline',
-      manifest: {
-        name: "pawnaCalender",
-        short_name: "pawnaCalender",
-        description: "Luxury resort and camping booking platform",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/owner",
-        scope: "/",
-        theme_color: "#000000",
-        background_color: "#000000",
-        icons: [
-          {
-            src: "/owner-icon.png",
-            sizes: "1024x1024",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "/owner-icon.png",
-            sizes: "1024x1024",
-            type: "image/png",
-            purpose: "maskable"
-          }
-        ]
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module',
-      },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true,
-        navigateFallback: '/index.html',
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      }
+      disable: true, // Disable the automatic plugin to handle manual separate PWAs
     }),
   ].filter(Boolean),
   resolve: {

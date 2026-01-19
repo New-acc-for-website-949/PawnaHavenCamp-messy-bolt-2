@@ -15,6 +15,30 @@ const OwnerLayout = () => {
     if (!isLoggedIn) {
       navigate('/owner');
     }
+
+    // Register Owner-specific Service Worker
+    if ('serviceWorker' in navigator && window.location.pathname.startsWith('/owner')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/owner/sw.js', { scope: '/owner' })
+          .then(registration => {
+            console.log('Owner SW registered:', registration);
+          })
+          .catch(error => {
+            console.log('Owner SW registration failed:', error);
+          });
+      });
+    }
+
+    // Dynamically update manifest for Owner PWA
+    const link = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
+    if (link) {
+      link.href = '/owner/manifest.json';
+    } else {
+      const newLink = document.createElement('link');
+      newLink.rel = 'manifest';
+      newLink.href = '/owner/manifest.json';
+      document.head.appendChild(newLink);
+    }
   }, [isLoggedIn, navigate]);
 
   if (!isLoggedIn) return null;
