@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,21 @@ const OwnerRates = () => {
     weekend: '3999'
   });
 
-  const [customRates, setCustomRates] = useState([
-    { id: '1', date: '2026-01-26', price: '4999' }
-  ]);
+  const [customRates, setCustomRates] = useState<{ id: string, date: string, price: string }[]>([]);
+
+  useEffect(() => {
+    const savedRates = localStorage.getItem('propertyRates');
+    if (savedRates) {
+      const parsed = JSON.parse(savedRates);
+      if (parsed.rates) setRates(parsed.rates);
+      if (parsed.customRates) setCustomRates(parsed.customRates);
+    }
+  }, []);
 
   const handleSave = () => {
     localStorage.setItem('propertyRates', JSON.stringify({ rates, customRates }));
+    // Dispatch storage event manually for same-page updates in Main.tsx
+    window.dispatchEvent(new Event('storage'));
     toast.success('Rates updated successfully');
   };
 
@@ -122,7 +131,7 @@ const OwnerRates = () => {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold">
+      <Button onClick={handleSave} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold h-12 shadow-xl mt-4">
         Save Rates
       </Button>
     </div>
