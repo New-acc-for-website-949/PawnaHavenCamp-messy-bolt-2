@@ -17,7 +17,9 @@ const OwnerProfile = () => {
   const [details, setDetails] = useState({
     amenities: ['Lake View', 'Private Washroom', 'BBQ Facility'],
     activities: ['Boating', 'Swimming', 'Bonfire'],
-    policy: 'No Smoking in tents. Check-in: 4 PM.'
+    highlights: ['Lakeside Camping', 'Sunset View', 'Premium Domes'],
+    policies: ['No Smoking in tents', 'Check-in: 4 PM', 'Check-out: 11 AM'],
+    description: 'Beautiful luxury resort with glamping domes and cottages near Pawna Lake.'
   });
 
   const [newItem, setNewItem] = useState({ type: '', value: '' });
@@ -32,7 +34,7 @@ const OwnerProfile = () => {
     toast.success('Profile details saved');
   };
 
-  const addItem = (type: 'amenities' | 'activities') => {
+  const addItem = (type: 'amenities' | 'activities' | 'highlights' | 'policies') => {
     if (!newItem.value.trim()) return;
     setDetails({
       ...details,
@@ -41,13 +43,13 @@ const OwnerProfile = () => {
     setNewItem({ type: '', value: '' });
   };
 
-  const removeItem = (type: 'amenities' | 'activities', index: number) => {
+  const removeItem = (type: 'amenities' | 'activities' | 'highlights' | 'policies', index: number) => {
     const newList = [...details[type]];
     newList.splice(index, 1);
     setDetails({ ...details, [type]: newList });
   };
 
-  const TagList = ({ type, items }: { type: 'amenities' | 'activities', items: string[] }) => (
+  const TagList = ({ type, items }: { type: 'amenities' | 'activities' | 'highlights' | 'policies', items: string[] }) => (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {items.map((item, idx) => (
@@ -120,12 +122,22 @@ const OwnerProfile = () => {
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Property Policy</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Highlights</Label>
+          <TagList type="highlights" items={details.highlights} />
+        </div>
+
+        <div className="space-y-3">
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Policies</Label>
+          <TagList type="policies" items={details.policies} />
+        </div>
+
+        <div className="space-y-3">
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Description</Label>
           <Textarea 
             className="bg-[#1A1A1A] border-[#D4AF37]/20 text-gray-200 focus:border-[#D4AF37] min-h-[100px]"
-            value={details.policy} 
-            onChange={e => setDetails({...details, policy: e.target.value})}
-            placeholder="Property policies..."
+            value={details.description} 
+            onChange={e => setDetails({...details, description: e.target.value})}
+            placeholder="Property description..."
           />
         </div>
         
