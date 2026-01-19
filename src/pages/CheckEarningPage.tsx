@@ -11,13 +11,15 @@ import {
   History,
   Clock,
   CheckCircle2,
-  Send
+  Send,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 const CheckEarningPage = () => {
   const [step, setStep] = useState<"verify" | "otp" | "dashboard">("verify");
@@ -25,8 +27,12 @@ const CheckEarningPage = () => {
     code: "",
     otp: "",
     withdrawCode: "",
-    accountDetails: ""
+    accountDetails: "",
+    withdrawAmount: ""
   });
+
+  const availableBalance = 12450.00;
+  const isAmountInvalid = parseFloat(formData.withdrawAmount) > availableBalance;
 
   const handleSendOTP = () => {
     if (formData.code === "HRUSHI77") {
@@ -168,7 +174,34 @@ const CheckEarningPage = () => {
                       className="h-12 bg-secondary/50 rounded-xl"
                     />
                   </div>
-                  <Button className="w-full h-14 rounded-2xl font-bold shadow-gold">
+                  <div className="space-y-2">
+                    <Label className={cn(isAmountInvalid && "text-red-500 font-bold")}>
+                      Enter withdraw amount
+                    </Label>
+                    <Input 
+                      placeholder="e.g. 5000" 
+                      type="number"
+                      inputMode="numeric"
+                      value={formData.withdrawAmount}
+                      onChange={(e) => setFormData({...formData, withdrawAmount: e.target.value})}
+                      className={cn(
+                        "h-12 bg-secondary/50 rounded-xl transition-all",
+                        isAmountInvalid && "border-red-500 bg-red-500/10 text-red-500"
+                      )}
+                    />
+                    {isAmountInvalid && (
+                      <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider animate-pulse">
+                        Amount exceeds available balance
+                      </p>
+                    )}
+                  </div>
+                  <Button 
+                    disabled={isAmountInvalid || !formData.withdrawAmount || parseFloat(formData.withdrawAmount) <= 0}
+                    className={cn(
+                      "w-full h-14 rounded-2xl font-bold transition-all shadow-gold",
+                      isAmountInvalid && "opacity-50 grayscale cursor-not-allowed shadow-none"
+                    )}
+                  >
                     Withdraw Amount
                   </Button>
                 </Card>
