@@ -67,6 +67,7 @@ const OwnerProfile = () => {
               autoFocus
               className="h-8 text-xs bg-black/60 border-[#D4AF37] text-white w-32"
               value={newItem.value}
+              enterKeyHint="done"
               onChange={e => setNewItem({ ...newItem, value: e.target.value })}
               onKeyDown={e => e.key === 'Enter' && addItem(type)}
               onBlur={() => newItem.value ? addItem(type) : setNewItem({ type: '', value: '' })}

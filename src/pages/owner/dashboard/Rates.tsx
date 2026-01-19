@@ -55,6 +55,8 @@ const OwnerRates = () => {
               <Input 
                 className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
                 type="number" 
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={rates.weekday} 
                 onChange={e => setRates({...rates, weekday: e.target.value})}
               />
@@ -67,6 +69,8 @@ const OwnerRates = () => {
               <Input 
                 className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
                 type="number" 
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={rates.weekend} 
                 onChange={e => setRates({...rates, weekend: e.target.value})}
               />
@@ -106,6 +110,8 @@ const OwnerRates = () => {
                 <Input 
                   className="pl-5 h-8 text-sm bg-black/40 border-[#D4AF37]/20 text-white" 
                   type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={cr.price} 
                   onChange={e => {
                     const newRates = [...customRates];
