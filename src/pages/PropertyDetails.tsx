@@ -188,11 +188,11 @@ const PropertyDetails = () => {
               <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-1">Total Starting At</span>
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-[#D4AF37]">₹{propertyData.price}</span>
+                  <span className="text-3xl font-bold text-[#C5A021]">₹{propertyData.price}</span>
                   <span className="text-gray-400 text-sm">/{isVilla ? 'villa' : 'person'}</span>
                 </div>
-                <Badge variant="secondary" className="bg-[#D4AF37]/10 text-[#D4AF37] border-none text-[10px] flex items-center gap-1.5 px-3 py-1.5 rounded-full">
-                  <div className="w-2 h-2 bg-[#D4AF37] rotate-45" />
+                <Badge variant="secondary" className="bg-[#C5A021]/10 text-[#C5A021] border-none text-[10px] flex items-center gap-1.5 px-3 py-1.5 rounded-full">
+                  <div className="w-2 h-2 bg-[#C5A021] rotate-45" />
                   with meals
                 </Badge>
               </div>
@@ -207,7 +207,7 @@ const PropertyDetails = () => {
                 {propertyData.is_available ? "Available" : "Booked"}
               </Badge>
               <div className="flex items-center gap-1.5 ml-auto">
-                <Star className="w-4 h-4 text-[#D4AF37] fill-[#D4AF37]" />
+                <Star className="w-4 h-4 text-[#C5A021] fill-[#C5A021]" />
                 <span className="text-sm font-bold text-white">{propertyData.rating}</span>
                 <span className="text-gray-500 text-xs">(86)</span>
               </div>
@@ -216,7 +216,7 @@ const PropertyDetails = () => {
             <div className="grid grid-cols-3 gap-3">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="flex flex-col gap-2 h-24 rounded-3xl bg-[#D4AF37] border-none hover:bg-[#B8860B] transition-all group active:scale-95 shadow-gold">
+                  <Button variant="outline" className="flex flex-col gap-2 h-24 rounded-3xl bg-[#C5A021] border-none hover:bg-[#A6861A] transition-all group active:scale-95 shadow-gold">
                     <CalendarIcon className="w-6 h-6 text-black group-hover:scale-110 transition-transform" />
                     <span className="text-[9px] uppercase font-bold tracking-widest text-black">Book Stay</span>
                   </Button>
@@ -256,30 +256,30 @@ const PropertyDetails = () => {
           </div>
         </div>
 
-        <div className="bg-[#1A1A1A] rounded-[2.5rem] p-5 border border-[#D4AF37]/10 flex items-center justify-between">
+        <div className="bg-[#1A1A1A] rounded-[2.5rem] p-5 border border-[#C5A021]/10 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-[#D4AF37]/20">
-              <CalendarIcon className="w-5 h-5 text-[#D4AF37]" />
+            <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-[#C5A021]/20">
+              <CalendarIcon className="w-5 h-5 text-[#C5A021]" />
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-widest font-bold text-[#D4AF37]">Availability</p>
+              <p className="text-[9px] uppercase tracking-widest font-bold text-[#C5A021]">Availability</p>
               <p className="text-lg font-bold text-white">Check Dates</p>
             </div>
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="h-12 rounded-xl bg-[#D4AF37] border-none text-black text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#B8860B] shadow-gold">
+              <Button variant="outline" className="h-12 rounded-xl bg-[#C5A021] border-none text-black text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#A6861A] shadow-gold">
                 View Calendar
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#D4AF37]/20">
+            <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
               <div className="p-4">
                 <Calendar
                   mode="single"
                   className="w-full bg-transparent"
                   classNames={{
-                    day_today: "bg-[#D4AF37] text-black",
-                    day_selected: "bg-[#D4AF37] text-black hover:bg-[#D4AF37] hover:text-black",
+                    day_today: "bg-[#C5A021] text-black",
+                    day_selected: "bg-[#C5A021] text-black hover:bg-[#C5A021] hover:text-black",
                     day_disabled: "text-gray-700 opacity-50 line-through",
                   }}
                 />
@@ -453,7 +453,7 @@ const PropertyDetails = () => {
                 { label: 'Status', value: 'Verified', icon: ShieldCheck, accent: 'text-[#00FF41]' }
               ].map((stat, i) => (
                 <div key={i} className="bg-[#1A1A1A] rounded-2xl p-3 border border-gray-800/50 flex flex-col items-center text-center gap-1.5">
-                  <stat.icon className="w-4 h-4 text-[#D4AF37]" />
+                  <stat.icon className="w-4 h-4 text-[#C5A021]" />
                   <span className="text-[8px] uppercase font-bold text-gray-500 tracking-widest">{stat.label}</span>
                   <span className={cn("text-[9px] font-bold truncate w-full", stat.accent || "text-white")}>{stat.value}</span>
                 </div>
@@ -463,13 +463,13 @@ const PropertyDetails = () => {
             {/* Amenities */}
             <section>
               <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                <Wifi className="w-5 h-5 text-[#D4AF37]" />
+                <Wifi className="w-5 h-5 text-[#C5A021]" />
                 Amenities
               </h3>
               <div className="flex overflow-x-auto gap-3 pb-4 scrollbar-none -mx-2 px-2">
                 {propertyData.amenities.map((amenity, index) => (
-                  <div key={index} className="bg-[#1A1A1A] rounded-2xl p-4 border border-gray-800/50 flex flex-col items-center text-center gap-3 group hover:border-[#D4AF37]/30 transition-all min-w-[110px]">
-                    <div className="text-[#D4AF37]">{getIcon(amenity)}</div>
+                  <div key={index} className="bg-[#1A1A1A] rounded-2xl p-4 border border-gray-800/50 flex flex-col items-center text-center gap-3 group hover:border-[#C5A021]/30 transition-all min-w-[110px]">
+                    <div className="text-[#C5A021]">{getIcon(amenity)}</div>
                     <span className="text-[10px] font-bold text-white tracking-tight">{amenity}</span>
                   </div>
                 ))}
@@ -479,13 +479,13 @@ const PropertyDetails = () => {
             {/* Activities */}
             <section>
               <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                <Star className="w-5 h-5 text-[#D4AF37]" />
+                <Star className="w-5 h-5 text-[#C5A021]" />
                 Activities
               </h3>
               <div className="flex overflow-x-auto gap-3 pb-4 scrollbar-none -mx-2 px-2">
                 {propertyData.activities?.map((activity, index) => (
                   <div key={index} className="bg-[#1A1A1A] rounded-2xl p-3 border border-gray-800/50 flex flex-col items-center text-center gap-2 min-w-[90px]">
-                    <div className="text-[#D4AF37] opacity-80">{getIcon(activity)}</div>
+                    <div className="text-[#C5A021] opacity-80">{getIcon(activity)}</div>
                     <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">{activity}</span>
                   </div>
                 ))}
@@ -498,7 +498,7 @@ const PropertyDetails = () => {
                 <AccordionItem value="highlights" className="border-none bg-[#1A1A1A] rounded-2xl px-6 border border-gray-800/50 mb-3 overflow-hidden">
                   <AccordionTrigger className="hover:no-underline py-5 text-sm font-bold">
                     <div className="flex items-center gap-3">
-                      <Star className="w-4 h-4 text-[#D4AF37]" />
+                      <Star className="w-4 h-4 text-[#C5A021]" />
                       What You'll Love
                     </div>
                   </AccordionTrigger>
@@ -506,7 +506,7 @@ const PropertyDetails = () => {
                     <ul className="space-y-3">
                       {propertyData.highlights.map((h, i) => (
                         <li key={i} className="text-gray-400 text-sm flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#C5A021] mt-1.5 shrink-0" />
                           {h}
                         </li>
                       ))}
@@ -517,7 +517,7 @@ const PropertyDetails = () => {
                 <AccordionItem value="policies" className="border-none bg-[#1A1A1A] rounded-2xl px-6 border border-gray-800/50 overflow-hidden">
                   <AccordionTrigger className="hover:no-underline py-5 text-sm font-bold">
                     <div className="flex items-center gap-3">
-                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <ShieldCheck className="w-4 h-4 text-[#C5A021]" />
                       Rules & Policies
                     </div>
                   </AccordionTrigger>
@@ -525,7 +525,7 @@ const PropertyDetails = () => {
                     <ul className="space-y-3">
                       {propertyData.policies?.map((p, i) => (
                         <li key={i} className="text-gray-400 text-sm flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#C5A021] mt-1.5 shrink-0" />
                           {p}
                         </li>
                       ))}
