@@ -13,6 +13,7 @@ import { propertyAPI } from '@/lib/api';
 const OwnerProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [newItem, setNewItem] = useState({ type: '', value: '', time: '' });
   const [details, setDetails] = useState({
     amenities: [] as string[],
     activities: [] as string[],

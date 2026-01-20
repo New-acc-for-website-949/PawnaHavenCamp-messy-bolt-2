@@ -201,7 +201,7 @@ const AdminDashboard = () => {
   };
 
   const filteredProperties = properties.filter(p => {
-    const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
+    const matchesCategory = activeCategory === 'all' || p.category.toLowerCase() === activeCategory.toLowerCase();
     const title = p.title || '';
     const location = p.location || '';
     const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -209,9 +209,9 @@ const AdminDashboard = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const campingCount = properties.filter(p => p.category === 'camping').length;
-  const cottageCount = properties.filter(p => p.category === 'cottage').length;
-  const villaCount = properties.filter(p => p.category === 'villa').length;
+  const campingCount = properties.filter(p => p.category?.toLowerCase() === 'camping').length;
+  const cottageCount = properties.filter(p => p.category?.toLowerCase() === 'cottage').length;
+  const villaCount = properties.filter(p => p.category?.toLowerCase() === 'villa').length;
 
   if (isLoading) {
     return (
