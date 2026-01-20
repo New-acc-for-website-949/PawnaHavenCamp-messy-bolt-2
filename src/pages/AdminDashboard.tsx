@@ -59,6 +59,7 @@ const AdminDashboard = () => {
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('properties');
   const [ownerFilter, setOwnerFilter] = useState('all');
+  const [ownerSearchTerm, setOwnerSearchTerm] = useState('');
   const [referralSubTab, setReferralSubTab] = useState('all');
   const [transactionSubTab, setTransactionSubTab] = useState('all');
   
@@ -283,54 +284,56 @@ const AdminDashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Top Summary Boxes (2x2 Grid on Mobile) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="glass-dark rounded-2xl border border-white/5 p-4 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="p-1.5 rounded-lg bg-gold/10 text-gold">
-                <Building2 className="w-4 h-4" />
+        {/* Top Summary Boxes (Only show for Properties tab) */}
+        {activeTab === 'properties' && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 animate-in fade-in slide-in-from-top-2">
+            <div className="glass-dark rounded-2xl border border-white/5 p-4 flex flex-col justify-center">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="p-1.5 rounded-lg bg-gold/10 text-gold">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <p className="text-[10px] xs:text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</p>
               </div>
-              <p className="text-[10px] xs:text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</p>
+              <p className="text-xl xs:text-2xl font-bold text-foreground">{properties.length}</p>
             </div>
-            <p className="text-xl xs:text-2xl font-bold text-foreground">{properties.length}</p>
-          </div>
 
-          {categorySettings.map(setting => {
-            const count = setting.category === 'camping' ? campingCount : 
-                         setting.category === 'cottage' ? cottageCount : villaCount;
-            return (
-              <div key={setting.category} className={cn(
-                "glass-dark rounded-2xl border border-white/5 p-4 flex flex-col justify-center relative overflow-hidden",
-                setting.is_closed && "opacity-50 grayscale"
-              )}>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-gold/10 text-gold">
-                      {setting.category === 'camping' ? <Home className="w-4 h-4" /> : 
-                       setting.category === 'cottage' ? <Sparkles className="w-4 h-4" /> : <Star className="w-4 h-4" />}
+            {categorySettings.map(setting => {
+              const count = setting.category === 'camping' ? campingCount : 
+                           setting.category === 'cottage' ? cottageCount : villaCount;
+              return (
+                <div key={setting.category} className={cn(
+                  "glass-dark rounded-2xl border border-white/5 p-4 flex flex-col justify-center relative overflow-hidden",
+                  setting.is_closed && "opacity-50 grayscale"
+                )}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-gold/10 text-gold">
+                        {setting.category === 'camping' ? <Home className="w-4 h-4" /> : 
+                         setting.category === 'cottage' ? <Sparkles className="w-4 h-4" /> : <Star className="w-4 h-4" />}
+                      </div>
+                      <p className="text-[10px] xs:text-xs text-muted-foreground uppercase tracking-wider font-semibold truncate max-w-[60px]">{setting.category}</p>
                     </div>
-                    <p className="text-[10px] xs:text-xs text-muted-foreground uppercase tracking-wider font-semibold truncate max-w-[60px]">{setting.category}</p>
+                    <Badge variant={setting.is_closed ? "destructive" : "outline"} className="text-[8px] h-4 px-1 border-gold/20 text-gold">
+                      {count}
+                    </Badge>
                   </div>
-                  <Badge variant={setting.is_closed ? "destructive" : "outline"} className="text-[8px] h-4 px-1 border-gold/20 text-gold">
-                    {count}
-                  </Badge>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-lg xs:text-xl font-bold text-foreground">{setting.base_price || '---'}</p>
+                    <button 
+                      onClick={() => handleToggleCategory(setting.category, setting.is_closed)}
+                      className={cn(
+                        "p-1 rounded-md transition-colors",
+                        setting.is_closed ? "bg-red-500/20 text-red-500" : "bg-emerald-500/20 text-emerald-500"
+                      )}
+                    >
+                      {setting.is_closed ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between mt-1">
-                  <p className="text-lg xs:text-xl font-bold text-foreground">{setting.base_price || '---'}</p>
-                  <button 
-                    onClick={() => handleToggleCategory(setting.category, setting.is_closed)}
-                    className={cn(
-                      "p-1 rounded-md transition-colors",
-                      setting.is_closed ? "bg-red-500/20 text-red-500" : "bg-emerald-500/20 text-emerald-500"
-                    )}
-                  >
-                    {setting.is_closed ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Tab Content */}
         {activeTab === 'properties' && (
@@ -500,20 +503,35 @@ const AdminDashboard = () => {
                 Owners Directory
               </h3>
             </div>
-            
-            <Tabs value={ownerFilter} onValueChange={setOwnerFilter} className="w-full">
-              <TabsList className="bg-white/5 p-1 rounded-xl w-full border border-white/5">
-                {['all', 'camping', 'cottage', 'villa'].map(cat => (
-                  <TabsTrigger key={cat} value={cat} className="rounded-lg flex-1 text-[10px] xs:text-xs capitalize data-[state=active]:bg-gold data-[state=active]:text-black">
-                    {cat}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+
+            <div className="flex flex-col gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search owners by name..." 
+                  value={ownerSearchTerm}
+                  onChange={(e) => setOwnerSearchTerm(e.target.value)}
+                  className="pl-9 h-11 rounded-xl bg-white/5 border-white/10 focus:border-gold/50 transition-all text-sm"
+                />
+              </div>
+              
+              <Tabs value={ownerFilter} onValueChange={setOwnerFilter} className="w-full">
+                <TabsList className="bg-white/5 p-1 rounded-xl w-full border border-white/5">
+                  {['all', 'camping', 'cottage', 'villa'].map(cat => (
+                    <TabsTrigger key={cat} value={cat} className="rounded-lg flex-1 text-[10px] xs:text-xs capitalize data-[state=active]:bg-gold data-[state=active]:text-black">
+                      {cat}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {/* This is UI only as per requirements, using properties to derive owners */}
-              {Array.from(new Set(properties.filter(p => ownerFilter === 'all' || p.category === ownerFilter).map(p => p.owner_mobile))).map((mobile, idx) => {
+              {Array.from(new Set(properties
+                .filter(p => ownerFilter === 'all' || p.category === ownerFilter)
+                .filter(p => (p.owner_name || '').toLowerCase().includes(ownerSearchTerm.toLowerCase()))
+                .map(p => p.owner_mobile)
+              )).map((mobile, idx) => {
                 const ownerProp = properties.find(p => p.owner_mobile === mobile);
                 return (
                   <div key={idx} className="glass-dark rounded-2xl border border-white/5 p-4 flex items-center gap-4">
