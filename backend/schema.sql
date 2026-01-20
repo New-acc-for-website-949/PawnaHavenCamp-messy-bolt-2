@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS properties (
   activities TEXT NOT NULL,
   highlights TEXT NOT NULL,
   policies TEXT,
+  schedule TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
