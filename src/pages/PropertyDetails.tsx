@@ -244,8 +244,11 @@ const PropertyDetails = () => {
                         className="flex flex-col gap-0 h-20 rounded-2xl bg-gradient-to-br from-[#00C853] via-[#00B0FF] to-[#0091EA] border-none shadow-[0_10px_30px_rgba(0,176,255,0.3)] group overflow-hidden relative active:scale-95 transition-all px-1"
                       >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <MessageCircle className="w-6 h-6 text-white" />
-                        <span className="text-[10px] font-bold text-white">WhatsApp</span>
+                        <div className="flex items-center gap-1.5">
+                          <MessageCircle className="w-5 h-5 text-white" />
+                          <Phone className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-[10px] font-bold text-white">WhatsApp & Call</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] bg-[#0A0A0A] border-[#D4AF37]/20 p-8">
