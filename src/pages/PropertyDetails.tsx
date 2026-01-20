@@ -118,7 +118,8 @@ const PropertyDetails = () => {
               if (typeof img === 'string') return img;
               let url = img.image_url || img.url || "";
               if (url && url.startsWith('attached_assets/')) {
-                url = window.location.origin + '/' + url.replace(/^\//, '');
+                // Ensure correct relative path for images in both dev and prod
+                url = '/' + url;
               }
               return url;
             }).filter(Boolean);
@@ -127,7 +128,7 @@ const PropertyDetails = () => {
           if (mappedImages.length === 0 && p.image) {
             let url = p.image;
             if (url && url.startsWith('attached_assets/')) {
-              url = window.location.origin + '/' + url.replace(/^\//, '');
+              url = '/' + url;
             }
             mappedImages = [url];
           }
