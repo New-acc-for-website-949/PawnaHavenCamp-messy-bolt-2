@@ -54,6 +54,7 @@ const getAllProperties = async (req, res) => {
         highlights: parseField(prop.highlights),
         policies: parseField(prop.policies),
         schedule: parseField(prop.schedule),
+        availability: parseField(prop.availability),
         images: prop.images || [],
       };
     });
@@ -117,6 +118,7 @@ const getPublicProperties = async (req, res) => {
         highlights: parseField(prop.highlights),
         policies: parseField(prop.policies),
         schedule: parseField(prop.schedule),
+        availability: parseField(prop.availability),
         images: prop.images || [],
       };
     });
@@ -204,6 +206,7 @@ const getPropertyById = async (req, res) => {
       highlights: parsePostgresArray(result.rows[0].highlights),
       policies: parsePostgresArray(result.rows[0].policies),
       schedule: parsePostgresArray(result.rows[0].schedule),
+      availability: parsePostgresArray(result.rows[0].availability),
       images: result.rows[0].images || [],
     };
 
@@ -247,6 +250,7 @@ const getPublicPropertyBySlug = async (req, res) => {
       highlights: parsePostgresArray(result.rows[0].highlights),
       policies: parsePostgresArray(result.rows[0].policies),
       schedule: parsePostgresArray(result.rows[0].schedule),
+      availability: parsePostgresArray(result.rows[0].availability),
       images: result.rows[0].images || [],
     };
 
