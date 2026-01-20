@@ -536,32 +536,34 @@ const AdminDashboard = () => {
                 const ownerProperties = properties.filter(p => p.owner_mobile === mobile);
                 
                 return (
-                  <div key={idx} className="glass-dark rounded-2xl border border-white/5 p-4 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 shrink-0">
-                      <User className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-white truncate">{ownerProp?.owner_name || `Owner ${idx + 1}`}</h4>
-                      <p className="text-[10px] text-muted-foreground mb-1 font-medium">{mobile || '+91 ---'}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ownerProperties.slice(0, 2).map((p, pIdx) => (
-                          <div key={p.id} className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                            <span className="text-[9px] text-gold font-bold truncate max-w-[80px]">{p.title}</span>
-                            <span className="text-[8px] text-white/40 uppercase tracking-tighter">{p.category}</span>
-                          </div>
-                        ))}
-                        {ownerProperties.length > 2 && (
-                          <span className="text-[8px] text-muted-foreground self-center">+{ownerProperties.length - 2} more</span>
-                        )}
+                  <div key={idx} className="glass-dark rounded-2xl border border-white/5 p-4">
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 shrink-0">
+                        <User className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-white truncate text-base">{ownerProp?.owner_name || `Owner ${idx + 1}`}</h4>
+                        <p className="text-[11px] text-muted-foreground font-medium">{mobile || '+91 ---'}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" className="text-emerald-500 rounded-full h-10 w-10 hover:bg-emerald-500/10 shadow-lg shadow-emerald-500/5" onClick={() => window.open(`https://wa.me/${mobile?.replace(/\D/g, '')}`)}>
+                          <MessageSquare className="w-5 h-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-blue-500 rounded-full h-10 w-10 hover:bg-blue-500/10 shadow-lg shadow-blue-500/5" onClick={() => window.open(`tel:${mobile}`)}>
+                          <Phone className="w-5 h-5" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <Button variant="ghost" size="icon" className="text-emerald-500 rounded-full h-9 w-9 hover:bg-emerald-500/10 shadow-lg shadow-emerald-500/5" onClick={() => window.open(`https://wa.me/${mobile?.replace(/\D/g, '')}`)}>
-                        <MessageSquare className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-blue-500 rounded-full h-9 w-9 hover:bg-blue-500/10 shadow-lg shadow-blue-500/5" onClick={() => window.open(`tel:${mobile}`)}>
-                        <Phone className="w-4 h-4" />
-                      </Button>
+                    
+                    <div className="space-y-1.5 pt-3 border-t border-white/5">
+                      {ownerProperties.map((p) => (
+                        <div key={p.id} className="flex items-center justify-between gap-3 bg-white/5 px-3 py-2 rounded-xl border border-white/5 group hover:border-gold/30 transition-colors">
+                          <span className="text-sm text-white font-medium truncate flex-1">{p.title}</span>
+                          <Badge variant="outline" className="text-[9px] h-5 px-2 border-gold/20 text-gold bg-gold/5 uppercase font-bold shrink-0">
+                            {p.category}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 );
