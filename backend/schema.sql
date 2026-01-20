@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS properties (
   highlights TEXT NOT NULL,
   policies TEXT,
   schedule TEXT,
+  availability TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
