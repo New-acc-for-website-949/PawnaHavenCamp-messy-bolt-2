@@ -20,7 +20,10 @@ const OwnerDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       const ownerDataString = localStorage.getItem('ownerData');
-      if (!ownerDataString) return;
+      if (!ownerDataString) {
+        setLoading(false);
+        return;
+      }
       
       const ownerData = JSON.parse(ownerDataString);
       try {
@@ -34,7 +37,6 @@ const OwnerDashboard = () => {
             weekend: (Math.round(prop.price * 1.5))?.toString() || '3999' 
           });
           
-          // Convert availability array to record
           if (Array.isArray(prop.availability)) {
             const availMap: Record<string, boolean> = {};
             prop.availability.forEach((date: string) => {
@@ -55,26 +57,18 @@ const OwnerDashboard = () => {
 
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
-  
-  // To ensure the calendar starts on the correct day of the week, 
-  // we need to know what day the 1st of the month is.
-  const startDay = getDay(firstDayOfMonth); // 0 (Sun) to 6 (Sat)
-  
-  const days = eachDayOfInterval({
-    start: firstDayOfMonth,
-    end: lastDayOfMonth,
-  });
+  const startDay = getDay(firstDayOfMonth);
+  const days = eachDayOfInterval({ start: firstDayOfMonth, end: lastDayOfMonth });
 
   const getDayStatus = (date: Date) => {
     const key = format(date, 'yyyy-MM-dd');
-    return availability[key] !== false; // Default true (Available)
+    return availability[key] !== false;
   };
 
   const getDayPrice = (date: Date) => {
     const dateKey = format(date, 'yyyy-MM-dd');
     const custom = customRates.find(r => r.date === dateKey);
     if (custom) return custom.price;
-    // Sat (6) and Sun (0) are weekends
     const dayOfWeek = getDay(date);
     return (dayOfWeek === 0 || dayOfWeek === 6) ? rates.weekend : rates.weekday;
   };
@@ -82,13 +76,35 @@ const OwnerDashboard = () => {
   const today = startOfToday();
   const isPast = (date: Date) => isBefore(date, today);
 
+  const saveAvailability = async (newAvailability: Record<string, boolean>) => {
+    const ownerDataString = localStorage.getItem('ownerData');
+    if (!ownerDataString) return;
+    const ownerData = JSON.parse(ownerDataString);
+
+    try {
+      const bookedDates = Object.entries(newAvailability)
+        .filter(([_, isAvailable]) => !isAvailable)
+        .map(([date]) => date);
+
+      await fetch(`/api/properties/update/${ownerData.property_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ availability: bookedDates })
+      });
+      toast.success('Availability updated');
+    } catch (error) {
+      console.error('Error saving availability:', error);
+      toast.error('Failed to sync availability');
+    }
+  };
+
   const toggleAvailability = () => {
     if (isPast(selectedDate)) return;
     const key = format(selectedDate, 'yyyy-MM-dd');
-    setAvailability({
-      ...availability,
-      [key]: !getDayStatus(selectedDate)
-    });
+    const newStatus = !getDayStatus(selectedDate);
+    const newAvail = { ...availability, [key]: newStatus };
+    setAvailability(newAvail);
+    saveAvailability(newAvail);
   };
 
   const isSelectedWeekend = getDay(selectedDate) === 0 || getDay(selectedDate) === 6;

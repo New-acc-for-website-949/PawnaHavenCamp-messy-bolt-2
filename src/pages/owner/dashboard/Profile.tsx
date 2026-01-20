@@ -35,11 +35,11 @@ const OwnerProfile = () => {
         if (result.success) {
           const prop = result.data;
           setDetails({
-            amenities: prop.amenities || [],
-            activities: prop.activities || [],
-            highlights: prop.highlights || [],
-            policies: prop.policies || [],
-            schedule: prop.schedule || [],
+            amenities: Array.isArray(prop.amenities) ? prop.amenities : [],
+            activities: Array.isArray(prop.activities) ? prop.activities : [],
+            highlights: Array.isArray(prop.highlights) ? prop.highlights : [],
+            policies: Array.isArray(prop.policies) ? prop.policies : [],
+            schedule: Array.isArray(prop.schedule) ? prop.schedule : [],
             description: prop.description || ''
           });
         }

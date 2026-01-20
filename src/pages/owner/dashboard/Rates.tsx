@@ -11,17 +11,36 @@ const OwnerRates = () => {
     weekday: '1499',
     weekend: '3999'
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      const ownerDataString = localStorage.getItem('ownerData');
+      if (!ownerDataString) return;
+      const ownerData = JSON.parse(ownerDataString);
+
+      try {
+        const response = await fetch(`/api/properties/${ownerData.property_id}`);
+        const result = await response.json();
+        if (result.success) {
+          const prop = result.data;
+          setRates({
+            weekday: prop.price?.toString() || '1499',
+            weekend: (Math.round(prop.price * 1.5))?.toString() || '3999'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching rates:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRates();
+  }, []);
 
   const [customRates, setCustomRates] = useState<{ id: string, date: string, price: string }[]>([]);
 
-  useEffect(() => {
-    const savedRates = localStorage.getItem('propertyRates');
-    if (savedRates) {
-      const parsed = JSON.parse(savedRates);
-      if (parsed.rates) setRates(parsed.rates);
-      if (parsed.customRates) setCustomRates(parsed.customRates);
-    }
-  }, []);
+  if (loading) return <div className="p-8 text-center text-gold">Loading rates...</div>;
 
   const handleSave = () => {
     localStorage.setItem('propertyRates', JSON.stringify({ rates, customRates }));

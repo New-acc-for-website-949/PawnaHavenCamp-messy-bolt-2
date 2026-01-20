@@ -13,14 +13,33 @@ const OwnerCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [availability, setAvailability] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for availability
-  const mockAvailability: Record<string, 'available' | 'booked' | 'blocked'> = {
-    '2026-01-18': 'booked',
-    '2026-01-19': 'booked',
-    '2026-01-20': 'blocked',
-    '2026-01-25': 'booked',
-  };
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const ownerDataString = localStorage.getItem('ownerData');
+      if (!ownerDataString) return;
+      const ownerData = JSON.parse(ownerDataString);
+      
+      try {
+        const response = await fetch(`/api/properties/${ownerData.property_id}`);
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data.availability)) {
+          const availMap: Record<string, string> = {};
+          result.data.availability.forEach((date: string) => {
+            availMap[date] = 'booked';
+          });
+          setAvailability(availMap);
+        }
+      } catch (error) {
+        console.error('Error fetching calendar availability:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAvailability();
+  }, []);
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentDate),
@@ -34,13 +53,15 @@ const OwnerCalendar = () => {
 
   const getStatusColor = (date: Date) => {
     const key = format(date, 'yyyy-MM-dd');
-    const status = mockAvailability[key] || 'available';
+    const status = availability[key] || 'available';
     switch (status) {
       case 'booked': return 'bg-red-500 text-white';
       case 'blocked': return 'bg-yellow-500 text-white';
       default: return 'bg-green-500 text-white';
     }
   };
+
+  if (loading) return <div className="p-8 text-center text-gold">Loading calendar...</div>;
 
   return (
     <div className="space-y-6">
