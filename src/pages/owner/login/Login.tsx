@@ -30,7 +30,7 @@ const OwnerLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardContent className="pt-6">
           {!showOTP ? (
@@ -62,6 +62,11 @@ const OwnerLogin = () => {
           )}
         </CardContent>
       </Card>
+      <div className="mt-8 text-center">
+        <p className="text-[10px] tracking-[0.2em] font-bold text-muted-foreground/40 uppercase">
+          Powered by PawnaHavenCamp Luxury Stay
+        </p>
+      </div>
     </div>
   );
 };
