@@ -533,6 +533,8 @@ const AdminDashboard = () => {
                 .map(p => p.owner_mobile)
               )).map((mobile, idx) => {
                 const ownerProp = properties.find(p => p.owner_mobile === mobile);
+                const ownerProperties = properties.filter(p => p.owner_mobile === mobile);
+                
                 return (
                   <div key={idx} className="glass-dark rounded-2xl border border-white/5 p-4 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 shrink-0">
@@ -540,10 +542,17 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-white truncate">{ownerProp?.owner_name || `Owner ${idx + 1}`}</h4>
-                      <p className="text-xs text-muted-foreground mb-2">{mobile || '+91 ---'}</p>
-                      <div className="flex gap-2">
-                         <Badge variant="outline" className="text-[8px] h-4 border-gold/10 text-gold/60">{ownerProp?.category}</Badge>
-                         <Badge variant="outline" className="text-[8px] h-4 border-white/10 text-white/40">{ownerProp?.location}</Badge>
+                      <p className="text-[10px] text-muted-foreground mb-1 font-medium">{mobile || '+91 ---'}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ownerProperties.slice(0, 2).map((p, pIdx) => (
+                          <div key={p.id} className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                            <span className="text-[9px] text-gold font-bold truncate max-w-[80px]">{p.title}</span>
+                            <span className="text-[8px] text-white/40 uppercase tracking-tighter">{p.category}</span>
+                          </div>
+                        ))}
+                        {ownerProperties.length > 2 && (
+                          <span className="text-[8px] text-muted-foreground self-center">+{ownerProperties.length - 2} more</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1 sm:gap-2">
