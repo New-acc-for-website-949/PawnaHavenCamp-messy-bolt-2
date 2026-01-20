@@ -115,7 +115,7 @@ const PropertyDetails = () => {
             is_available: p.is_available,
             map_link: p.map_link,
             image: p.images && p.images.length > 0 ? p.images[0].image_url : "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200",
-            images: p.images ? p.images.map((img: any) => img.image_url) : []
+            images: p.images && p.images.length > 0 ? p.images.map((img: any) => img.image_url) : [p.image || "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"]
           });
         }
       } catch (error) {
@@ -375,11 +375,7 @@ const PropertyDetails = () => {
           <div className="md:hidden">
             <div className="h-[75vh] w-full relative">
               <ImageSlider 
-                images={propertyData.images && propertyData.images.length > 0 ? propertyData.images : [
-                  propertyData.image,
-                  "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1200",
-                  "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?w=1200"
-                ]} 
+                images={propertyData.images} 
                 title={propertyData.title} 
                 className="h-full rounded-none" 
               />
@@ -389,7 +385,7 @@ const PropertyDetails = () => {
           
           <div className="hidden md:block">
             <div className="h-[500px] w-full relative container mx-auto px-6 py-8">
-              <ImageSlider images={propertyData.images || [propertyData.image]} title={propertyData.title} className="rounded-3xl shadow-2xl" />
+              <ImageSlider images={propertyData.images} title={propertyData.title} className="rounded-3xl shadow-2xl" />
             </div>
           </div>
           
