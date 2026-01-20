@@ -51,6 +51,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
     is_available: true,
     max_capacity: '4',
     contact: '+91 8806092609',
+    owner_name: '',
     owner_mobile: '',
     amenities: [''],
     activities: [''],
@@ -114,6 +115,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
         is_available: property.is_available ?? true,
         max_capacity: property.max_capacity?.toString() || property.capacity?.toString() || '4',
         contact: property.contact || '+91 8806092609',
+        owner_name: property.owner_name || '',
         owner_mobile: property.owner_mobile || '',
         amenities: property.amenities?.length ? property.amenities : [''],
         activities: property.activities?.length ? property.activities : [''],
@@ -421,6 +423,20 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     value={formData.check_out_time}
                     onChange={(e) => setFormData({ ...formData, check_out_time: e.target.value })}
                     className="h-12 pl-10 bg-secondary/50 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="owner_name">Owner Name *</Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="owner_name"
+                    value={formData.owner_name}
+                    onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
+                    className="h-12 pl-10 bg-secondary/50 rounded-xl"
+                    required
                   />
                 </div>
               </div>
