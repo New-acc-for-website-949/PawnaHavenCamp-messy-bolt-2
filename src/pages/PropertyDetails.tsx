@@ -215,12 +215,12 @@ const PropertyDetails = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="flex flex-col gap-2 h-24 rounded-3xl bg-[#C5A021] border-none hover:bg-[#A6861A] transition-all group active:scale-95 shadow-gold">
-                      <CalendarIcon className="w-6 h-6 text-black group-hover:scale-110 transition-transform" />
-                      <span className="text-[9px] uppercase font-bold tracking-widest text-black">Book Stay</span>
+                    <Button variant="outline" className="flex flex-col gap-1 md:gap-2 h-20 md:h-24 rounded-2xl md:rounded-3xl bg-[#C5A021] border-none hover:bg-[#A6861A] transition-all group active:scale-95 shadow-gold px-1">
+                      <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-black group-hover:scale-110 transition-transform" />
+                      <span className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-black">Book Stay</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] bg-[#0A0A0A] border-[#D4AF37]/20">
@@ -240,11 +240,11 @@ const PropertyDetails = () => {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button 
-                    className="flex flex-col gap-1 h-24 rounded-3xl bg-gradient-to-br from-[#00C853] via-[#00B0FF] to-[#0091EA] border-none shadow-[0_10px_30px_rgba(0,176,255,0.3)] group overflow-hidden relative active:scale-95 transition-all"
+                    className="flex flex-col gap-0 md:gap-1 h-20 md:h-24 rounded-2xl md:rounded-3xl bg-gradient-to-br from-[#00C853] via-[#00B0FF] to-[#0091EA] border-none shadow-[0_10px_30px_rgba(0,176,255,0.3)] group overflow-hidden relative active:scale-95 transition-all px-1"
                   >
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <MessageCircle className="w-7 h-7 text-white" />
-                    <span className="text-[10px] font-bold text-white">Call / WhatsApp</span>
+                    <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                    <span className="text-[9px] md:text-[10px] font-bold text-white">Call / WhatsApp</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] bg-[#0A0A0A] border-[#D4AF37]/20 p-8">
@@ -272,11 +272,11 @@ const PropertyDetails = () => {
 
                 <Button 
                   variant="outline" 
-                  className="flex flex-col gap-2 h-24 rounded-3xl bg-[#A855F7] border-none shadow-[0_10px_30px_rgba(168,85,247,0.3)] hover:bg-[#9333EA] text-white transition-all active:scale-95"
+                  className="flex flex-col gap-1 md:gap-2 h-20 md:h-24 rounded-2xl md:rounded-3xl bg-[#A855F7] border-none shadow-[0_10px_30px_rgba(168,85,247,0.3)] hover:bg-[#9333EA] text-white transition-all active:scale-95 px-1"
                   onClick={() => window.open(propertyData.map_link || 'https://www.google.com/maps', '_blank')}
                 >
-                  <MapPin className="w-6 h-6" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest">Map</span>
+                  <MapPin className="w-5 h-5 md:w-6 md:h-6" />
+                  <span className="text-[8px] md:text-[10px] uppercase font-bold tracking-widest">Map</span>
                 </Button>
               </div>
             </div>
@@ -474,17 +474,17 @@ const PropertyDetails = () => {
               </div>
 
               {/* Feature Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
                   { label: 'Capacity', value: `${propertyData.capacity} Guests`, icon: Users },
                   { label: 'Check-in', value: propertyData.check_in_time || '2:00 PM', icon: Clock },
                   { label: 'Check-out', value: propertyData.check_out_time || '11:00 AM', icon: Clock },
                   { label: 'Status', value: 'Verified', icon: ShieldCheck, accent: 'text-[#00FF41]' }
                 ].map((stat, i) => (
-                  <div key={i} className="bg-[#1A1A1A] rounded-3xl p-4 border border-gray-800/50 flex flex-col items-center text-center gap-2 group hover:border-[#C5A021]/30 transition-all">
-                    <stat.icon className="w-5 h-5 text-[#C5A021]" />
-                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">{stat.label}</span>
-                    <span className={cn("text-sm font-bold truncate w-full", stat.accent || "text-white")}>{stat.value}</span>
+                  <div key={i} className="bg-[#1A1A1A] rounded-2xl md:rounded-3xl p-3 md:p-4 border border-gray-800/50 flex flex-col items-center text-center gap-1 md:gap-2 group hover:border-[#C5A021]/30 transition-all overflow-hidden">
+                    <stat.icon className="w-4 h-4 md:w-5 md:h-5 text-[#C5A021] shrink-0" />
+                    <span className="text-[8px] md:text-[10px] uppercase font-bold text-gray-500 tracking-widest leading-tight">{stat.label}</span>
+                    <span className={cn("text-xs md:text-sm font-bold truncate w-full px-1", stat.accent || "text-white")}>{stat.value}</span>
                   </div>
                 ))}
               </div>
@@ -561,8 +561,8 @@ const PropertyDetails = () => {
               {/* Accordions */}
               <div className="space-y-4">
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="highlights" className="border-none bg-[#1A1A1A] rounded-[2rem] px-8 border border-gray-800/50 mb-4 overflow-hidden">
-                    <AccordionTrigger className="hover:no-underline py-6 text-lg font-bold">
+                  <AccordionItem value="highlights" className="border-none bg-[#1A1A1A] rounded-2xl md:rounded-[2rem] px-5 md:px-8 border border-gray-800/50 mb-4 overflow-hidden">
+                    <AccordionTrigger className="hover:no-underline py-4 md:py-6 text-base md:text-lg font-bold">
                       <div className="flex items-center gap-3">
                         <Star className="w-5 h-5 text-[#C5A021]" />
                         What You'll Love
@@ -580,8 +580,8 @@ const PropertyDetails = () => {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="policies" className="border-none bg-[#1A1A1A] rounded-[2rem] px-8 border border-gray-800/50 overflow-hidden">
-                    <AccordionTrigger className="hover:no-underline py-6 text-lg font-bold">
+                  <AccordionItem value="policies" className="border-none bg-[#1A1A1A] rounded-2xl md:rounded-[2rem] px-5 md:px-8 border border-gray-800/50 overflow-hidden">
+                    <AccordionTrigger className="hover:no-underline py-4 md:py-6 text-base md:text-lg font-bold">
                       <div className="flex items-center gap-3">
                         <ShieldCheck className="w-5 h-5 text-[#C5A021]" />
                         Rules & Policies
