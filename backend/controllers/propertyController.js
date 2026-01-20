@@ -310,7 +310,7 @@ const createProperty = async (req, res) => {
     // Generate slug
     const slug = generateSlug(title);
 
-    // Generate unique 5-digit property ID (e.g., AD75C)
+    // Generate unique 5-digit property ID (e.g., AD75C) only if not provided by frontend
     const generatePropertyId = () => {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = '';
@@ -319,7 +319,7 @@ const createProperty = async (req, res) => {
       }
       return result;
     };
-    const property_id = generatePropertyId();
+    const property_id = req.body.property_id || generatePropertyId();
 
     // Start transaction
     await client.query('BEGIN');

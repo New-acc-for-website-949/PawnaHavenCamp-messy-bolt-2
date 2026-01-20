@@ -129,6 +129,14 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
         schedule: property.schedule?.length ? property.schedule : [{ time: '', title: '' }],
         images: property.images?.length ? property.images.map((img: any) => typeof img === 'string' ? img : img.image_url) : [],
       });
+    } else {
+      // Generate a new 5-digit property ID for new property
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let newId = '';
+      for (let i = 0; i < 5; i++) {
+        newId += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      setFormData(prev => ({ ...prev, property_id: newId }));
     }
   }, [property]);
 
