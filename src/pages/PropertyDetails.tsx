@@ -406,7 +406,7 @@ const PropertyDetails = () => {
           </div>
           
           <div className="hidden md:block">
-            <div className="h-[500px] w-full relative container mx-auto px-6 py-8">
+            <div className="h-auto w-full relative container mx-auto px-6 py-8">
               <ImageSlider images={propertyData.images} title={propertyData.title} className="rounded-3xl shadow-2xl" />
             </div>
           </div>
