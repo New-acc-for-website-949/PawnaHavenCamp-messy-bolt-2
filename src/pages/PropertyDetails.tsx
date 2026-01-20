@@ -111,11 +111,11 @@ const PropertyDetails = () => {
           const p = response.data;
           setPropertyData({
             ...p,
+            images: p.images && p.images.length > 0 ? p.images.map((img: any) => img.image_url) : [p.image || "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"],
             priceNote: p.price_note,
             is_available: p.is_available,
             map_link: p.map_link,
-            image: p.images && p.images.length > 0 ? p.images[0].image_url : (p.image || "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"),
-            images: p.images && p.images.length > 0 ? p.images.map((img: any) => img.image_url) : [p.image || "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"]
+            image: p.images && p.images.length > 0 ? p.images[0].image_url : (p.image || "https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200")
           });
         }
       } catch (error) {
@@ -498,7 +498,7 @@ const PropertyDetails = () => {
                   <AccordionTrigger className="hover:no-underline py-5 text-sm font-bold">
                     <div className="flex items-center gap-3">
                       <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                      Policies
+                      Rules & Policies
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pb-5">

@@ -53,7 +53,7 @@ const ImageSlider = ({ images, title, className }: ImageSliderProps) => {
 
   return (
     <div 
-      className={cn("relative w-full aspect-[3/4] md:aspect-video bg-black rounded-2xl overflow-hidden group", className)}
+      className={cn("relative w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden group", className)}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
