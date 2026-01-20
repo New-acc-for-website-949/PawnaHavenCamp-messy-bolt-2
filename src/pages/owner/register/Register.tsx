@@ -4,22 +4,58 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Shield } from 'lucide-react';
+import { Sparkles, Shield, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const OwnerRegister = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     propertyName: '',
     propertyId: '',
     propertyType: '',
     ownerName: '',
-    ownerNumber: ''
+    ownerNumber: '',
+    password: '' // Added password field
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('tempOwnerData', JSON.stringify(formData));
-    navigate('/owner/register/otp');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/owners/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          propertyName: formData.propertyName,
+          propertyId: formData.propertyId,
+          propertyType: formData.propertyType,
+          ownerName: formData.ownerName,
+          ownerMobile: formData.ownerNumber,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Registration successful!');
+        // In a real app, we might redirect to OTP or Login
+        // For now, let's store data and move to the next logical step
+        localStorage.setItem('tempOwnerData', JSON.stringify(data.data));
+        navigate('/owner/login'); 
+      } else {
+        toast.error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('An error occurred during registration. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,8 +147,30 @@ const OwnerRegister = () => {
                 placeholder="10-digit mobile number"
               />
             </div>
-            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-gold-dark hover:from-gold-dark hover:to-primary transition-all duration-500 shadow-gold hover:shadow-gold-lg transform hover:-translate-y-0.5 mt-6">
-              Verify Mobile Number
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">Password</Label>
+              <Input 
+                required 
+                type="password" 
+                value={formData.password} 
+                onChange={e => setFormData({...formData, password: e.target.value})}
+                className="h-12 bg-secondary/50 border-border/50 rounded-xl px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                placeholder="Set a password for your account"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-gold-dark hover:from-gold-dark hover:to-primary transition-all duration-500 shadow-gold hover:shadow-gold-lg transform hover:-translate-y-0.5 mt-6"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Registering...
+                </>
+              ) : (
+                'Register Property'
+              )}
             </Button>
           </form>
         </div>
