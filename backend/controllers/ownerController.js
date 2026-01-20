@@ -44,17 +44,13 @@ exports.registerOwner = async (req, res) => {
       });
     }
 
-    // 4. Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     // 5. Register owner
     const result = await pool.query(
       `INSERT INTO owners 
-       (property_id, property_name, property_type, owner_name, mobile_number, password) 
-       VALUES ($1, $2, $3, $4, $5, $6) 
+       (property_id, property_name, property_type, owner_name, mobile_number) 
+       VALUES ($1, $2, $3, $4, $5) 
        RETURNING id, property_id, owner_name, mobile_number`,
-      [propertyId, propertyName, propertyType, ownerName, ownerMobile, hashedPassword]
+      [propertyId, propertyName, propertyType, ownerName, ownerMobile]
     );
 
     return res.status(201).json({

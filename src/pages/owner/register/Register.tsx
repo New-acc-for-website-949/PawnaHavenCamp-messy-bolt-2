@@ -15,8 +15,7 @@ const OwnerRegister = () => {
     propertyId: '',
     propertyType: '',
     ownerName: '',
-    ownerNumber: '',
-    password: '' // Added password field
+    ownerNumber: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,8 +33,7 @@ const OwnerRegister = () => {
           propertyId: formData.propertyId,
           propertyType: formData.propertyType,
           ownerName: formData.ownerName,
-          ownerMobile: formData.ownerNumber,
-          password: formData.password
+          ownerMobile: formData.ownerNumber
         }),
       });
 
@@ -145,17 +143,6 @@ const OwnerRegister = () => {
                 onChange={e => setFormData({...formData, ownerNumber: e.target.value})}
                 className="h-12 bg-secondary/50 border-border/50 rounded-xl px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
                 placeholder="10-digit mobile number"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">Password</Label>
-              <Input 
-                required 
-                type="password" 
-                value={formData.password} 
-                onChange={e => setFormData({...formData, password: e.target.value})}
-                className="h-12 bg-secondary/50 border-border/50 rounded-xl px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-                placeholder="Set a password for your account"
               />
             </div>
             <Button 
