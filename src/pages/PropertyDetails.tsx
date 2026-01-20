@@ -238,7 +238,7 @@ const PropertyDetails = () => {
 
                 <Button 
                   className="flex flex-col gap-1 h-24 rounded-3xl bg-gradient-to-br from-[#00C853] via-[#00B0FF] to-[#0091EA] border-none shadow-[0_10px_30px_rgba(0,176,255,0.3)] group overflow-hidden relative active:scale-95 transition-all"
-                  onClick={() => window.open(`https://api.whatsapp.com/send?phone=919356874010`, '_blank')}
+                  onClick={() => window.open(`https://api.whatsapp.com/send?phone=918806092609`, '_blank')}
                 >
                   <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <MessageCircle className="w-7 h-7 text-white" />
@@ -337,7 +337,7 @@ const PropertyDetails = () => {
               <Button
                 variant="outline"
                 className="h-16 rounded-2xl text-base font-bold border-border/50 hover:bg-secondary transition-all flex items-center justify-center gap-2"
-                onClick={() => window.open(`tel:+919356874010`, '_self')}
+                onClick={() => window.open(`tel:+918806092609`, '_self')}
               >
                 <Phone className="w-4 h-4 text-primary" />
                 Call Host
@@ -345,7 +345,7 @@ const PropertyDetails = () => {
               <Button
                 variant="outline"
                 className="h-16 rounded-2xl text-base font-bold border-border/50 hover:bg-secondary transition-all flex items-center justify-center gap-2"
-                onClick={() => window.open(`https://api.whatsapp.com/send?phone=919356874010`, '_blank')}
+                onClick={() => window.open(`https://api.whatsapp.com/send?phone=918806092609`, '_blank')}
               >
                 <MessageCircle className="w-4 h-4 text-green-500" />
                 WhatsApp
@@ -369,7 +369,7 @@ const PropertyDetails = () => {
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Inquiry Support</p>
-                <p className="font-bold text-foreground">+91 9356874010</p>
+                <p className="font-bold text-foreground">+91 8806092609</p>
               </div>
             </div>
           </div>
