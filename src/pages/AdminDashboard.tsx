@@ -40,6 +40,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 import {
   Popover,
   PopoverContent,
@@ -453,7 +455,70 @@ const AdminDashboard = () => {
                       </div>
 
                       <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-                        <span className="text-[10px] text-muted-foreground uppercase block mb-1">Booked Dates (Availability)</span>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] text-muted-foreground uppercase block">Booked Dates (Availability)</span>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" className="h-7 text-[10px] border-gold/30 text-gold hover:bg-gold/10">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                Manage Calendar
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
+                              <DialogHeader>
+                                <DialogTitle className="text-xl font-display text-gold">Manage Availability</DialogTitle>
+                              </DialogHeader>
+                              <div className="p-4">
+                                <CalendarComponent
+                                  mode="single"
+                                  className="w-full bg-transparent"
+                                  onSelect={async (date) => {
+                                    if (!date) return;
+                                    const dateKey = format(date, 'yyyy-MM-dd');
+                                    const currentAvail = Array.isArray(property.availability) ? property.availability : [];
+                                    const isBooked = currentAvail.includes(dateKey);
+                                    
+                                    const newAvail = isBooked 
+                                      ? currentAvail.filter((d: string) => d !== dateKey)
+                                      : [...currentAvail, dateKey];
+                                    
+                                    const token = localStorage.getItem('adminToken');
+                                    try {
+                                      const response = await fetch(`/api/properties/update/${property.id}`, {
+                                        method: 'PUT',
+                                        headers: { 
+                                          'Content-Type': 'application/json',
+                                          'Authorization': `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({ availability: newAvail })
+                                      });
+                                      if (response.ok) {
+                                        toast({ title: isBooked ? 'Date unblocked' : 'Date blocked' });
+                                        fetchData(token!);
+                                      }
+                                    } catch (error) {
+                                      toast({ title: 'Update failed', variant: 'destructive' });
+                                    }
+                                  }}
+                                  modifiers={{
+                                    booked: (date) => {
+                                      const key = format(date, 'yyyy-MM-dd');
+                                      return Array.isArray(property.availability) && property.availability.includes(key);
+                                    }
+                                  }}
+                                  modifiersClassNames={{
+                                    booked: "bg-red-500/20 text-red-500 line-through"
+                                  }}
+                                  classNames={{
+                                    day_today: "bg-gold text-black",
+                                    day_selected: "bg-gold text-black hover:bg-gold hover:text-black",
+                                  }}
+                                />
+                                <p className="text-[10px] text-white/40 mt-4 text-center italic">Click a date to toggle its booking status</p>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {Array.isArray(property.availability) && property.availability.length > 0 ? (
                             property.availability.map((date: string) => (
