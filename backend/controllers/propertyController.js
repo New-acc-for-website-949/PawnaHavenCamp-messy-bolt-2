@@ -8,6 +8,19 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '');
 };
 
+const parsePostgresArray = (field) => {
+  if (!field) return [];
+  if (Array.isArray(field)) return field;
+  if (typeof field === 'string' && field.startsWith('{')) {
+    return field.substring(1, field.length - 1).split(',').map(item => item.trim().replace(/^"(.*)"$/, '$1'));
+  }
+  try {
+    return JSON.parse(field);
+  } catch (e) {
+    return [];
+  }
+};
+
 // Get all properties (Admin)
 const getAllProperties = async (req, res) => {
   try {
@@ -19,14 +32,30 @@ const getAllProperties = async (req, res) => {
       ORDER BY p.created_at DESC
     `);
 
-    const properties = result.rows.map(prop => ({
-      ...prop,
-      amenities: JSON.parse(prop.amenities || '[]'),
-      activities: JSON.parse(prop.activities || '[]'),
-      highlights: JSON.parse(prop.highlights || '[]'),
-      policies: prop.policies ? JSON.parse(prop.policies) : [],
-      images: prop.images || [],
-    }));
+    const properties = result.rows.map(prop => {
+      const parseField = (field) => {
+        if (!field) return [];
+        if (Array.isArray(field)) return field;
+        if (typeof field === 'string' && field.startsWith('{')) {
+          // Handle PostgreSQL array format like "{item1,item2}"
+          return field.substring(1, field.length - 1).split(',').map(item => item.trim().replace(/^"(.*)"$/, '$1'));
+        }
+        try {
+          return JSON.parse(field);
+        } catch (e) {
+          return [];
+        }
+      };
+
+      return {
+        ...prop,
+        amenities: parseField(prop.amenities),
+        activities: parseField(prop.activities),
+        highlights: parseField(prop.highlights),
+        policies: parseField(prop.policies),
+        images: prop.images || [],
+      };
+    });
 
     return res.status(200).json({
       success: true,
@@ -65,14 +94,30 @@ const getPublicProperties = async (req, res) => {
       ORDER BY p.is_available DESC, p.is_top_selling DESC, p.created_at DESC
     `);
 
-    const properties = result.rows.map(prop => ({
-      ...prop,
-      amenities: JSON.parse(prop.amenities || '[]'),
-      activities: JSON.parse(prop.activities || '[]'),
-      highlights: JSON.parse(prop.highlights || '[]'),
-      policies: prop.policies ? JSON.parse(prop.policies) : [],
-      images: prop.images || [],
-    }));
+    const properties = result.rows.map(prop => {
+      const parseField = (field) => {
+        if (!field) return [];
+        if (Array.isArray(field)) return field;
+        if (typeof field === 'string' && field.startsWith('{')) {
+          // Handle PostgreSQL array format like "{item1,item2}"
+          return field.substring(1, field.length - 1).split(',').map(item => item.trim().replace(/^"(.*)"$/, '$1'));
+        }
+        try {
+          return JSON.parse(field);
+        } catch (e) {
+          return [];
+        }
+      };
+
+      return {
+        ...prop,
+        amenities: parseField(prop.amenities),
+        activities: parseField(prop.activities),
+        highlights: parseField(prop.highlights),
+        policies: parseField(prop.policies),
+        images: prop.images || [],
+      };
+    });
 
     return res.status(200).json({
       success: true,
@@ -152,10 +197,10 @@ const getPropertyById = async (req, res) => {
 
     const property = {
       ...result.rows[0],
-      amenities: JSON.parse(result.rows[0].amenities || '[]'),
-      activities: JSON.parse(result.rows[0].activities || '[]'),
-      highlights: JSON.parse(result.rows[0].highlights || '[]'),
-      policies: result.rows[0].policies ? JSON.parse(result.rows[0].policies) : [],
+      amenities: parsePostgresArray(result.rows[0].amenities),
+      activities: parsePostgresArray(result.rows[0].activities),
+      highlights: parsePostgresArray(result.rows[0].highlights),
+      policies: parsePostgresArray(result.rows[0].policies),
       images: result.rows[0].images || [],
     };
 
@@ -194,10 +239,10 @@ const getPublicPropertyBySlug = async (req, res) => {
 
     const property = {
       ...result.rows[0],
-      amenities: JSON.parse(result.rows[0].amenities || '[]'),
-      activities: JSON.parse(result.rows[0].activities || '[]'),
-      highlights: JSON.parse(result.rows[0].highlights || '[]'),
-      policies: result.rows[0].policies ? JSON.parse(result.rows[0].policies) : [],
+      amenities: parsePostgresArray(result.rows[0].amenities),
+      activities: parsePostgresArray(result.rows[0].activities),
+      highlights: parsePostgresArray(result.rows[0].highlights),
+      policies: parsePostgresArray(result.rows[0].policies),
       images: result.rows[0].images || [],
     };
 
