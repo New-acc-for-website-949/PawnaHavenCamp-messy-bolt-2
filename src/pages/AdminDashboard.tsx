@@ -32,14 +32,19 @@ import {
   History,
   ArrowUpRight,
   Filter,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Bell
 } from 'lucide-react';
 import AdminPropertyForm from '@/components/AdminPropertyForm';
-import AdminFloatingActions from '@/components/AdminFloatingActions';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
 
 const AdminDashboard = () => {
@@ -244,6 +249,25 @@ const AdminDashboard = () => {
             <h1 className="font-display text-sm sm:text-xl font-semibold text-foreground truncate max-w-[120px] sm:max-w-none">PawnaHaven Admin</h1>
           </div>
           <div className="flex items-center gap-1 sm:gap-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-8 h-8 sm:w-10 sm:h-10 text-gold hover:text-gold-light hover:bg-gold/10 relative">
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-charcoal animate-pulse" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 bg-charcoal/95 border-white/10 text-white rounded-2xl backdrop-blur-xl mt-2 shadow-2xl">
+                <div className="p-4">
+                  <h3 className="font-bold text-lg mb-2 text-gold">Notifications</h3>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                      <p className="text-sm font-medium">System Alert</p>
+                      <p className="text-xs text-white/50">Server is running smoothly.</p>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
             <Button variant="ghost" size="icon" className="w-8 h-8 sm:w-10 sm:h-10 text-gold hover:text-gold-light hover:bg-gold/10" onClick={() => window.open('tel:+918806092609')}>
               <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
@@ -637,11 +661,6 @@ const AdminDashboard = () => {
           ))}
         </div>
       </nav>
-
-      {/* Move Floating Actions up so they don't hide the bottom bar */}
-      <div className="fixed bottom-24 right-6 z-40">
-        <AdminFloatingActions />
-      </div>
     </div>
   );
 };
