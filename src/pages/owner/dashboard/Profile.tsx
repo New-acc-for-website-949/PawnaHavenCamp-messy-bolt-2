@@ -1,52 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { LogOut, User, Plus, X } from 'lucide-react';
+import { LogOut, User, Plus, X, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import PWAInstallButton from '@/components/owner/pwa/PWAInstallButton';
+import { propertyAPI } from '@/lib/api';
 
 const OwnerProfile = () => {
   const navigate = useNavigate();
   const ownerDataString = localStorage.getItem('ownerData');
-  const ownerData = ownerDataString ? JSON.parse(ownerDataString) : { propertyName: 'My Property', ownerName: 'Owner', ownerNumber: '9999999999' };
+  const ownerData = ownerDataString ? JSON.parse(ownerDataString) : { propertyName: 'My Property', ownerName: 'Owner', ownerNumber: '8806092609', id: '1' };
 
+  const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState({
     amenities: ['Lake View', 'Private Washroom', 'BBQ Facility'],
     activities: ['Boating', 'Swimming', 'Bonfire'],
     highlights: ['Lakeside Camping', 'Sunset View', 'Premium Domes'],
     policies: ['No Smoking in tents', 'Check-in: 4 PM', 'Check-out: 11 AM'],
+    schedule: [
+      { time: '04:00 PM', title: 'Grab Tents' },
+      { time: '05:30 PM', title: 'Snacks' },
+      { time: '08:30 AM', title: 'Breakfast' }
+    ],
     description: 'Beautiful luxury resort with glamping domes and cottages near Pawna Lake.'
   });
 
-  const [newItem, setNewItem] = useState({ type: '', value: '' });
+  const [newItem, setNewItem] = useState({ type: '', value: '', time: '' });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const saved = localStorage.getItem('ownerProfileDetails');
+      if (saved) {
+        setDetails(JSON.parse(saved));
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('ownerLoggedIn');
     navigate('/owner');
   };
 
-  const handleSave = () => {
-    localStorage.setItem('ownerProfileDetails', JSON.stringify(details));
-    toast.success('Profile details saved');
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      localStorage.setItem('ownerProfileDetails', JSON.stringify(details));
+      if (ownerData.id) {
+        const response = await propertyAPI.update(ownerData.id, details);
+        if (response.success) {
+          toast.success('Profile and schedule updated successfully');
+        } else {
+          toast.info('Saved locally, but backend update failed');
+        }
+      } else {
+        toast.success('Profile details saved locally');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Failed to save changes');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addItem = (type: 'amenities' | 'activities' | 'highlights' | 'policies') => {
-    if (!newItem.value.trim()) return;
-    setDetails({
-      ...details,
-      [type]: [...details[type], newItem.value.trim()]
-    });
-    setNewItem({ type: '', value: '' });
+  const addItem = (type: string) => {
+    if (type === 'schedule') {
+      if (!newItem.value.trim() || !newItem.time.trim()) {
+        toast.error('Please enter both time and title');
+        return;
+      }
+      setDetails({
+        ...details,
+        schedule: [...(details.schedule || []), { time: newItem.time.trim(), title: newItem.value.trim() }]
+      });
+    } else {
+      const t = type as 'amenities' | 'activities' | 'highlights' | 'policies';
+      if (!newItem.value.trim()) return;
+      setDetails({
+        ...details,
+        [t]: [...details[t], newItem.value.trim()]
+      });
+    }
+    setNewItem({ type: '', value: '', time: '' });
   };
 
-  const removeItem = (type: 'amenities' | 'activities' | 'highlights' | 'policies', index: number) => {
-    const newList = [...details[type]];
-    newList.splice(index, 1);
-    setDetails({ ...details, [type]: newList });
+  const removeItem = (type: string, index: number) => {
+    if (type === 'schedule') {
+      const newList = [...(details.schedule || [])];
+      newList.splice(index, 1);
+      setDetails({ ...details, schedule: newList });
+    } else {
+      const t = type as 'amenities' | 'activities' | 'highlights' | 'policies';
+      const newList = [...details[t]];
+      newList.splice(index, 1);
+      setDetails({ ...details, [t]: newList });
+    }
   };
 
   const TagList = ({ type, items }: { type: 'amenities' | 'activities' | 'highlights' | 'policies', items: string[] }) => (
@@ -126,6 +179,59 @@ const OwnerProfile = () => {
           <TagList type="highlights" items={details.highlights} />
         </div>
 
+        {/* Schedule Section */}
+        <div className="space-y-3">
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Check-in/Check-out Schedule
+          </Label>
+          <div className="space-y-3">
+            {(details.schedule || []).map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between bg-black/40 border border-[#D4AF37]/20 p-3 rounded-xl group">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                  <div>
+                    <p className="text-[10px] font-bold text-[#D4AF37] uppercase">{item.time}</p>
+                    <p className="text-sm font-medium text-white">{item.title}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => removeItem('schedule', idx)}
+                  className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            
+            <div className="p-4 border border-dashed border-[#D4AF37]/30 rounded-xl space-y-3 bg-[#1A1A1A]/50">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Add New Event</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Input 
+                  placeholder="Time (e.g. 04:00 PM)"
+                  className="h-10 bg-black/60 border-[#D4AF37]/20 text-white text-xs"
+                  value={newItem.type === 'schedule' ? newItem.time : ''}
+                  onChange={e => setNewItem({ ...newItem, type: 'schedule', time: e.target.value })}
+                />
+                <Input 
+                  placeholder="Title (e.g. Snacks)"
+                  className="h-10 bg-black/60 border-[#D4AF37]/20 text-white text-xs"
+                  value={newItem.type === 'schedule' ? newItem.value : ''}
+                  onChange={e => setNewItem({ ...newItem, type: 'schedule', value: e.target.value })}
+                />
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                onClick={() => addItem('schedule')}
+              >
+                <Plus className="w-3 h-3 mr-2" /> Add to Schedule
+              </Button>
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-3">
           <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Policies</Label>
           <TagList type="policies" items={details.policies} />
@@ -141,8 +247,8 @@ const OwnerProfile = () => {
           />
         </div>
         
-        <Button onClick={handleSave} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold h-12 shadow-xl">
-          Save Profile
+        <Button onClick={handleSave} disabled={loading} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold h-12 shadow-xl">
+          {loading ? 'Saving...' : 'Save Profile'}
         </Button>
       </div>
     </div>

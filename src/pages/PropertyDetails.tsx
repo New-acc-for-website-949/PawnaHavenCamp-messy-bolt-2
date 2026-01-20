@@ -89,6 +89,7 @@ interface PropertyDetail {
   highlights: string[];
   activities: string[];
   policies?: string[];
+  schedule?: { time: string; title: string; icon?: string }[];
   contact?: string;
   owner_mobile?: string;
   map_link?: string;
@@ -490,15 +491,17 @@ const PropertyDetails = () => {
 
               {/* Amenities */}
               <section>
-                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                  <Wifi className="w-6 h-6 text-[#C5A021]" />
-                  Amenities
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-2xl font-bold flex items-center gap-3">
+                    <Wifi className="w-6 h-6 text-[#C5A021]" />
+                    Amenities
+                  </h3>
+                </div>
+                <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 overflow-x-auto md:overflow-visible gap-3 pb-4 md:pb-0 scrollbar-none -mx-2 px-2 md:mx-0 md:px-0">
                   {propertyData.amenities.map((amenity, index) => (
-                    <div key={index} className="bg-[#1A1A1A] rounded-3xl p-6 border border-gray-800/50 flex flex-col items-center text-center gap-4 group hover:border-[#C5A021]/30 transition-all">
-                      <div className="text-[#C5A021]">{getIcon(amenity)}</div>
-                      <span className="text-sm font-bold text-white tracking-tight">{amenity}</span>
+                    <div key={index} className="bg-[#1A1A1A] rounded-2xl p-3 md:p-6 border border-gray-800/50 flex flex-col items-center text-center gap-2 md:gap-4 group hover:border-[#C5A021]/30 transition-all min-w-[100px] md:min-w-0">
+                      <div className="text-[#C5A021] scale-90 md:scale-100">{getIcon(amenity)}</div>
+                      <span className="text-[10px] md:text-sm font-bold text-white tracking-tight">{amenity}</span>
                     </div>
                   ))}
                 </div>
@@ -510,15 +513,50 @@ const PropertyDetails = () => {
                   <Star className="w-6 h-6 text-[#C5A021]" />
                   Activities
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 overflow-x-auto md:overflow-visible gap-3 pb-4 md:pb-0 scrollbar-none -mx-2 px-2 md:mx-0 md:px-0">
                   {propertyData.activities?.map((activity, index) => (
-                    <div key={index} className="bg-[#1A1A1A] rounded-3xl p-6 border border-gray-800/50 flex flex-col items-center text-center gap-4 group hover:border-[#C5A021]/30 transition-all">
-                      <div className="text-[#C5A021] opacity-80">{getIcon(activity)}</div>
-                      <span className="text-sm font-bold text-gray-300 uppercase tracking-widest">{activity}</span>
+                    <div key={index} className="bg-[#1A1A1A] rounded-2xl p-3 md:p-6 border border-gray-800/50 flex flex-col items-center text-center gap-2 md:gap-4 group hover:border-[#C5A021]/30 transition-all min-w-[100px] md:min-w-0">
+                      <div className="text-[#C5A021] opacity-80 scale-90 md:scale-100">{getIcon(activity)}</div>
+                      <span className="text-[10px] md:text-sm font-bold text-gray-300 uppercase tracking-widest">{activity}</span>
                     </div>
                   ))}
                 </div>
               </section>
+
+              {/* Schedule Section */}
+              {propertyData.schedule && propertyData.schedule.length > 0 && (
+                <section className="relative">
+                  <h3 className="text-2xl font-bold mb-10 flex items-center gap-3">
+                    <Clock className="w-6 h-6 text-[#C5A021]" />
+                    Property Schedule
+                  </h3>
+                  
+                  <div className="relative space-y-0 pb-8">
+                    {/* Vertical Line */}
+                    <div className="absolute left-[21px] top-2 bottom-0 w-0.5 bg-gradient-to-b from-[#C5A021] via-[#C5A021]/50 to-transparent" />
+                    
+                    {propertyData.schedule.map((item, idx) => (
+                      <div key={idx} className="relative flex items-start gap-6 pb-10 group last:pb-0">
+                        {/* Dot on line */}
+                        <div className="absolute left-[18px] top-2 w-2 h-2 rounded-full bg-[#C5A021] border-4 border-[#0A0A0A] z-10 shadow-[0_0_10px_rgba(197,160,33,0.5)] group-hover:scale-150 transition-transform" />
+                        
+                        {/* Icon Box */}
+                        <div className="w-11 h-11 rounded-xl bg-[#1A1A1A] border border-[#C5A021]/20 flex items-center justify-center shrink-0 shadow-lg group-hover:border-[#C5A021]/50 transition-all">
+                          <div className="text-[#C5A021]">
+                            {getIcon(item.title || item.icon || "")}
+                          </div>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="pt-0.5 flex flex-col gap-1">
+                          <span className="text-xs font-bold text-[#C5A021] uppercase tracking-widest">{item.time}</span>
+                          <h4 className="text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors">{item.title}</h4>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* Accordions */}
               <div className="space-y-4">

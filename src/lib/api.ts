@@ -27,12 +27,34 @@ const transformProperty = (property: any) => {
     activities: parseJsonField(property.activities),
     highlights: parseJsonField(property.highlights),
     policies: parseJsonField(property.policies),
+    schedule: parseJsonField(property.schedule),
     image: images.length > 0 ? images[0].image_url : "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4",
     images: images.map((img: any) => img.image_url)
   };
 };
 
 export const propertyAPI = {
+  // ... existing methods
+  update: async (id: string, data: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/properties/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update property');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating property:', error);
+      return { success: false, message: 'Update failed' };
+    }
+  },
   getPublicList: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/properties/public-list`, {

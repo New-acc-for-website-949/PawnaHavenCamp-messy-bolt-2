@@ -53,6 +53,7 @@ const getAllProperties = async (req, res) => {
         activities: parseField(prop.activities),
         highlights: parseField(prop.highlights),
         policies: parseField(prop.policies),
+        schedule: parseField(prop.schedule),
         images: prop.images || [],
       };
     });
@@ -115,6 +116,7 @@ const getPublicProperties = async (req, res) => {
         activities: parseField(prop.activities),
         highlights: parseField(prop.highlights),
         policies: parseField(prop.policies),
+        schedule: parseField(prop.schedule),
         images: prop.images || [],
       };
     });
@@ -201,6 +203,7 @@ const getPropertyById = async (req, res) => {
       activities: parsePostgresArray(result.rows[0].activities),
       highlights: parsePostgresArray(result.rows[0].highlights),
       policies: parsePostgresArray(result.rows[0].policies),
+      schedule: parsePostgresArray(result.rows[0].schedule),
       images: result.rows[0].images || [],
     };
 
@@ -243,6 +246,7 @@ const getPublicPropertyBySlug = async (req, res) => {
       activities: parsePostgresArray(result.rows[0].activities),
       highlights: parsePostgresArray(result.rows[0].highlights),
       policies: parsePostgresArray(result.rows[0].policies),
+      schedule: parsePostgresArray(result.rows[0].schedule),
       images: result.rows[0].images || [],
     };
 
@@ -287,6 +291,7 @@ const createProperty = async (req, res) => {
       activities,
       highlights,
       policies,
+      schedule,
       images,
     } = req.body;
 
@@ -311,8 +316,8 @@ const createProperty = async (req, res) => {
       `INSERT INTO properties (
         title, slug, description, category, location, rating, price, price_note,
         capacity, max_capacity, check_in_time, check_out_time, status, is_top_selling, is_active, is_available,
-        contact, owner_mobile, map_link, amenities, activities, highlights, policies, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, CURRENT_TIMESTAMP)
+        contact, owner_mobile, map_link, amenities, activities, highlights, policies, schedule, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, CURRENT_TIMESTAMP)
       RETURNING *`,
       [
         title,
@@ -338,6 +343,7 @@ const createProperty = async (req, res) => {
         typeof activities === 'string' ? activities : JSON.stringify(activities || []),
         typeof highlights === 'string' ? highlights : JSON.stringify(highlights || []),
         typeof policies === 'string' ? policies : JSON.stringify(policies || []),
+        typeof schedule === 'string' ? schedule : JSON.stringify(schedule || []),
       ]
     );
 
@@ -550,6 +556,11 @@ const updateProperty = async (req, res) => {
     if (policies !== undefined) {
       updates.push(`policies = $${paramCount}`);
       values.push(typeof policies === 'string' ? policies : JSON.stringify(policies));
+      paramCount++;
+    }
+    if (req.body.schedule !== undefined) {
+      updates.push(`schedule = $${paramCount}`);
+      values.push(typeof req.body.schedule === 'string' ? req.body.schedule : JSON.stringify(req.body.schedule));
       paramCount++;
     }
 
