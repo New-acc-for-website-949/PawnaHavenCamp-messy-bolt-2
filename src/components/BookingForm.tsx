@@ -47,6 +47,22 @@ export function BookingForm({
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
   const [isCheckOutOpen, setIsCheckOutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [bookedDates, setBookedDates] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`/api/properties/${propertyId}`);
+        const result = await response.json();
+        if (result.success && result.data.availability) {
+          setBookedDates(result.data.availability);
+        }
+      } catch (error) {
+        console.error("Error fetching availability:", error);
+      }
+    };
+    fetchAvailability();
+  }, [propertyId]);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [advanceAmount, setAdvanceAmount] = useState(0);
@@ -222,12 +238,9 @@ export function BookingForm({
                   initialFocus
                   disabled={(date) => {
                     const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
-                    if (isVilla) {
-                      const day = date.getDate();
-                      const isBooked = day === 15 || day === 16 || day === 20;
-                      return isPast || isBooked;
-                    }
-                    return isPast;
+                    const dateKey = format(date, "yyyy-MM-dd");
+                    const isBooked = bookedDates.includes(dateKey);
+                    return isPast || isBooked;
                   }}
                   className="p-3 pointer-events-auto"
                 />
@@ -265,8 +278,8 @@ export function BookingForm({
                       const maxDate = new Date(formData.checkIn);
                       maxDate.setDate(formData.checkIn.getDate() + 7);
                       
-                      const day = date.getDate();
-                      const isBooked = day === 15 || day === 16 || day === 20;
+                      const dateKey = format(date, "yyyy-MM-dd");
+                      const isBooked = bookedDates.includes(dateKey);
                       
                       return date < minDate || date > maxDate || isBooked;
                     }}

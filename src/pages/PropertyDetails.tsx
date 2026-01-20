@@ -319,10 +319,16 @@ const PropertyDetails = () => {
                   <Calendar
                     mode="single"
                     className="w-full bg-transparent"
+                    disabled={(date) => {
+                      const dateKey = format(date, 'yyyy-MM-dd');
+                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                      const isBooked = (propertyData as any).availability?.includes(dateKey);
+                      return isPast || isBooked;
+                    }}
                     classNames={{
                       day_today: "bg-[#C5A021] text-black",
                       day_selected: "bg-[#C5A021] text-black hover:bg-[#C5A021] hover:text-black",
-                      day_disabled: "text-gray-700 opacity-50 line-through",
+                      day_disabled: "text-red-500 opacity-50 line-through bg-red-500/10",
                     }}
                   />
                 </div>
