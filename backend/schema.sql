@@ -42,8 +42,20 @@ CREATE TABLE IF NOT EXISTS properties (
   schedule TEXT,
   availability TEXT,
   availability_calendar JSONB,
+  special_dates JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create availability_calendar table for real-time sync
+CREATE TABLE IF NOT EXISTS availability_calendar (
+  id SERIAL PRIMARY KEY,
+  property_id INTEGER NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  price VARCHAR(255),
+  is_booked BOOLEAN DEFAULT false,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(property_id, date)
 );
 
 -- Create property_images table
