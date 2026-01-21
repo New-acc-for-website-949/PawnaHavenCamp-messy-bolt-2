@@ -27,23 +27,24 @@ const OwnerRates = () => {
       try {
         const response = await fetch(`/api/properties/${id}`);
         const result = await response.json();
+        let currentProp = null;
         if (result.success) {
-          const prop = result.data;
+          currentProp = result.data;
           setRates({
-            weekday: prop.weekday_price || prop.price || '',
-            weekend: prop.weekend_price || '',
+            weekday: currentProp.weekday_price || currentProp.price || '',
+            weekend: currentProp.weekend_price || '',
           });
         }
 
         // Fetch special dates from availability_calendar
         const calResponse = await fetch(`/api/properties/${id}/calendar`);
         const calResult = await calResponse.json();
-        if (calResult.success) {
+        if (calResult.success && currentProp) {
           const customPrices = calResult.data
-            .filter((d: any) => d.price && d.price !== prop.weekday_price && d.price !== prop.weekend_price)
+            .filter((d: any) => d.price && d.price.toString() !== currentProp.weekday_price?.toString() && d.price.toString() !== currentProp.weekend_price?.toString())
             .map((d: any) => ({
               date: format(new Date(d.date), 'yyyy-MM-dd'),
-              price: d.price
+              price: d.price.toString()
             }));
           setSpecialDates(customPrices);
         }
@@ -177,18 +178,20 @@ const OwnerRates = () => {
 
             <div className="space-y-3">
               {specialDates.map((sd, index) => (
-                <div key={index} className="flex items-center space-x-2 bg-black/20 p-2 rounded-lg border border-[#D4AF37]/10">
-                  <Input 
-                    type="date" 
-                    className="bg-black/40 border-[#D4AF37]/20 text-white text-xs h-9" 
-                    value={sd.date}
-                    onChange={(e) => handleSpecialDateChange(index, 'date', e.target.value)}
-                  />
+                <div key={index} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-black/20 p-3 rounded-lg border border-[#D4AF37]/10">
+                  <div className="flex-1">
+                    <Input 
+                      type="date" 
+                      className="bg-black/40 border-[#D4AF37]/20 text-white text-xs h-10 w-full" 
+                      value={sd.date}
+                      onChange={(e) => handleSpecialDateChange(index, 'date', e.target.value)}
+                    />
+                  </div>
                   <div className="relative flex-1">
-                    <span className="absolute left-2 top-2 text-gray-400 text-xs">₹</span>
+                    <span className="absolute left-3 top-3 text-gray-400 text-xs">₹</span>
                     <Input 
                       type="text" 
-                      className="pl-5 bg-black/40 border-[#D4AF37]/20 text-white text-xs h-9" 
+                      className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white text-xs h-10 w-full" 
                       value={sd.price}
                       onChange={(e) => handleSpecialDateChange(index, 'price', e.target.value)}
                       placeholder="Price"
@@ -197,7 +200,7 @@ const OwnerRates = () => {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="text-red-500 hover:text-red-400 h-9 w-9"
+                    className="text-red-500 hover:text-red-400 h-10 w-10 self-end sm:self-auto"
                     onClick={() => handleRemoveSpecialDate(index)}
                   >
                     <Trash2 className="w-4 h-4" />
