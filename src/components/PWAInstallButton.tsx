@@ -61,22 +61,11 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
   }, []);
 
   const handleInstallClick = async () => {
-    if (isInstalled) {
-      // Logic for "View in App" - could be a deep link or just a toast
-      toast.info("Opening the app...");
-      // In a real PWA, this usually doesn't do much from the browser
-      // unless you have a custom protocol. For now, we show the state.
-      return;
-    }
+    if (isInstalled) return;
 
     if (!deferredPrompt) {
       if (isIOS) {
-        toast.info(
-          "To install: Tap the 'Share' button in Safari and select 'Add to Home Screen' 📲",
-          { duration: 6000 }
-        );
-      } else {
-        toast.error("The browser is not ready to install the app yet. Please wait a moment for the 'Install' prompt to become available from your browser's menu, or try refreshing. 🚀");
+        // Silent for iOS as requested - no toast
       }
       return;
     }
@@ -94,9 +83,17 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
     } catch (error) {
       console.error('PWA install error:', error);
       setIsInstalling(false);
-      toast.error("Installation failed. Please try via your browser menu.");
     }
   };
+
+  // Hide button if not ready and not iOS, or if already installed
+  if (!deferredPrompt && !isIOS && !isInstalling) {
+    return null;
+  }
+
+  if (isInstalled) {
+    return null;
+  }
 
   return (
     <Button 
