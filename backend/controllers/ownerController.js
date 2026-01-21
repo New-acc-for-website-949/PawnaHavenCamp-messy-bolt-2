@@ -1,4 +1,5 @@
-const { pool } = require('../db');
+const { pool, query } = require('../db');
+const { generateToken } = require('../utils/jwt');
 
 exports.registerOwner = async (req, res) => {
   const { propertyName, propertyId, propertyType, ownerName, ownerMobile } = req.body;
@@ -130,9 +131,12 @@ exports.verifyOTP = async (req, res) => {
       });
     }
 
+    const token = generateToken({ id: result.rows[0].id, mobile: mobileNumber, role: 'owner' });
+
     return res.status(200).json({
       success: true,
       message: 'Login successful!',
+      token,
       data: {
         ...result.rows[0],
         ownerNumber: result.rows[0].mobile_number,

@@ -128,10 +128,14 @@ const OwnerProfile = () => {
     setLoading(true);
     try {
       const propId = ownerData?.property_id || ownerData?.propertyId;
+      const token = localStorage.getItem('ownerToken');
       if (propId) {
         const response = await fetch(`/api/properties/update/${propId}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify(details)
         });
         const result = await response.json();

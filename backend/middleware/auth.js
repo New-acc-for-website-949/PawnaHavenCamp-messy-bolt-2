@@ -26,9 +26,10 @@ const authMiddleware = (req, res, next) => {
     }
 
     // Attach user info to request
-    req.admin = {
+    req.user = {
       id: decoded.id,
       email: decoded.email,
+      role: decoded.role || 'admin'
     };
 
     next();
