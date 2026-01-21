@@ -75,12 +75,12 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
   };
 
   return (
-    <div className="p-0 sm:p-4 bg-black/40 rounded-3xl border border-white/10 w-full overflow-hidden">
-      <div className="calendar-container w-full overflow-x-auto pb-4">
-        <div className="min-w-[320px] sm:min-w-full">
+    <div className="w-full">
+      <div className="calendar-container w-full overflow-x-visible">
+        <div className="w-full">
           <Calendar
             mode="single"
-            className="w-full p-0 sm:p-3"
+            className="w-full p-0"
             disabled={(date) => isBefore(startOfDay(date), startOfDay(new Date()))}
             onSelect={(date) => {
               if (date && isAdmin) {
@@ -98,13 +98,13 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
                 
                 return (
                   <div className={cn(
-                    "relative w-full h-full flex flex-col items-center justify-center p-0.5 sm:p-1 rounded-md transition-all select-none",
+                    "relative w-full h-full flex flex-col items-center justify-center p-0.5 rounded-md transition-all select-none",
                     isBooked ? "bg-[#FF0000] text-white" : "bg-[#00FF00] text-black",
                     isPast && "opacity-60 grayscale-[0.5]"
                   )}>
-                    <span className="text-[10px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
+                    <span className="text-[11px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
                     {price && (
-                      <span className="text-[7px] sm:text-[10px] font-black leading-none mt-0.5 sm:mt-1 scale-90 sm:scale-100 origin-center truncate w-full text-center px-0.5">
+                      <span className="text-[8px] sm:text-[10px] font-black leading-none mt-0.5 sm:mt-1 scale-90 sm:scale-100 origin-center truncate w-full text-center px-0.5">
                         {price.replace('₹', '').replace('/-', '').trim()}
                       </span>
                     )}
@@ -115,20 +115,20 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
             classNames={{
               months: "w-full",
               month: "w-full space-y-4",
-              caption: "flex justify-center pt-1 relative items-center mb-2 px-8",
-              caption_label: "text-sm sm:text-base font-bold text-[#D4AF37]",
+              caption: "flex justify-center pt-1 relative items-center mb-4 px-8",
+              caption_label: "text-base sm:text-lg font-bold text-[#D4AF37]",
               nav: "space-x-1 flex items-center",
               nav_button: cn(
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-[#D4AF37] border-[#D4AF37]/30"
+                "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 text-[#D4AF37] border-[#D4AF37]/30"
               ),
               nav_button_previous: "absolute left-1",
               nav_button_next: "absolute right-1",
               table: "w-full border-collapse",
-              head_row: "flex w-full mb-2",
-              head_cell: "text-gray-400 rounded-md flex-1 font-medium text-[10px] sm:text-xs uppercase tracking-wider text-center",
+              head_row: "flex w-full mb-3",
+              head_cell: "text-gray-400 rounded-md flex-1 font-bold text-[10px] sm:text-xs uppercase tracking-tighter text-center",
               row: "flex w-full mt-1",
-              cell: "flex-1 aspect-square h-auto relative p-0.5 sm:p-1 text-center text-sm focus-within:relative focus-within:z-20",
-              day: "h-full w-full p-0 font-normal aria-selected:opacity-100 hover:scale-95 transition-transform",
+              cell: "flex-1 aspect-square h-auto relative p-0.5 text-center text-sm focus-within:relative focus-within:z-20",
+              day: "h-full w-full p-0 font-normal aria-selected:opacity-100 transition-transform",
               day_today: "ring-1 sm:ring-2 ring-yellow-400 ring-offset-1 sm:ring-offset-2 ring-offset-black rounded-md",
               day_selected: "bg-transparent text-inherit hover:bg-transparent hover:text-inherit focus:bg-transparent focus:text-inherit",
               day_disabled: "opacity-50 cursor-not-allowed",
@@ -137,18 +137,6 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
           />
         </div>
       </div>
-      <style>{`
-        .calendar-container::-webkit-scrollbar {
-          height: 4px;
-        }
-        .calendar-container::-webkit-scrollbar-track {
-          background: rgba(212, 175, 55, 0.05);
-        }
-        .calendar-container::-webkit-scrollbar-thumb {
-          background: rgba(212, 175, 55, 0.2);
-          border-radius: 10px;
-        }
-      `}</style>
     </div>
   );
 };
