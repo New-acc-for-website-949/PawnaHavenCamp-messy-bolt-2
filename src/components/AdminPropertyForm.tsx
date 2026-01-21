@@ -531,7 +531,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
             { label: 'Amenities', field: 'amenities' as const, icon: Star },
             { label: 'Activities', field: 'activities' as const, icon: Sparkles },
             { label: 'Highlights', field: 'highlights' as const, icon: Star },
-            { label: 'Policies', field: 'policies' as const, icon: Clock },
+            { label: 'Rules & Policies', field: 'policies' as const, icon: Clock },
           ].map((section) => (
             <div key={section.field} className="glass rounded-2xl border border-border/50 p-6">
               <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">

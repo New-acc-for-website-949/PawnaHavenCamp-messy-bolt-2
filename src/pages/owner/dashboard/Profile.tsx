@@ -23,6 +23,13 @@ const OwnerProfile = () => {
     description: ''
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem('ownerToken');
+    localStorage.removeItem('ownerData');
+    toast.success('Logged out successfully');
+    navigate('/owner/login');
+  };
+
   const ownerDataString = localStorage.getItem('ownerData');
   const ownerData = ownerDataString ? JSON.parse(ownerDataString) : null;
 
@@ -238,19 +245,19 @@ const OwnerProfile = () => {
         </CardContent>
       </Card>
 
-      <div className="space-y-6">
+        <div className="space-y-6">
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">AMENITIES</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Amenities</Label>
           <TagList type="amenities" items={details.amenities} />
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">ACTIVITIES</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Activities</Label>
           <TagList type="activities" items={details.activities} />
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">What You'll Love</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Highlights</Label>
           <TagList type="highlights" items={details.highlights} />
         </div>
 
@@ -258,7 +265,7 @@ const OwnerProfile = () => {
         <div className="space-y-3">
           <Label className="text-sm font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            PROPERTY SCHEDULE
+            Property Schedule
           </Label>
           <div className="space-y-3">
             {(details.schedule || []).map((item, idx) => (
@@ -313,7 +320,7 @@ const OwnerProfile = () => {
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">DESCRIPTION</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Description</Label>
           <Textarea 
             className="bg-[#1A1A1A] border-[#D4AF37]/20 text-gray-200 focus:border-[#D4AF37] min-h-[100px]"
             value={details.description} 
