@@ -260,7 +260,9 @@ const updateProperty = async (req, res) => {
       price_note, price, special_dates 
     } = req.body;
 
-    console.log('Update payload received:', req.body);
+    console.log('Update property request received for ID:', id);
+    console.log('Update payload:', JSON.stringify(req.body, null, 2));
+
     const result = await query(`
       UPDATE properties 
       SET 
@@ -280,21 +282,25 @@ const updateProperty = async (req, res) => {
       WHERE property_id = $13 OR id::text = $13
       RETURNING *
     `, [
-      Array.isArray(amenities) ? JSON.stringify(amenities) : amenities, 
-      Array.isArray(activities) ? JSON.stringify(activities) : activities, 
-      Array.isArray(highlights) ? JSON.stringify(highlights) : highlights, 
-      Array.isArray(policies) ? JSON.stringify(policies) : policies, 
-      Array.isArray(schedule) ? JSON.stringify(schedule) : schedule, 
-      description,
-      Array.isArray(availability) ? JSON.stringify(availability) : availability,
+      Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || null), 
+      Array.isArray(activities) ? JSON.stringify(activities) : (activities || null), 
+      Array.isArray(highlights) ? JSON.stringify(highlights) : (highlights || null), 
+      Array.isArray(policies) ? JSON.stringify(policies) : (policies || null), 
+      Array.isArray(schedule) ? JSON.stringify(schedule) : (schedule || null), 
+      description || null,
+      Array.isArray(availability) ? JSON.stringify(availability) : (availability || null),
       weekday_price ? String(weekday_price) : null,
       weekend_price ? String(weekend_price) : null,
-      price_note,
-      price,
+      price_note || null,
+      price || null,
       Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || '[]'),
       id
     ]);
-    console.log('Update result rows:', result.rowCount);
+
+    console.log('Rows updated:', result.rowCount);
+    if (result.rows.length > 0) {
+      console.log('New column values - Weekday:', result.rows[0].weekday_price, 'Weekend:', result.rows[0].weekend_price);
+    }
 
     if (result.rows.length === 0) {
       return res.status(404).json({

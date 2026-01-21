@@ -87,7 +87,7 @@ const OwnerRates = () => {
       console.log('Saving rates with payload:', payload);
 
       // 1. Update base rates and special_dates
-      const response = await fetch(`/api/properties/${propertyId}`, {
+      const response = await fetch(`/api/properties/update/${propertyId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const OwnerRates = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update base rates');
+        throw new Error('Failed to update rates');
       }
 
       // 2. Update special dates in calendar for real-time sync
