@@ -31,6 +31,8 @@ interface AdminPropertyFormProps {
   onCancel: () => void;
 }
 
+import { CalendarSync } from "@/components/CalendarSync";
+
 const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -310,10 +312,10 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                 />
               </div>
 
-              {/* <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>Availability Calendar (Syncs with Owner Dashboard)</Label>
-                <CalendarSync propertyId={formData.property_id || property?.id} isAdmin={true} />
-              </div> */}
+                <CalendarSync propertyId={formData.property_id || property.id} isAdmin={true} />
+              </div>
 
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="title">Property Title *</Label>
