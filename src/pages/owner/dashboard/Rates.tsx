@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 const OwnerRates = () => {
   const [rates, setRates] = useState({
     weekday: '',
     weekend: '',
-    price_note: ''
   });
+  const [specialDates, setSpecialDates] = useState<{ date: string; price: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [propertyId, setPropertyId] = useState<string | null>(null);
 
@@ -30,8 +32,20 @@ const OwnerRates = () => {
           setRates({
             weekday: prop.weekday_price || prop.price || '',
             weekend: prop.weekend_price || '',
-            price_note: prop.price_note || ''
           });
+        }
+
+        // Fetch special dates from availability_calendar
+        const calResponse = await fetch(`/api/properties/${id}/calendar`);
+        const calResult = await calResponse.json();
+        if (calResult.success) {
+          const customPrices = calResult.data
+            .filter((d: any) => d.price && d.price !== prop.weekday_price && d.price !== prop.weekend_price)
+            .map((d: any) => ({
+              date: format(new Date(d.date), 'yyyy-MM-dd'),
+              price: d.price
+            }));
+          setSpecialDates(customPrices);
         }
       } catch (error) {
         console.error('Error fetching rates:', error);
@@ -42,12 +56,28 @@ const OwnerRates = () => {
     fetchRates();
   }, []);
 
+  const handleAddSpecialDate = () => {
+    setSpecialDates([...specialDates, { date: format(new Date(), 'yyyy-MM-dd'), price: '' }]);
+  };
+
+  const handleRemoveSpecialDate = (index: number) => {
+    setSpecialDates(specialDates.filter((_, i) => i !== index));
+  };
+
+  const handleSpecialDateChange = (index: number, field: 'date' | 'price', value: string) => {
+    const newSpecialDates = [...specialDates];
+    newSpecialDates[index][field] = value;
+    setSpecialDates(newSpecialDates);
+  };
+
   const handleSave = async () => {
     if (!propertyId) return;
     
     try {
       const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      const response = await fetch(`/api/properties/${propertyId}`, {
+      
+      // 1. Update base rates
+      await fetch(`/api/properties/${propertyId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -56,16 +86,29 @@ const OwnerRates = () => {
         body: JSON.stringify({
           weekday_price: rates.weekday,
           weekend_price: rates.weekend,
-          price_note: rates.price_note,
-          price: rates.weekday // Use weekday as base price
+          price: rates.weekday
         })
       });
-      
-      if (response.ok) {
-        toast.success('Rates updated successfully and synced with all calendars.');
-      } else {
-        toast.error('Failed to update rates.');
+
+      // 2. Update special dates in calendar
+      for (const sd of specialDates) {
+        if (sd.date && sd.price) {
+          await fetch(`/api/properties/${propertyId}/calendar`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              date: sd.date,
+              price: sd.price,
+              is_booked: false // Assuming special price means available
+            })
+          });
+        }
       }
+      
+      toast.success('Rates and Special Dates updated successfully.');
     } catch (error) {
       toast.error('Error updating rates.');
     }
@@ -79,45 +122,82 @@ const OwnerRates = () => {
       
       <Card className="glass border-[#D4AF37]/30 bg-black/40">
         <CardContent className="pt-6 space-y-4">
-          <div className="space-y-2">
-            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekday Price (Mon - Fri)</Label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
-              <Input 
-                type="text" 
-                className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
-                value={rates.weekday}
-                onChange={(e) => setRates({...rates, weekday: e.target.value})}
-                placeholder="e.g. 7499"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekday Price (Mon-Fri)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
+                <Input 
+                  type="text" 
+                  className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
+                  value={rates.weekday}
+                  onChange={(e) => setRates({...rates, weekday: e.target.value})}
+                  placeholder="e.g. 7499"
+                />
+              </div>
             </div>
-            <p className="text-[10px] text-gray-500 italic">* Automatically shows in calendar cells for weekdays.</p>
+
+            <div className="space-y-2">
+              <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekend Price (Sat-Sun)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
+                <Input 
+                  type="text" 
+                  className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
+                  value={rates.weekend}
+                  onChange={(e) => setRates({...rates, weekend: e.target.value})}
+                  placeholder="e.g. 8999"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekend Price (Sat - Sun)</Label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
-              <Input 
-                type="text" 
-                className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
-                value={rates.weekend}
-                onChange={(e) => setRates({...rates, weekend: e.target.value})}
-                placeholder="e.g. 8999"
-              />
+          <div className="pt-4 border-t border-[#D4AF37]/10">
+            <div className="flex items-center justify-between mb-4">
+              <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Special Date Prices</Label>
+              <Button 
+                onClick={handleAddSpecialDate}
+                variant="outline" 
+                size="sm"
+                className="h-8 border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10"
+              >
+                <Plus className="w-4 h-4 mr-1" /> Add Date
+              </Button>
             </div>
-            <p className="text-[10px] text-gray-500 italic">* Automatically shows in calendar cells for weekends.</p>
-          </div>
 
-          <div className="space-y-2">
-            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Price Note</Label>
-            <Input 
-              type="text" 
-              className="bg-black/60 border-[#D4AF37]/20 text-white" 
-              value={rates.price_note}
-              onChange={(e) => setRates({...rates, price_note: e.target.value})}
-              placeholder="e.g. per person with meals"
-            />
+            <div className="space-y-3">
+              {specialDates.map((sd, index) => (
+                <div key={index} className="flex items-center space-x-2 bg-black/20 p-2 rounded-lg border border-[#D4AF37]/10">
+                  <Input 
+                    type="date" 
+                    className="bg-black/40 border-[#D4AF37]/20 text-white text-xs h-9" 
+                    value={sd.date}
+                    onChange={(e) => handleSpecialDateChange(index, 'date', e.target.value)}
+                  />
+                  <div className="relative flex-1">
+                    <span className="absolute left-2 top-2 text-gray-400 text-xs">₹</span>
+                    <Input 
+                      type="text" 
+                      className="pl-5 bg-black/40 border-[#D4AF37]/20 text-white text-xs h-9" 
+                      value={sd.price}
+                      onChange={(e) => handleSpecialDateChange(index, 'price', e.target.value)}
+                      placeholder="Price"
+                    />
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-red-500 hover:text-red-400 h-9 w-9"
+                    onClick={() => handleRemoveSpecialDate(index)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              {specialDates.length === 0 && (
+                <p className="text-center text-[10px] text-gray-500 italic py-2">No special dates added.</p>
+              )}
+            </div>
           </div>
 
           <Button 
