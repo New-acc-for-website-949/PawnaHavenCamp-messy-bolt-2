@@ -76,20 +76,28 @@ const OwnerRates = () => {
     try {
       const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
       
+      const payload = {
+        weekday_price: rates.weekday,
+        weekend_price: rates.weekend,
+        price: rates.weekday,
+        special_dates: specialDates
+      };
+      
+      console.log('Saving rates with payload:', payload);
+
       // 1. Update base rates and special_dates
-      await fetch(`/api/properties/${propertyId}`, {
+      const response = await fetch(`/api/properties/${propertyId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          weekday_price: rates.weekday,
-          weekend_price: rates.weekend,
-          price: rates.weekday,
-          special_dates: specialDates
-        })
+        body: JSON.stringify(payload)
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to update base rates');
+      }
 
       // 2. Update special dates in calendar for real-time sync
       for (const sd of specialDates) {
@@ -111,6 +119,7 @@ const OwnerRates = () => {
       
       toast.success('Rates and Special Dates updated successfully.');
     } catch (error) {
+      console.error('Error in handleSave:', error);
       toast.error('Error updating rates.');
     }
   };
