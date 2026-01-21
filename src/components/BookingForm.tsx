@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Users, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PaytmPaymentService } from "@/lib/paytmPayment";
-import { CalendarSync } from "@/components/CalendarSync";
 import {
   Accordion,
   AccordionContent,
@@ -230,13 +230,20 @@ export function BookingForm({
                   <span className="truncate">{formData.checkIn ? format(formData.checkIn, "MMM d") : "Date"}</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 border-[#D4AF37]/20" align="start">
-                <div className="w-[320px] sm:w-[400px]">
-                  <CalendarSync 
-                    propertyId={propertyId} 
-                    onDateSelect={handleCheckInSelect}
-                  />
-                </div>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.checkIn}
+                  onSelect={handleCheckInSelect}
+                  initialFocus
+                  disabled={(date) => {
+                    const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                    const dateKey = format(date, "yyyy-MM-dd");
+                    const isBooked = bookedDates.includes(dateKey);
+                    return isPast || isBooked;
+                  }}
+                  className="p-3 pointer-events-auto"
+                />
               </PopoverContent>
             </Popover>
           </div>
@@ -256,16 +263,29 @@ export function BookingForm({
                     <span className="truncate">{formData.checkOut ? format(formData.checkOut, "MMM d") : "Date"}</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 border-[#D4AF37]/20" align="end">
-                  <div className="w-[320px] sm:w-[400px]">
-                    <CalendarSync 
-                      propertyId={propertyId} 
-                      onDateSelect={(date) => {
-                        setFormData({ ...formData, checkOut: date });
-                        setIsCheckOutOpen(false);
-                      }}
-                    />
-                  </div>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={formData.checkOut}
+                    onSelect={(date) => {
+                      setFormData({ ...formData, checkOut: date });
+                      setIsCheckOutOpen(false);
+                    }}
+                    disabled={(date) => {
+                      if (!formData.checkIn) return true;
+                      const minDate = new Date(formData.checkIn);
+                      minDate.setDate(formData.checkIn.getDate() + 1);
+                      const maxDate = new Date(formData.checkIn);
+                      maxDate.setDate(formData.checkIn.getDate() + 7);
+                      
+                      const dateKey = format(date, "yyyy-MM-dd");
+                      const isBooked = bookedDates.includes(dateKey);
+                      
+                      return date < minDate || date > maxDate || isBooked;
+                    }}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
                 </PopoverContent>
               </Popover>
             ) : (

@@ -318,8 +318,8 @@ const PropertyDetails = () => {
                   View Calendar
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[450px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20 p-2">
-                <div className="p-0">
+              <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
+                <div className="p-4">
                   <CalendarSync propertyId={propertyData.property_id || propertyData.id} />
                 </div>
               </DialogContent>
