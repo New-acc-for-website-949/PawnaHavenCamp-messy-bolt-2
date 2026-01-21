@@ -237,13 +237,6 @@ const getPropertyById = async (req, res) => {
       images: result.rows[0].images || [],
     };
 
-    console.log('Sending property data to owner dashboard:', { 
-      id: property.id, 
-      property_id: property.property_id,
-      amenitiesCount: property.amenities.length,
-      activitiesCount: property.activities.length
-    });
-
     return res.status(200).json({
       success: true,
       data: property,
@@ -261,29 +254,37 @@ const getPropertyById = async (req, res) => {
 const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amenities, activities, highlights, policies, schedule, description, availability } = req.body;
+    const { amenities, activities, highlights, policies, schedule, description, availability, weekday_price, weekend_price, price_note, price } = req.body;
 
     const result = await query(`
       UPDATE properties 
       SET 
-        amenities = $1, 
-        activities = $2, 
-        highlights = $3, 
-        policies = $4, 
-        schedule = $5, 
-        description = $6,
-        availability = $7,
+        amenities = COALESCE($1, amenities), 
+        activities = COALESCE($2, activities), 
+        highlights = COALESCE($3, highlights), 
+        policies = COALESCE($4, policies), 
+        schedule = COALESCE($5, schedule), 
+        description = COALESCE($6, description),
+        availability = COALESCE($7, availability),
+        weekday_price = COALESCE($8, weekday_price),
+        weekend_price = COALESCE($9, weekend_price),
+        price_note = COALESCE($10, price_note),
+        price = COALESCE($11, price),
         updated_at = CURRENT_TIMESTAMP
-      WHERE property_id = $8 OR id::text = $8
+      WHERE property_id = $12 OR id::text = $12
       RETURNING *
     `, [
-      Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || '[]'), 
-      Array.isArray(activities) ? JSON.stringify(activities) : (activities || '[]'), 
-      Array.isArray(highlights) ? JSON.stringify(highlights) : (highlights || '[]'), 
-      Array.isArray(policies) ? JSON.stringify(policies) : (policies || '[]'), 
-      Array.isArray(schedule) ? JSON.stringify(schedule) : (schedule || '[]'), 
+      Array.isArray(amenities) ? JSON.stringify(amenities) : amenities, 
+      Array.isArray(activities) ? JSON.stringify(activities) : activities, 
+      Array.isArray(highlights) ? JSON.stringify(highlights) : highlights, 
+      Array.isArray(policies) ? JSON.stringify(policies) : policies, 
+      Array.isArray(schedule) ? JSON.stringify(schedule) : schedule, 
       description,
-      Array.isArray(availability) ? JSON.stringify(availability) : (availability || '[]'),
+      Array.isArray(availability) ? JSON.stringify(availability) : availability,
+      weekday_price,
+      weekend_price,
+      price_note,
+      price,
       id
     ]);
 
@@ -377,6 +378,8 @@ const createProperty = async (req, res) => {
       location,
       rating,
       price,
+      weekday_price,
+      weekend_price,
       price_note,
       capacity,
       max_capacity,
@@ -429,10 +432,10 @@ const createProperty = async (req, res) => {
     // Insert property
     const propertyResult = await client.query(
       `INSERT INTO properties (
-        title, slug, property_id, description, category, location, rating, price, price_note,
+        title, slug, property_id, description, category, location, rating, price, weekday_price, weekend_price, price_note,
         capacity, max_capacity, check_in_time, check_out_time, status, is_top_selling, is_active, is_available,
         contact, owner_name, owner_mobile, map_link, amenities, activities, highlights, policies, schedule, availability, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, CURRENT_TIMESTAMP)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, CURRENT_TIMESTAMP)
       RETURNING *`,
       [
         title,
@@ -443,6 +446,8 @@ const createProperty = async (req, res) => {
         location,
         rating || 4.5,
         price,
+        weekday_price,
+        weekend_price,
         price_note,
         capacity,
         max_capacity || capacity,

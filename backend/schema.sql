@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS properties (
   location VARCHAR(255) NOT NULL,
   rating DECIMAL(2,1) DEFAULT 4.5 CHECK (rating >= 0 AND rating <= 5),
   price VARCHAR(50) NOT NULL,
+  weekday_price VARCHAR(50),
+  weekend_price VARCHAR(50),
   price_note VARCHAR(255) NOT NULL,
   capacity INTEGER NOT NULL,
   max_capacity INTEGER,

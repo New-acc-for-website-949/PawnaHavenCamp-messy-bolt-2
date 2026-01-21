@@ -3,30 +3,34 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const OwnerRates = () => {
   const [rates, setRates] = useState({
-    weekday: '1499',
-    weekend: '3999'
+    weekday: '',
+    weekend: '',
+    price_note: ''
   });
   const [loading, setLoading] = useState(true);
+  const [propertyId, setPropertyId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRates = async () => {
       const ownerDataString = localStorage.getItem('ownerData');
       if (!ownerDataString) return;
       const ownerData = JSON.parse(ownerDataString);
+      const id = ownerData.property_id || ownerData.propertyId;
+      setPropertyId(id);
 
       try {
-        const response = await fetch(`/api/properties/${ownerData.property_id}`);
+        const response = await fetch(`/api/properties/${id}`);
         const result = await response.json();
         if (result.success) {
           const prop = result.data;
           setRates({
-            weekday: prop.price?.toString() || '1499',
-            weekend: (Math.round(prop.price * 1.5))?.toString() || '3999'
+            weekday: prop.weekday_price || prop.price || '',
+            weekend: prop.weekend_price || '',
+            price_note: prop.price_note || ''
           });
         }
       } catch (error) {
@@ -38,127 +42,92 @@ const OwnerRates = () => {
     fetchRates();
   }, []);
 
-  const [customRates, setCustomRates] = useState<{ id: string, date: string, price: string }[]>([]);
-
-  if (loading) return <div className="p-8 text-center text-gold">Loading rates...</div>;
-
-  const handleSave = () => {
-    localStorage.setItem('propertyRates', JSON.stringify({ rates, customRates }));
-    // Dispatch storage event manually for same-page updates in Main.tsx
-    window.dispatchEvent(new Event('storage'));
-    toast.success('Rates updated successfully');
+  const handleSave = async () => {
+    if (!propertyId) return;
+    
+    try {
+      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
+      const response = await fetch(`/api/properties/${propertyId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          weekday_price: rates.weekday,
+          weekend_price: rates.weekend,
+          price_note: rates.price_note,
+          price: rates.weekday // Use weekday as base price
+        })
+      });
+      
+      if (response.ok) {
+        toast.success('Rates updated successfully and synced with all calendars.');
+      } else {
+        toast.error('Failed to update rates.');
+      }
+    } catch (error) {
+      toast.error('Error updating rates.');
+    }
   };
 
-  const addSpecialDate = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setCustomRates([...customRates, { id: Math.random().toString(36).substr(2, 9), date: today, price: '0' }]);
-  };
-
-  const removeSpecialDate = (id: string) => {
-    setCustomRates(customRates.filter(r => r.id !== id));
-  };
+  if (loading) return <div className="p-8 text-center text-[#D4AF37]">Loading rates...</div>;
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-[#D4AF37]">Prices / Rates</h2>
-
-      <Card className="bg-[#1A1A1A] border-[#D4AF37]/20">
-        <CardHeader>
-          <CardTitle className="text-sm text-[#D4AF37]">Base Rates</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="space-y-6 max-w-2xl mx-auto px-4 sm:px-0">
+      <h1 className="text-2xl font-bold text-[#D4AF37] font-display">Manage Prices & Rates</h1>
+      
+      <Card className="glass border-[#D4AF37]/30 bg-black/40">
+        <CardContent className="pt-6 space-y-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">Weekday Rate (Mon–Fri)</Label>
+            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekday Price (Mon - Fri)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">₹</span>
+              <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
               <Input 
-                className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
-                type="number" 
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={rates.weekday} 
-                onChange={e => setRates({...rates, weekday: e.target.value})}
+                type="text" 
+                className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
+                value={rates.weekday}
+                onChange={(e) => setRates({...rates, weekday: e.target.value})}
+                placeholder="e.g. 7499"
               />
             </div>
+            <p className="text-[10px] text-gray-500 italic">* Automatically shows in calendar cells for weekdays.</p>
           </div>
+
           <div className="space-y-2">
-            <Label className="text-gray-300">Weekend Rate (Sat–Sun)</Label>
+            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Weekend Price (Sat - Sun)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">₹</span>
+              <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
               <Input 
-                className="pl-7 bg-black/40 border-[#D4AF37]/20 text-white focus:border-[#D4AF37]" 
-                type="number" 
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={rates.weekend} 
-                onChange={e => setRates({...rates, weekend: e.target.value})}
+                type="text" 
+                className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white" 
+                value={rates.weekend}
+                onChange={(e) => setRates({...rates, weekend: e.target.value})}
+                placeholder="e.g. 8999"
               />
             </div>
+            <p className="text-[10px] text-gray-500 italic">* Automatically shows in calendar cells for weekends.</p>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card className="bg-[#1A1A1A] border-[#D4AF37]/20">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm text-[#D4AF37]">Special Date Prices</CardTitle>
+          <div className="space-y-2">
+            <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Price Note</Label>
+            <Input 
+              type="text" 
+              className="bg-black/60 border-[#D4AF37]/20 text-white" 
+              value={rates.price_note}
+              onChange={(e) => setRates({...rates, price_note: e.target.value})}
+              placeholder="e.g. per person with meals"
+            />
+          </div>
+
           <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={addSpecialDate}
-            className="h-7 text-[10px] border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10"
+            className="w-full bg-[#D4AF37] hover:bg-[#B8962E] text-black font-bold mt-4 h-12 rounded-xl"
+            onClick={handleSave}
           >
-            <Plus className="w-3 h-3 mr-1" /> Add Date
+            Update Rates & Sync Calendars
           </Button>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {customRates.map((cr) => (
-            <div key={cr.id} className="flex items-center space-x-2">
-              <Input 
-                type="date" 
-                className="flex-1 bg-black/40 border-[#D4AF37]/20 text-white h-8 text-xs" 
-                value={cr.date}
-                onChange={e => {
-                  const newRates = [...customRates];
-                  const index = newRates.findIndex(r => r.id === cr.id);
-                  newRates[index].date = e.target.value;
-                  setCustomRates(newRates);
-                }}
-              />
-              <div className="w-24 relative">
-                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[#D4AF37] text-xs">₹</span>
-                <Input 
-                  className="pl-5 h-8 text-sm bg-black/40 border-[#D4AF37]/20 text-white" 
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={cr.price} 
-                  onChange={e => {
-                    const newRates = [...customRates];
-                    const index = newRates.findIndex(r => r.id === cr.id);
-                    newRates[index].price = e.target.value;
-                    setCustomRates(newRates);
-                  }}
-                />
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-red-400 hover:text-red-300"
-                onClick={() => removeSpecialDate(cr.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-          {customRates.length === 0 && (
-            <p className="text-center text-xs text-gray-500 py-4">No special dates added</p>
-          )}
         </CardContent>
       </Card>
-
-      <Button onClick={handleSave} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold h-12 shadow-xl mt-4">
-        Save Rates
-      </Button>
     </div>
   );
 };

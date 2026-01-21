@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar } from "@/components/ui/calendar";
-import { format, isBefore, startOfDay } from "date-fns";
+import { format, isBefore, startOfDay, isWeekend } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,11 @@ interface CalendarSyncProps {
 
 export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: CalendarSyncProps) => {
   const [calendarData, setCalendarData] = useState<any[]>([]);
-  const [propertyPrice, setPropertyPrice] = useState<string>("");
+  const [propertyPrices, setPropertyPrices] = useState<{
+    base: string;
+    weekday: string;
+    weekend: string;
+  }>({ base: "", weekday: "", weekend: "" });
   const [loading, setLoading] = useState(true);
 
   const fetchCalendar = async () => {
@@ -24,11 +28,15 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
         setCalendarData(result.data);
       }
       
-      // Fetch property details for base price
+      // Fetch property details for pricing settings
       const propResponse = await fetch(`/api/properties/${propertyId}`);
       const propResult = await propResponse.json();
       if (propResult.success) {
-        setPropertyPrice(propResult.data.price);
+        setPropertyPrices({
+          base: propResult.data.price,
+          weekday: propResult.data.weekday_price || propResult.data.price,
+          weekend: propResult.data.weekend_price || propResult.data.price
+        });
       }
     } catch (error) {
       console.error("Failed to fetch calendar:", error);
@@ -41,12 +49,20 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
     if (propertyId) fetchCalendar();
   }, [propertyId]);
 
+  const getPriceForDate = (date: Date) => {
+    const data = getDayData(date);
+    if (data?.price) return data.price;
+    return isWeekend(date) ? propertyPrices.weekend : propertyPrices.weekday;
+  };
+
   const handleUpdate = async (date: Date, isBooked: boolean) => {
     if (!isAdmin) return;
     if (isBefore(startOfDay(date), startOfDay(new Date()))) return;
     
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const price = getPriceForDate(date);
+      
       const response = await fetch(`/api/properties/${propertyId}/calendar`, {
         method: 'PUT',
         headers: {
@@ -56,7 +72,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
         body: JSON.stringify({
           date: format(date, 'yyyy-MM-dd'),
           is_booked: isBooked,
-          price: propertyPrice
+          price: price
         })
       });
       
@@ -93,7 +109,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
               DayContent: ({ date }) => {
                 const data = getDayData(date);
                 const isBooked = data?.is_booked;
-                const price = data?.price || propertyPrice;
+                const price = getPriceForDate(date);
                 const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
                 
                 return (
