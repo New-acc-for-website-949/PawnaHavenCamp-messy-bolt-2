@@ -314,7 +314,10 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
 
               <div className="space-y-2 md:col-span-2">
                 <Label>Availability Calendar (Syncs with Owner Dashboard)</Label>
-                <CalendarSync propertyId={formData.property_id || property.id} isAdmin={true} />
+                {property && (
+                  <CalendarSync propertyId={property.property_id || property.id} isAdmin={true} />
+                )}
+                {!property && <p className="text-sm text-muted-foreground italic">Save the property first to enable calendar sync.</p>}
               </div>
 
               <div className="space-y-2 md:col-span-2">

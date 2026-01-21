@@ -16,6 +16,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
 
   const fetchCalendar = async () => {
     try {
+      if (!propertyId || propertyId === 'Generating...') return;
       const response = await fetch(`/api/properties/${propertyId}/calendar`);
       const result = await response.json();
       if (result.success) {
