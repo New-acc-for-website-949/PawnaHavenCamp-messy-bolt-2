@@ -257,7 +257,7 @@ const OwnerProfile = () => {
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Highlights</Label>
+          <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Highlights (What You'll Love)</Label>
           <TagList type="highlights" items={details.highlights} />
         </div>
 

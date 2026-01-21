@@ -530,7 +530,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
           {[
             { label: 'Amenities', field: 'amenities' as const, icon: Star },
             { label: 'Activities', field: 'activities' as const, icon: Sparkles },
-            { label: 'Highlights', field: 'highlights' as const, icon: Star },
+            { label: 'Highlights (What You\'ll Love)', field: 'highlights' as const, icon: Star },
             { label: 'Rules & Policies', field: 'policies' as const, icon: Clock },
           ].map((section) => (
             <div key={section.field} className="glass rounded-2xl border border-border/50 p-6">
@@ -693,6 +693,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="min-h-[150px] bg-secondary/50 rounded-xl resize-none"
+              placeholder="Provide a detailed description of the property..."
               required
             />
           </div>
