@@ -62,6 +62,7 @@ const OwnerLogin = () => {
 
       if (data.success) {
         localStorage.setItem('ownerLoggedIn', 'true');
+        localStorage.setItem('ownerToken', data.token);
         localStorage.setItem('ownerData', JSON.stringify(data.data));
         toast.success('Login successful!');
         navigate('/owner/dashboard');
