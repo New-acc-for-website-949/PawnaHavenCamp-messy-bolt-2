@@ -76,7 +76,7 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
           { duration: 6000 }
         );
       } else {
-        toast.error("Installation prompt not ready. Please wait a few seconds for the browser to load the app fully and try again. 🚀");
+        toast.error("The browser is not ready to install the app yet. Please wait a moment for the 'Install' prompt to become available from your browser's menu, or try refreshing. 🚀");
       }
       return;
     }
@@ -89,9 +89,8 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
       
       if (outcome === 'accepted') {
         setDeferredPrompt(null);
-      } else {
-        setIsInstalling(false);
       }
+      setIsInstalling(false);
     } catch (error) {
       console.error('PWA install error:', error);
       setIsInstalling(false);
