@@ -65,7 +65,7 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
 
     if (!deferredPrompt) {
       if (isIOS) {
-        // Silent for iOS as requested - no toast
+        // Silent for iOS
       }
       return;
     }
@@ -85,11 +85,6 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
       setIsInstalling(false);
     }
   };
-
-  // Hide button if not ready and not iOS, or if already installed
-  if (!deferredPrompt && !isIOS && !isInstalling) {
-    return null;
-  }
 
   if (isInstalled) {
     return null;
