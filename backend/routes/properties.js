@@ -42,4 +42,8 @@ router.post('/upload-image', authMiddleware, upload.single('image'), (req, res) 
 router.get('/settings/categories', authMiddleware, propertyController.getCategorySettings);
 router.put('/settings/categories/:category', authMiddleware, propertyController.updateCategorySettings);
 
+// Calendar routes
+router.get('/:id/calendar', propertyController.getCalendarData);
+router.put('/:id/calendar', authMiddleware, propertyController.updateCalendarData);
+
 module.exports = router;

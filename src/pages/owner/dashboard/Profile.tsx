@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import PWAInstallButton from '@/components/owner/pwa/PWAInstallButton';
 import { propertyAPI } from '@/lib/api';
 
+import { CalendarSync } from "@/components/CalendarSync";
+
 const OwnerProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -248,6 +250,12 @@ const OwnerProfile = () => {
           </div>
         </CardContent>
       </Card>
+
+      <div className="glass rounded-3xl p-6 border border-[#D4AF37]/30">
+        <h3 className="text-xl font-bold text-[#D4AF37] mb-4">Availability Calendar</h3>
+        <p className="text-xs text-gray-400 mb-4 italic">* Click on a date to toggle its booking status. This will update on the website and admin panel instantly.</p>
+        <CalendarSync propertyId={ownerData?.property_id || ownerData?.propertyId} isAdmin={true} />
+      </div>
 
         <div className="space-y-6">
         <div className="space-y-3">

@@ -581,6 +581,48 @@ const togglePropertyStatus = async (req, res) => {
   }
 };
 
+// Get calendar data for a property
+const getCalendarData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await query(
+      'SELECT date, price, is_booked FROM availability_calendar WHERE property_id = (SELECT id FROM properties WHERE property_id = $1 OR id::text = $1)',
+      [id]
+    );
+    return res.status(200).json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Get calendar data error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch calendar data.' });
+  }
+};
+
+// Update calendar data for a property
+const updateCalendarData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, price, is_booked } = req.body;
+
+    await query(
+      `INSERT INTO availability_calendar (property_id, date, price, is_booked, updated_at)
+       VALUES ((SELECT id FROM properties WHERE property_id = $1 OR id::text = $1), $2, $3, $4, CURRENT_TIMESTAMP)
+       ON CONFLICT (property_id, date) 
+       DO UPDATE SET price = EXCLUDED.price, is_booked = EXCLUDED.is_booked, updated_at = CURRENT_TIMESTAMP`,
+      [id, date, price, is_booked]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Calendar updated successfully.'
+    });
+  } catch (error) {
+    console.error('Update calendar data error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update calendar.' });
+  }
+};
+
 module.exports = {
   getAllProperties,
   getPublicProperties,
@@ -591,5 +633,7 @@ module.exports = {
   deleteProperty,
   togglePropertyStatus,
   getCategorySettings,
-  updateCategorySettings
+  updateCategorySettings,
+  getCalendarData,
+  updateCalendarData
 };

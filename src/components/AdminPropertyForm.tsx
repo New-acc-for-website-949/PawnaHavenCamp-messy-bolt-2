@@ -31,6 +31,8 @@ interface AdminPropertyFormProps {
   onCancel: () => void;
 }
 
+import { CalendarSync } from "@/components/CalendarSync";
+
 const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -311,35 +313,8 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label>Availability Calendar (Booked Dates)</Label>
-                <div className="bg-secondary/20 rounded-2xl p-6 border border-border/50">
-                  <p className="text-xs text-muted-foreground mb-4 italic">
-                    * Select dates below to mark them as BOOKED. These will be editable by both admin and owner.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {/* Simplified Date Selection for Fast Mode - in real app would use a DatePicker */}
-                    <Input 
-                      type="date"
-                      className="h-10 bg-background"
-                      onChange={(e) => {
-                        if (e.target.value && !formData.availability.includes(e.target.value)) {
-                          setFormData(prev => ({ ...prev, availability: [...prev.availability, e.target.value] }));
-                        }
-                      }}
-                    />
-                    <div className="flex flex-wrap gap-2 mt-2 col-span-full">
-                      {formData.availability.map(date => (
-                        <Badge key={date} variant="secondary" className="gap-1 px-2 py-1 bg-red-500/10 text-red-500 border-red-500/20">
-                          {date}
-                          <Trash2 
-                            className="w-3 h-3 cursor-pointer hover:text-red-700" 
-                            onClick={() => setFormData(prev => ({ ...prev, availability: prev.availability.filter(d => d !== date) }))}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <Label>Availability Calendar (Syncs with Owner Dashboard)</Label>
+                <CalendarSync propertyId={formData.property_id || property.id} isAdmin={true} />
               </div>
 
               <div className="space-y-2 md:col-span-2">

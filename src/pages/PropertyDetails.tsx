@@ -95,7 +95,10 @@ interface PropertyDetail {
   owner_mobile?: string;
   map_link?: string;
   is_available: boolean;
+  property_id: string;
 }
+
+import { CalendarSync } from "@/components/CalendarSync";
 
 const PropertyDetails = () => {
   const { propertyId } = useParams();
@@ -317,21 +320,7 @@ const PropertyDetails = () => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
                 <div className="p-4">
-                  <Calendar
-                    mode="single"
-                    className="w-full bg-transparent"
-                    disabled={(date) => {
-                      const dateKey = format(date, 'yyyy-MM-dd');
-                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
-                      const isBooked = (propertyData as any).availability?.includes(dateKey);
-                      return isPast || isBooked;
-                    }}
-                    classNames={{
-                      day_today: "bg-[#C5A021] text-black",
-                      day_selected: "bg-[#C5A021] text-black hover:bg-[#C5A021] hover:text-black",
-                      day_disabled: "text-red-500 opacity-50 line-through bg-red-500/10",
-                    }}
-                  />
+                  <CalendarSync propertyId={propertyData.property_id || propertyData.id} />
                 </div>
               </DialogContent>
             </Dialog>
