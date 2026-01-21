@@ -5,9 +5,10 @@ import Destinations from "@/components/Destinations";
 import Properties from "@/components/Properties";
 import FloatingContact from "@/components/FloatingContact";
 import Footer from "@/components/Footer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Loader2, Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Index = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -22,34 +23,53 @@ const Index = () => {
       setShowInstallBanner(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    const handleAppInstalled = () => {
+      console.log('App was installed');
+      setDeferredPrompt(null);
+      setShowInstallBanner(false);
+      toast.success("App installed successfully! Check your home screen.");
+    };
 
-    // Also check if already installed
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setShowInstallBanner(false);
     }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = useCallback(async () => {
     if (!deferredPrompt) {
       console.log('No deferredPrompt available');
+      // If no prompt, it might be iOS or already handled by browser
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      if (isIOS) {
+        toast.info("To install on iOS: Tap 'Share' and then 'Add to Home Screen' 📲");
+      } else {
+        toast.info("Installation is being prepared by your browser. Please try again in a moment or check your browser menu. 🚀");
+      }
       return;
     }
     
-    // Show the native browser install prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
-    
-    setDeferredPrompt(null);
-    setShowInstallBanner(false);
-  };
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        setShowInstallBanner(false);
+      }
+    } catch (err) {
+      console.error("Installation error:", err);
+      toast.error("Could not launch installation. Please use your browser's 'Install' or 'Add to Home Screen' menu option.");
+    }
+  }, [deferredPrompt]);
 
   const handleCloseBanner = () => {
     setShowInstallBanner(false);
