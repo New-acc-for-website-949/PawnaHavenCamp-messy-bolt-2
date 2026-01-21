@@ -158,9 +158,9 @@ const PropertyDetails = () => {
     }
   }, [fetchedData]);
 
-  if (isLoading) {
+  if (isLoading && !propertyData) {
     return (
-      <div className="container mx-auto px-6 py-12 space-y-8">
+      <div className="container mx-auto px-6 py-12 space-y-8 bg-[#0A0A0A] min-h-screen">
         <Skeleton className="h-[400px] w-full rounded-3xl" />
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-6">
