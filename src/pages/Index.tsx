@@ -46,28 +46,27 @@ const Index = () => {
   const handleInstallClick = useCallback(async () => {
     if (!deferredPrompt) {
       console.log('No deferredPrompt available');
-      // If no prompt, it might be iOS or already handled by browser
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
-        toast.info("To install on iOS: Tap 'Share' and then 'Add to Home Screen' 📲");
+        toast.info("To install: Tap 'Share' then 'Add to Home Screen' 📲");
       } else {
-        toast.info("Installation is being prepared by your browser. Please try again in a moment or check your browser menu. 🚀");
+        toast.info("Preparing direct installation... Please ensure you are using Chrome or Samsung Internet. 🚀");
       }
       return;
     }
     
     try {
-      await deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
+      // Force immediate trigger of the native prompt
+      const promptEvent = deferredPrompt;
+      setDeferredPrompt(null);
+      setShowInstallBanner(false);
       
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-        setShowInstallBanner(false);
-      }
+      await promptEvent.prompt();
+      const { outcome } = await promptEvent.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
     } catch (err) {
       console.error("Installation error:", err);
-      toast.error("Could not launch installation. Please use your browser's 'Install' or 'Add to Home Screen' menu option.");
+      toast.error("Install via your browser's 'Add to Home Screen' menu.");
     }
   }, [deferredPrompt]);
 
