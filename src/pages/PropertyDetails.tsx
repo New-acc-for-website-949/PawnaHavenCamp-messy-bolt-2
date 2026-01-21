@@ -47,6 +47,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 // Helper for mapping icons
 const getIcon = (amenity: string) => {
@@ -100,66 +101,64 @@ interface PropertyDetail {
 const PropertyDetails = () => {
   const { propertyId } = useParams();
   const [propertyData, setPropertyData] = useState<PropertyDetail | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-
-    const fetchProperty = async () => {
-      try {
-        if (!propertyId) return;
-        const response = await propertyAPI.getPublicBySlug(propertyId);
-        if (response.success) {
-          const p = response.data;
-          console.log("Property Raw Data:", JSON.stringify(p, null, 2));
-          let mappedImages: string[] = [];
-          
-          if (p.images && Array.isArray(p.images) && p.images.length > 0) {
-            mappedImages = p.images.map((img: any) => {
-              if (typeof img === 'string') return img;
-              let url = img.image_url || img.url || "";
-              if (url && url.startsWith('attached_assets/')) {
-                // Ensure correct relative path for images in both dev and prod
-                url = '/' + url;
-              }
-              return url;
-            }).filter(Boolean);
-          }
-          
-          if (mappedImages.length === 0 && p.image) {
-            let url = p.image;
+  const { data: fetchedData, isLoading } = useQuery({
+    queryKey: ['property', propertyId],
+    queryFn: async () => {
+      if (!propertyId) return null;
+      const response = await propertyAPI.getPublicBySlug(propertyId);
+      if (response.success) {
+        const p = response.data;
+        let mappedImages: string[] = [];
+        
+        if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+          mappedImages = p.images.map((img: any) => {
+            if (typeof img === 'string') return img;
+            let url = img.image_url || img.url || "";
             if (url && url.startsWith('attached_assets/')) {
               url = '/' + url;
             }
-            mappedImages = [url];
-          }
-          
-          if (mappedImages.length === 0) {
-            mappedImages = ["https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"];
-          }
-          
-          console.log("Mapped Images for Slider:", mappedImages);
-
-          setPropertyData({
-            ...p,
-            images: mappedImages,
-            priceNote: p.price_note,
-            is_available: p.is_available,
-            map_link: p.map_link,
-            image: mappedImages[0]
-          });
+            return url;
+          }).filter(Boolean);
         }
-      } catch (error) {
-        console.error("Failed to fetch property details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        
+        if (mappedImages.length === 0 && p.image) {
+          let url = p.image;
+          if (url && url.startsWith('attached_assets/')) {
+            url = '/' + url;
+          }
+          mappedImages = [url];
+        }
+        
+        if (mappedImages.length === 0) {
+          mappedImages = ["https://images.unsplash.com/photo-1571508601166-972e0a1f3ced?w=1200"];
+        }
 
-    fetchProperty();
+        return {
+          ...p,
+          images: mappedImages,
+          priceNote: p.price_note,
+          is_available: p.is_available,
+          map_link: p.map_link,
+          image: mappedImages[0]
+        };
+      }
+      return null;
+    },
+    enabled: !!propertyId,
+  });
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [propertyId]);
 
-  if (loading) {
+  useEffect(() => {
+    if (fetchedData) {
+      setPropertyData(fetchedData);
+    }
+  }, [fetchedData]);
+
+  if (isLoading) {
     return (
       <div className="container mx-auto px-6 py-12 space-y-8">
         <Skeleton className="h-[400px] w-full rounded-3xl" />

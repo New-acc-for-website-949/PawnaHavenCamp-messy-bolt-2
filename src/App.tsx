@@ -8,9 +8,11 @@ import { HelmetProvider } from "react-helmet-async";
 import ScrollRestoration from "./components/ScrollRestoration";
 import LogoLoader from "./components/LogoLoader";
 
-// Lazy load pages for transition effect
-const Index = lazy(() => import("./pages/Index"));
-const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
+// Import core pages directly for instant routing
+import Index from "./pages/Index";
+import PropertyDetails from "./pages/PropertyDetails";
+
+// Lazy load other pages
 const VideoGallery = lazy(() => import("./pages/VideoGallery"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -32,26 +34,21 @@ const OwnerMain = lazy(() => import("./pages/owner/dashboard/Main"));
 const OwnerRates = lazy(() => import("./pages/owner/dashboard/Rates"));
 const OwnerProfile = lazy(() => import("./pages/owner/dashboard/Profile"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
+    },
+  },
+});
 
-// Page wrapper to handle loading state on route changes
+// Optimized Page wrapper - remove artificial delay
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-  const [showChildren, setShowChildren] = useState(false);
-
-  useEffect(() => {
-    setShowChildren(false);
-    const timer = setTimeout(() => setShowChildren(true), 10);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
-
   return (
-    <>
-      {!showChildren && <LogoLoader />}
-      <Suspense fallback={<LogoLoader />}>
-        {showChildren && children}
-      </Suspense>
-    </>
+    <Suspense fallback={<LogoLoader />}>
+      {children}
+    </Suspense>
   );
 };
 
