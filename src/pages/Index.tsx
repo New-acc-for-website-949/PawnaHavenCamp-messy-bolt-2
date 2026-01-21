@@ -50,23 +50,26 @@ const Index = () => {
       if (isIOS) {
         toast.info("To install: Tap 'Share' then 'Add to Home Screen' 📲");
       } else {
-        toast.info("Preparing direct installation... Please ensure you are using Chrome or Samsung Internet. 🚀");
+        toast.error("Installation not ready yet. Please wait 2-3 seconds for the browser to recognize the app and click again. 🚀");
       }
       return;
     }
     
     try {
-      // Force immediate trigger of the native prompt
-      const promptEvent = deferredPrompt;
-      setDeferredPrompt(null);
-      setShowInstallBanner(false);
+      // Show the native browser install prompt
+      await deferredPrompt.prompt();
       
-      await promptEvent.prompt();
-      const { outcome } = await promptEvent.userChoice;
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
       console.log(`User response to the install prompt: ${outcome}`);
+      
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        setShowInstallBanner(false);
+      }
     } catch (err) {
       console.error("Installation error:", err);
-      toast.error("Install via your browser's 'Add to Home Screen' menu.");
+      toast.error("Please use your browser menu to 'Install' or 'Add to Home Screen'.");
     }
   }, [deferredPrompt]);
 

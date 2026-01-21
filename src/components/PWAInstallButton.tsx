@@ -76,8 +76,7 @@ export function PWAInstallButton({ variant = 'floating', className }: PWAInstall
           { duration: 6000 }
         );
       } else {
-        localStorage.setItem('pwa_install_click_pending', Date.now().toString());
-        toast.info("Preparing installation... Please wait 5-10 seconds for your browser to authorize the app. If no prompt appears, please refresh and try once more. 🚀", { duration: 8000 });
+        toast.error("Installation prompt not ready. Please wait a few seconds for the browser to load the app fully and try again. 🚀");
       }
       return;
     }
