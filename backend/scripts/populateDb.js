@@ -690,10 +690,10 @@ async function populateProperties() {
         property.price,
         property.priceNote,
         property.capacity,
-        JSON.stringify(property.amenities),
-        JSON.stringify(property.activities || []),
-        JSON.stringify(property.highlights || []),
-        JSON.stringify(property.policies || []),
+        Array.isArray(property.amenities) ? property.amenities.join(', ') : property.amenities,
+        Array.isArray(property.activities) ? property.activities.join(', ') : property.activities,
+        Array.isArray(property.highlights) ? property.highlights.join(', ') : property.highlights,
+        Array.isArray(property.policies) ? property.policies.join(', ') : property.policies,
         property.contact
       ];
 
