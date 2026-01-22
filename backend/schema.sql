@@ -92,6 +92,41 @@ CREATE TABLE IF NOT EXISTS category_settings (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create referral_users table
+CREATE TABLE IF NOT EXISTS referral_users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  mobile_number VARCHAR(20) UNIQUE NOT NULL,
+  referral_code VARCHAR(50) UNIQUE NOT NULL,
+  balance DECIMAL(10,2) DEFAULT 0,
+  status VARCHAR(20) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create referral_transactions table
+CREATE TABLE IF NOT EXISTS referral_transactions (
+  id SERIAL PRIMARY KEY,
+  referral_user_id INTEGER NOT NULL REFERENCES referral_users(id),
+  booking_id INTEGER,
+  amount DECIMAL(10,2) NOT NULL,
+  type VARCHAR(20) NOT NULL, -- 'earning', 'withdrawal'
+  status VARCHAR(20) DEFAULT 'completed', -- 'pending', 'completed', 'failed'
+  source VARCHAR(50), -- 'booking', 'manual', 'adjustment'
+  upi_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create otp_verifications table
+CREATE TABLE IF NOT EXISTS otp_verifications (
+  id SERIAL PRIMARY KEY,
+  mobile_number VARCHAR(20) NOT NULL,
+  otp_code VARCHAR(6) NOT NULL,
+  purpose VARCHAR(20) NOT NULL, -- 'register', 'login'
+  expires_at TIMESTAMP NOT NULL,
+  attempts INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert default category settings
 INSERT INTO category_settings (category, is_active, base_price, description)
 VALUES 
@@ -105,29 +140,12 @@ CREATE INDEX IF NOT EXISTS idx_properties_slug ON properties(slug);
 CREATE INDEX IF NOT EXISTS idx_properties_category ON properties(category);
 CREATE INDEX IF NOT EXISTS idx_properties_is_active ON properties(is_active);
 CREATE INDEX IF NOT EXISTS idx_property_images_property_id ON property_images(property_id);
+CREATE INDEX IF NOT EXISTS idx_referral_users_mobile ON referral_users(mobile_number);
+CREATE INDEX IF NOT EXISTS idx_referral_users_code ON referral_users(referral_code);
+CREATE INDEX IF NOT EXISTS idx_referral_transactions_user ON referral_transactions(referral_user_id);
+CREATE INDEX IF NOT EXISTS idx_otp_verifications_mobile ON otp_verifications(mobile_number);
 
 -- Insert initial admin user
 INSERT INTO admins (email, password_hash)
 VALUES ('admin@looncamp.shop', '$2b$10$8k31lpb.NzzVqV0Pq5iJKuauiTJY2Bdnb4APYKM2MvLPsRYtV9WEu')
 ON CONFLICT (email) DO NOTHING;
-
--- Sample property data (optional - for testing)
--- You can remove this section in production
-INSERT INTO properties (
-  title, slug, description, category, location, rating, price, price_note,
-  capacity, amenities, activities, highlights, policies
-) VALUES (
-  'Luxury Dome Resort',
-  'luxury-dome-resort',
-  'Experience ultimate luxury at our lakeside retreat with panoramic views.',
-  'camping',
-  'Pawna Lake, Maharashtra',
-  4.9,
-  '₹7,499',
-  'per person with meal',
-  4,
-  '["Private Washroom", "AC", "Mini Fridge", "BBQ", "Food Included", "Lake Access"]',
-  '["Boating", "Swimming", "Bonfire", "Stargazing"]',
-  '["Panoramic lake views", "Private facilities", "Gourmet dining", "Water sports"]',
-  '["Free cancellation up to 7 days", "50% refund for 3-7 days", "No refund within 3 days"]'
-) ON CONFLICT (slug) DO NOTHING;
