@@ -9,6 +9,7 @@ const ownerRoutes = require('./routes/ownerRoutes');
 const eticketRoutes = require('./routes/etickets');
 const bookingRoutes = require('./routes/bookings');
 const paymentRoutes = require('./routes/payments');
+const referralRoutes = require('./routes/referralRoutes');
 const { pool } = require('./db');
 
 const app = express();
@@ -62,6 +63,7 @@ app.use('/api/owners', ownerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/etickets', eticketRoutes);
+app.use('/api/referrals', referralRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
