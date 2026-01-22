@@ -19,6 +19,7 @@ router.post('/login', authenticateReferralUser, UserController.login);
 
 // Authenticated User endpoints
 router.get('/dashboard', authenticateReferralUser, UserController.getDashboard);
+router.get('/share', authenticateReferralUser, ReferralController.getShareInfo);
 router.post('/withdraw', authenticateReferralUser, WithdrawalController.withdraw);
 
 module.exports = router;

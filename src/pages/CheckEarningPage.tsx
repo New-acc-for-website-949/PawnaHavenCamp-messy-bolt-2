@@ -14,7 +14,11 @@ import {
   Send,
   AlertCircle,
   Loader2,
-  LogOut
+  LogOut,
+  QrCode,
+  Copy,
+  Download,
+  Share2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -35,11 +39,18 @@ interface DashboardData {
   total_referrals: number;
 }
 
+interface ShareData {
+  referralCode: string;
+  referralLink: string;
+  referralQrCode: string;
+}
+
 const CheckEarningPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<"verify" | "otp" | "dashboard">("verify");
   const [loading, setLoading] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [shareData, setShareData] = useState<ShareData | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("referral_token"));
 
   const [formData, setFormData] = useState({
@@ -53,6 +64,7 @@ const CheckEarningPage = () => {
   useEffect(() => {
     if (token) {
       fetchDashboard(token);
+      fetchShareData(token);
     }
   }, [token]);
 
@@ -72,6 +84,42 @@ const CheckEarningPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchShareData = async (authToken: string) => {
+    try {
+      const res = await axios.get("/api/referrals/share", {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      setShareData(res.data);
+    } catch (error: any) {
+      console.error("Share data error:", error);
+    }
+  };
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied!`);
+  };
+
+  const handleDownloadQR = () => {
+    if (!shareData) return;
+    const link = document.createElement("a");
+    link.href = shareData.referralQrCode;
+    link.download = `referral-qr-${shareData.referralCode}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!shareData) return;
+    const message = `Hey!  
+Book villas, cottages & camping in Lonavala / Pawna Lake 🏕️🏡  
+
+Use my referral link to get instant discount:  
+${shareData.referralLink}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const handleSendOTP = async () => {
@@ -278,7 +326,7 @@ const CheckEarningPage = () => {
             </Card>
 
             <Tabs defaultValue="withdraw" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-secondary/50 rounded-2xl p-1 h-14">
+              <TabsList className="grid w-full grid-cols-3 bg-secondary/50 rounded-2xl p-1 h-14">
                 <TabsTrigger value="withdraw" className="rounded-xl font-bold data-[state=active]:bg-primary">
                   <Wallet className="w-4 h-4 mr-2" />
                   Withdraw
@@ -286,6 +334,10 @@ const CheckEarningPage = () => {
                 <TabsTrigger value="history" className="rounded-xl font-bold data-[state=active]:bg-primary">
                   <History className="w-4 h-4 mr-2" />
                   Stats
+                </TabsTrigger>
+                <TabsTrigger value="share" className="rounded-xl font-bold data-[state=active]:bg-primary">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
                 </TabsTrigger>
               </TabsList>
 
@@ -349,6 +401,59 @@ const CheckEarningPage = () => {
                     <p className="text-lg font-bold text-primary">{dashboard.total_referrals}</p>
                   </Card>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="share" className="mt-6 space-y-6">
+                {shareData ? (
+                  <div className="space-y-6">
+                    {/* QR Code Section */}
+                    <Card className="p-6 bg-card border-border/50 rounded-3xl text-center space-y-4">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Your QR Code</Label>
+                      <div className="bg-white p-4 rounded-2xl inline-block mx-auto">
+                        <img src={shareData.referralQrCode} alt="Referral QR" className="w-48 h-48" />
+                      </div>
+                      <Button variant="outline" onClick={handleDownloadQR} className="w-full gap-2 rounded-xl">
+                        <Download className="w-4 h-4" />
+                        Download QR
+                      </Button>
+                    </Card>
+
+                    {/* Referral Link Section */}
+                    <Card className="p-6 bg-card border-border/50 rounded-3xl space-y-3">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Referral Link</Label>
+                      <div className="flex gap-2">
+                        <Input readOnly value={shareData.referralLink} className="bg-secondary/30 border-none" />
+                        <Button size="icon" variant="secondary" onClick={() => handleCopy(shareData.referralLink, "Link")}>
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </Card>
+
+                    {/* Referral Code Section */}
+                    <Card className="p-6 bg-card border-border/50 rounded-3xl space-y-3">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Referral Code</Label>
+                      <div className="flex items-center justify-between bg-secondary/30 p-4 rounded-xl">
+                        <span className="text-2xl font-display font-bold text-primary tracking-wider">{shareData.referralCode}</span>
+                        <Button size="icon" variant="ghost" onClick={() => handleCopy(shareData.referralCode, "Code")}>
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </Card>
+
+                    {/* WhatsApp Share Button */}
+                    <Button 
+                      onClick={handleWhatsAppShare}
+                      className="w-full h-14 rounded-2xl font-bold bg-[#25D366] hover:bg-[#128C7E] text-white shadow-lg"
+                    >
+                      <Share2 className="w-5 h-5 mr-2" />
+                      Share on WhatsApp
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex justify-center p-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

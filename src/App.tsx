@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import ScrollRestoration from "./components/ScrollRestoration";
 import LogoLoader from "./components/LogoLoader";
+import axios from "axios";
 
 // Lazy load pages for transition effect
 const Index = lazy(() => import("./pages/Index"));
@@ -40,10 +41,17 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   const [showChildren, setShowChildren] = useState(false);
 
   useEffect(() => {
+    // Referral Auto-Apply Logic
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get("ref");
+    if (refCode) {
+      localStorage.setItem("applied_referral_code", refCode.toUpperCase());
+    }
+
     setShowChildren(false);
     const timer = setTimeout(() => setShowChildren(true), 10);
     return () => clearTimeout(timer);
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   return (
     <>
