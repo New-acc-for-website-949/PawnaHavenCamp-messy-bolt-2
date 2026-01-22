@@ -126,11 +126,40 @@ const OwnerRates = () => {
           weekday: prop.weekday_price || prop.price || '',
           weekend: prop.weekend_price || '',
         });
-        if (prop.special_dates) {
-          const sd = Array.isArray(prop.special_dates) 
-            ? prop.special_dates 
-            : JSON.parse(prop.special_dates);
-          setSpecialDates(sd);
+        
+        // Synchronize special_dates from availability_calendar if needed
+        const calendarResponse = await fetch(`/api/properties/${propertyId}/calendar`);
+        const calendarResult = await calendarResponse.json();
+        
+        if (calendarResult.success && Array.isArray(calendarResult.data)) {
+          // Find all dates that have a price override and are not the base price
+          const calendarSpecialDates = calendarResult.data
+            .filter((day: any) => day.price && day.price !== prop.weekday_price && day.price !== prop.weekend_price)
+            .map((day: any) => ({
+              date: format(new Date(day.date), 'yyyy-MM-dd'),
+              price: String(day.price)
+            }));
+            
+          if (calendarSpecialDates.length > 0) {
+            setSpecialDates(calendarSpecialDates);
+            
+            // Sync this back to the properties table to keep them in sync
+            await fetch(`/api/properties/update/${propertyId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                special_dates: calendarSpecialDates
+              })
+            });
+          } else if (prop.special_dates) {
+            const sd = Array.isArray(prop.special_dates) 
+              ? prop.special_dates 
+              : JSON.parse(prop.special_dates);
+            setSpecialDates(sd);
+          }
         }
       }
     } catch (error) {
