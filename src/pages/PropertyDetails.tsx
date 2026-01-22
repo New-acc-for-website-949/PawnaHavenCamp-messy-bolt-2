@@ -233,9 +233,10 @@ const PropertyDetails = () => {
                 <div className="grid grid-cols-2 gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="flex flex-col gap-1 h-20 rounded-2xl bg-[#C5A021] border-none hover:bg-[#A6861A] transition-all group active:scale-95 shadow-gold px-1">
-                        <CalendarIcon className="w-5 h-5 text-black group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-black">Book Stay</span>
+                      <Button variant="outline" className="flex flex-col gap-1 h-20 rounded-2xl bg-gradient-to-b from-[#D4AF37] to-[#C5A021] border-none hover:from-[#C5A021] hover:to-[#A6861A] transition-all group active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_20px_rgba(0,0,0,0.3)] px-1 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <CalendarIcon className="w-5 h-5 text-black group-hover:scale-110 transition-transform relative z-10" />
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-black relative z-10">Book Stay</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] bg-[#0A0A0A] border-[#D4AF37]/20">
@@ -258,14 +259,14 @@ const PropertyDetails = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button 
-                        className="flex flex-col gap-0 h-20 rounded-2xl bg-gradient-to-br from-[#00C853] via-[#00B0FF] to-[#0091EA] border-none shadow-[0_10px_30px_rgba(0,176,255,0.3)] group overflow-hidden relative active:scale-95 transition-all px-1"
+                        className="flex flex-col gap-0 h-20 rounded-2xl bg-gradient-to-b from-[#00E676] to-[#00C853] border-none shadow-[0_6px_0_rgb(0,150,60),0_12px_20px_rgba(0,0,0,0.3)] group overflow-hidden relative active:translate-y-1 active:shadow-inner transition-all px-1"
                       >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 relative z-10">
                           <MessageCircle className="w-5 h-5 text-white" />
                           <Phone className="w-4 h-4 text-white" />
                         </div>
-                        <span className="text-[10px] font-bold text-white">WhatsApp & Call</span>
+                        <span className="text-[10px] font-bold text-white relative z-10">WhatsApp & Call</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] bg-[#0A0A0A] border-[#D4AF37]/20 p-8">
@@ -297,12 +298,13 @@ const PropertyDetails = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="flex flex-col gap-1 h-14 rounded-2xl bg-[#A855F7] border-none shadow-[0_10px_30px_rgba(168,85,247,0.3)] hover:bg-[#9333EA] text-white transition-all active:scale-95 px-1 w-full"
+                  className="flex flex-col gap-1 h-14 rounded-2xl bg-[#1A1A1A] border-2 border-[#D4AF37] shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.5)] hover:bg-[#2A2A2A] text-white transition-all active:translate-y-1 active:shadow-inner px-1 w-full group relative overflow-hidden"
                   onClick={() => window.open(propertyData.map_link || 'https://www.google.com/maps', '_blank')}
                 >
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-[10px] uppercase font-bold tracking-widest">Open in Maps</span>
+                  <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-2 relative z-10">
+                    <MapPin className="w-4 h-4 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-white">Open in Maps</span>
                   </div>
                 </Button>
               </div>
@@ -321,8 +323,8 @@ const PropertyDetails = () => {
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="h-12 rounded-xl bg-[#C5A021] border-none text-black text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#A6861A] shadow-gold">
-                  View Calendar
+                <Button variant="outline" className="h-12 rounded-xl bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#D4AF37]/10 transition-all active:translate-y-0.5 active:shadow-inner shadow-[0_3px_0_rgb(146,120,33)] group">
+                  <span className="group-active:scale-95 transition-transform">View Calendar</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
@@ -363,10 +365,11 @@ const PropertyDetails = () => {
               <DialogTrigger asChild>
                 <Button
                   disabled={!propertyData.is_available}
-                  className="w-full bg-[#C5A021] text-primary-foreground hover:bg-[#A6861A] h-16 rounded-2xl text-lg font-bold shadow-gold hover:shadow-gold-lg transition-all active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full bg-gradient-to-b from-[#D4AF37] to-[#C5A021] text-black hover:from-[#C5A021] hover:to-[#A6861A] h-16 rounded-2xl text-lg font-bold transition-all active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_25px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 group relative overflow-hidden"
                 >
-                  <MessageCircle className="w-6 h-6" />
-                  {propertyData.is_available ? "Book Your Stay" : "Currently Booked"}
+                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <MessageCircle className="w-6 h-6 relative z-10" />
+                  <span className="relative z-10">{propertyData.is_available ? "Book Your Stay" : "Currently Booked"}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px] rounded-[2rem]">
@@ -386,32 +389,35 @@ const PropertyDetails = () => {
               </DialogContent>
             </Dialog>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                className="h-16 rounded-2xl text-base font-bold border-border/50 hover:bg-secondary transition-all flex items-center justify-center gap-2"
+                className="h-16 rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
                 onClick={() => window.open(`tel:+918806092609`, '_self')}
               >
-                <Phone className="w-4 h-4 text-primary" />
-                Call Host
+                <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Phone className="w-4 h-4 text-[#D4AF37] group-hover:scale-110 transition-transform relative z-10" />
+                <span className="relative z-10">Call Host</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-16 rounded-2xl text-base font-bold border-border/50 hover:bg-secondary transition-all flex items-center justify-center gap-2"
+                className="h-16 rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#00C853] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(0,150,60),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
                 onClick={() => window.open(`https://api.whatsapp.com/send?phone=918806092609`, '_blank')}
               >
-                <MessageCircle className="w-4 h-4 text-green-500" />
-                WhatsApp
+                <div className="absolute inset-0 bg-[#00C853]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <MessageCircle className="w-4 h-4 text-[#00C853] group-hover:scale-110 transition-transform relative z-10" />
+                <span className="relative z-10">WhatsApp</span>
               </Button>
             </div>
 
             <Button
               variant="secondary"
-              className="w-full h-16 rounded-2xl text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center justify-center gap-3 mt-2"
+              className="w-full h-16 rounded-2xl text-lg font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3 mt-2 group relative overflow-hidden"
               onClick={() => window.open(propertyData.map_link || 'https://www.google.com/maps', '_blank')}
             >
-              <MapPin className="w-5 h-5" />
-              Find us on Map
+              <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <MapPin className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform relative z-10" />
+              <span className="relative z-10">Find us on Map</span>
             </Button>
           </div>
 
