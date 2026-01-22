@@ -151,7 +151,7 @@ const ReferralPage = () => {
         <Card className="p-8 bg-gradient-to-br from-primary to-gold-dark text-primary-foreground rounded-[2.5rem] relative overflow-hidden shadow-gold">
            <div className="relative z-10">
              <h3 className="text-2xl font-display font-bold mb-2">Invite & Earn</h3>
-             <p className="text-primary-foreground/80 mb-6 max-w-[200px]">Get ₹500 for every booking made using your referral code.</p>
+             <p className="text-primary-foreground/80 mb-6 max-w-[200px]">Get from ₹100 to ₹8000 for every booking made using your referral code.</p>
              <Button onClick={() => navigate("/referral/generate")} className="bg-white text-primary hover:bg-white/90 rounded-2xl font-bold">Start Inviting</Button>
            </div>
            <Users className="absolute -right-8 -bottom-8 w-40 h-40 text-white/10" />
