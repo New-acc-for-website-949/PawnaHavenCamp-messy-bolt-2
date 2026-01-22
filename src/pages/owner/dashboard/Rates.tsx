@@ -24,8 +24,13 @@ const OwnerRates = () => {
     setPropertyId(id);
 
     try {
+      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
       console.log('Fetching rates for property:', id);
-      const response = await fetch(`/api/properties/${id}`);
+      const response = await fetch(`/api/properties/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const result = await response.json();
       console.log('Fetch rates response:', result);
       
