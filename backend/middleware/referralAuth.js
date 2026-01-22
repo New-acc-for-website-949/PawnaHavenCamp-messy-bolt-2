@@ -11,13 +11,13 @@ const authenticateReferralUser = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_fallback_secret');
 
-    // If purpose is register, we don't expect a user to exist yet
-    if (decoded.purpose === 'register') {
+    // If purpose is register or login, we only need to verify the OTP purpose
+    if (decoded.purpose === 'register' || decoded.purpose === 'login') {
       req.user = decoded;
       return next();
     }
 
-    // For other purposes (login, dashboard), fetch user and check status
+    // For other purposes (dashboard, withdrawal), fetch user and check status
     const result = await query(
       'SELECT id, username, mobile_number, status FROM referral_users WHERE id = $1',
       [decoded.userId]
