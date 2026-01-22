@@ -326,8 +326,8 @@ const PropertyDetails = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" className="h-12 rounded-xl bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#D4AF37]/10 transition-all active:translate-y-0.5 active:shadow-inner shadow-[0_3px_0_rgb(146,120,33)] group relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
-                       style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_162102_1769079281569.jpg")' }} />
+                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
+                       style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_162339_1769079675263.jpg")' }} />
                   <span className="group-active:scale-95 transition-transform relative z-10">View Calendar</span>
                 </Button>
               </DialogTrigger>
