@@ -229,11 +229,11 @@ const PropertyDetails = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="flex flex-col gap-1 h-20 rounded-2xl bg-gradient-to-b from-[#D4AF37] to-[#C5A021] border-none hover:from-[#C5A021] hover:to-[#A6861A] transition-all group active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_20px_rgba(0,0,0,0.3)] px-1 relative overflow-hidden">
+                      <Button variant="outline" className="flex flex-col gap-1 h-[72px] rounded-2xl bg-gradient-to-b from-[#D4AF37] to-[#C5A021] border-none hover:from-[#C5A021] hover:to-[#A6861A] transition-all group active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_20px_rgba(0,0,0,0.3)] px-1 relative overflow-hidden">
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CalendarIcon className="w-5 h-5 text-black group-hover:scale-110 transition-transform relative z-10" />
                         <span className="text-[10px] uppercase font-bold tracking-widest text-black relative z-10">Book Stay</span>
@@ -259,7 +259,7 @@ const PropertyDetails = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button 
-                        className="flex flex-col gap-0 h-20 rounded-2xl bg-gradient-to-b from-[#00E676] to-[#00C853] border-none shadow-[0_6px_0_rgb(0,150,60),0_12px_20px_rgba(0,0,0,0.3)] group overflow-hidden relative active:translate-y-1 active:shadow-inner transition-all px-1"
+                        className="flex flex-col gap-0 h-[72px] rounded-2xl bg-gradient-to-b from-[#00E676] to-[#00C853] border-none shadow-[0_6px_0_rgb(0,150,60),0_12px_20px_rgba(0,0,0,0.3)] group overflow-hidden relative active:translate-y-1 active:shadow-inner transition-all px-1"
                       >
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center gap-1.5 relative z-10">
@@ -362,12 +362,12 @@ const PropertyDetails = () => {
             </p>
           </div>
 
-          <div className="space-y-4 mb-8">
+          <div className="space-y-6 mb-8">
             <Dialog>
               <DialogTrigger asChild>
                 <Button
                   disabled={!propertyData.is_available}
-                  className="w-full bg-gradient-to-b from-[#D4AF37] to-[#C5A021] text-black hover:from-[#C5A021] hover:to-[#A6861A] h-16 rounded-2xl text-lg font-bold transition-all active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_25px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 group relative overflow-hidden"
+                  className="w-full bg-gradient-to-b from-[#D4AF37] to-[#C5A021] text-black hover:from-[#C5A021] hover:to-[#A6861A] h-[58px] rounded-2xl text-lg font-bold transition-all active:translate-y-1 active:shadow-inner shadow-[0_6px_0_rgb(146,120,33),0_12px_25px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <MessageCircle className="w-6 h-6 relative z-10" />
@@ -394,7 +394,7 @@ const PropertyDetails = () => {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                className="h-16 rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
+                className="h-[58px] rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
                 onClick={() => window.open(`tel:+918806092609`, '_self')}
               >
                 <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -403,7 +403,7 @@ const PropertyDetails = () => {
               </Button>
               <Button
                 variant="outline"
-                className="h-16 rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#00C853] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(0,150,60),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
+                className="h-[58px] rounded-2xl text-base font-bold bg-[#1A1A1A] border-2 border-[#00C853] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(0,150,60),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-2 group relative overflow-hidden"
                 onClick={() => window.open(`https://api.whatsapp.com/send?phone=918806092609`, '_blank')}
               >
                 <div className="absolute inset-0 bg-[#00C853]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -412,17 +412,19 @@ const PropertyDetails = () => {
               </Button>
             </div>
 
-            <Button
-              variant="secondary"
-              className="w-full h-16 rounded-2xl text-lg font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3 mt-2 group relative overflow-hidden"
-              onClick={() => window.open(propertyData.map_link || 'https://www.google.com/maps', '_blank')}
-            >
-              <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
-                   style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_161205_1769078572047.jpg")' }} />
-              <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <MapPin className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform relative z-10" />
-              <span className="relative z-10">Find us on Map</span>
-            </Button>
+            <div className="pt-2">
+              <Button
+                variant="secondary"
+                className="w-full h-16 rounded-2xl text-lg font-bold bg-[#1A1A1A] border-2 border-[#D4AF37] text-white hover:bg-[#2A2A2A] transition-all active:translate-y-1 active:shadow-inner shadow-[0_4px_0_rgb(146,120,33),0_8px_15px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3 mt-2 group relative overflow-hidden"
+                onClick={() => window.open(propertyData.map_link || 'https://www.google.com/maps', '_blank')}
+              >
+                <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
+                     style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_161205_1769078572047.jpg")' }} />
+                <div className="absolute inset-0 bg-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <MapPin className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform relative z-10" />
+                <span className="relative z-10">Find us on Map</span>
+              </Button>
+            </div>
           </div>
 
           <div className="pt-8 border-t border-border/50">
