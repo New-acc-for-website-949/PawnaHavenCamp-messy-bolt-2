@@ -39,6 +39,8 @@ const OwnerRates = () => {
           weekend: String(weekend),
         });
         
+        console.log('Mapped rates:', { weekday, weekend });
+        
         if (prop.special_dates) {
           const sd = Array.isArray(prop.special_dates) 
             ? prop.special_dates 
@@ -144,7 +146,7 @@ const OwnerRates = () => {
           <CardContent className="pt-6">
             <Label className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest mb-2 block">Current Weekday Rate (Monday - Friday)</Label>
             <div className="text-2xl font-bold text-white">
-              {rates.weekday ? `₹${rates.weekday}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
+              ₹{rates.weekday || <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
             </div>
           </CardContent>
         </Card>
@@ -152,7 +154,7 @@ const OwnerRates = () => {
           <CardContent className="pt-6">
             <Label className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest mb-2 block">Current Weekend Rate (Sat - Sunday)</Label>
             <div className="text-2xl font-bold text-white">
-              {rates.weekend ? `₹${rates.weekend}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
+              ₹{rates.weekend || <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
             </div>
           </CardContent>
         </Card>
