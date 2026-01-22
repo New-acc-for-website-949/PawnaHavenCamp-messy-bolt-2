@@ -24,9 +24,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
     try {
       if (!propertyId || propertyId === 'Generating...') return;
       const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      const headers = {
-        'Authorization': `Bearer ${token}`
-      };
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
       const response = await fetch(`/api/properties/${propertyId}/calendar`, { headers });
       const result = await response.json();
@@ -35,24 +33,32 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect }: Cale
       }
       
       // Fetch property details for pricing settings
-      const propResponse = await fetch(`/api/properties/${propertyId}`, { headers });
+      // Use public endpoint if no token is available for Guest view
+      const propUrl = token ? `/api/properties/${propertyId}` : `/api/properties/public/${propertyId}`;
+      const propResponse = await fetch(propUrl, { headers: token ? headers : {} });
       const propResult = await propResponse.json();
+      
       if (propResult.success) {
         let specialDates = [];
-        if (propResult.data.special_dates) {
+        const data = propResult.data;
+        if (data.special_dates) {
           try {
-            specialDates = typeof propResult.data.special_dates === 'string' 
-              ? JSON.parse(propResult.data.special_dates) 
-              : propResult.data.special_dates;
+            specialDates = typeof data.special_dates === 'string' 
+              ? JSON.parse(data.special_dates) 
+              : data.special_dates;
           } catch (e) {
             console.error("Error parsing special dates:", e);
           }
         }
 
         setPropertyPrices({
-          base: propResult.data.price,
-          weekday: propResult.data.weekday_price || propResult.data.price,
-          weekend: propResult.data.weekend_price || propResult.data.price,
+          base: data.price ? String(data.price) : "",
+          weekday: (data.weekday_price !== null && data.weekday_price !== undefined && data.weekday_price !== "") 
+            ? String(data.weekday_price) 
+            : (data.price ? String(data.price) : ""),
+          weekend: (data.weekend_price !== null && data.weekend_price !== undefined && data.weekend_price !== "") 
+            ? String(data.weekend_price) 
+            : (data.price ? String(data.price) : ""),
           specialDates: Array.isArray(specialDates) ? specialDates : []
         });
       }
