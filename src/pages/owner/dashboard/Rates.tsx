@@ -94,9 +94,10 @@ const OwnerRates = () => {
       }
 
       // 2. Update special dates in calendar for real-time sync
-      for (const sd of specialDates) {
-        if (sd.date && sd.price) {
-          await fetch(`/api/properties/${propertyId}/calendar`, {
+      const calendarUpdates = specialDates
+        .filter(sd => sd.date && sd.price)
+        .map(sd => 
+          fetch(`/api/properties/${propertyId}/calendar`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -107,11 +108,31 @@ const OwnerRates = () => {
               price: sd.price,
               is_booked: false
             })
-          });
-        }
+          })
+        );
+      
+      if (calendarUpdates.length > 0) {
+        await Promise.all(calendarUpdates);
       }
       
       toast.success('Rates and Special Dates updated successfully.');
+      
+      // Re-fetch data to ensure UI is in sync with backend
+      const refreshResponse = await fetch(`/api/properties/${propertyId}`);
+      const refreshResult = await refreshResponse.json();
+      if (refreshResult.success) {
+        const prop = refreshResult.data;
+        setRates({
+          weekday: prop.weekday_price || prop.price || '',
+          weekend: prop.weekend_price || '',
+        });
+        if (prop.special_dates) {
+          const sd = Array.isArray(prop.special_dates) 
+            ? prop.special_dates 
+            : JSON.parse(prop.special_dates);
+          setSpecialDates(sd);
+        }
+      }
     } catch (error) {
       console.error('Error in handleSave:', error);
       toast.error('Error updating rates.');
