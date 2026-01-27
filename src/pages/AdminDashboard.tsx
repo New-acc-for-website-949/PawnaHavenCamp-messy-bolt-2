@@ -71,9 +71,28 @@ const AdminDashboard = () => {
   const [ownerSearchTerm, setOwnerSearchTerm] = useState('');
   const [referralSubTab, setReferralSubTab] = useState('all');
   const [transactionSubTab, setTransactionSubTab] = useState('all');
+  const [referralUsers, setReferralUsers] = useState<any[]>([]);
+  const [isReferralLoading, setIsReferralLoading] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const fetchReferralUsers = async () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return;
+    setIsReferralLoading(true);
+    try {
+      const response = await fetch('/api/referrals/admin/all', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
+      setReferralUsers(result || []);
+    } catch (error) {
+      console.error('Fetch referrals error:', error);
+    } finally {
+      setIsReferralLoading(false);
+    }
+  };
 
   const fetchData = async (token: string) => {
     try {
@@ -95,8 +114,32 @@ const AdminDashboard = () => {
       if (settingsResult.success) {
         setCategorySettings(settingsResult.data || []);
       }
+      
+      // Also fetch referral users
+      fetchReferralUsers();
     } catch (error) {
       console.error('Fetch error:', error);
+    }
+  };
+
+  const handleUpdateReferralStatus = async (userId: number, status: string) => {
+    const token = localStorage.getItem('adminToken');
+    try {
+      const response = await fetch('/api/referrals/admin/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, status })
+      });
+      const result = await response.json();
+      if (result.id) {
+        toast({ title: 'Status updated successfully' });
+        fetchReferralUsers();
+      }
+    } catch (error) {
+      toast({ title: 'Failed to update status', variant: 'destructive' });
     }
   };
 
