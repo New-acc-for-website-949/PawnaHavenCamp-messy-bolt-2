@@ -723,21 +723,108 @@ const AdminDashboard = () => {
             </Tabs>
 
             {referralSubTab === 'all' && (
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search user ID or name..." className="pl-9 h-11 rounded-xl bg-white/5 border-white/10 text-sm" />
-              </div>
+              <>
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search user ID or name..." 
+                    className="pl-9 h-11 rounded-xl bg-white/5 border-white/10 text-sm"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {isReferralLoading ? (
+                    <div className="flex justify-center p-8">
+                      <Loader2 className="w-8 h-8 animate-spin text-gold" />
+                    </div>
+                  ) : referralUsers.length === 0 ? (
+                    <div className="text-center p-8 glass-dark rounded-2xl border border-white/5">
+                      <p className="text-muted-foreground">No referral users found</p>
+                    </div>
+                  ) : referralUsers.filter(u => 
+                      u.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                      u.mobile_number.includes(searchTerm) ||
+                      u.referral_code.toLowerCase().includes(searchTerm.toLowerCase())
+                    ).map((referral) => (
+                    <div key={referral.id} className="glass-dark rounded-2xl border border-white/5 p-4 hover:border-gold/30 transition-all">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
+                            <Users2 className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-white">{referral.username}</h4>
+                            <p className="text-xs text-muted-foreground">{referral.mobile_number}</p>
+                          </div>
+                        </div>
+                        <Badge variant={referral.status === 'active' ? "outline" : "destructive"} className={cn(
+                          "text-[10px] uppercase tracking-wider",
+                          referral.status === 'active' ? "border-emerald-500/50 text-emerald-500 bg-emerald-500/5" : ""
+                        )}>
+                          {referral.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/5 text-center">
+                          <p className="text-[8px] text-muted-foreground uppercase mb-0.5">Code</p>
+                          <p className="text-xs font-bold text-gold">{referral.referral_code}</p>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/5 text-center">
+                          <p className="text-[8px] text-muted-foreground uppercase mb-0.5">Balance</p>
+                          <p className="text-xs font-bold text-white">₹{parseFloat(referral.balance).toLocaleString('en-IN')}</p>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white/5 border border-white/5 text-center">
+                          <p className="text-[8px] text-muted-foreground uppercase mb-0.5">Referrals</p>
+                          <p className="text-xs font-bold text-white">{referral.total_referrals}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                        <p className="text-[10px] text-muted-foreground">Joined {new Date(referral.created_at).toLocaleDateString()}</p>
+                        <div className="flex gap-2">
+                          {referral.status === 'active' ? (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-7 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              onClick={() => handleUpdateReferralStatus(referral.id, 'blocked')}
+                            >
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Block
+                            </Button>
+                          ) : (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-7 text-[10px] text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                              onClick={() => handleUpdateReferralStatus(referral.id, 'active')}
+                            >
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Activate
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
-            <div className="space-y-3">
-              <div className="p-8 text-center glass-dark rounded-3xl border border-white/5">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5 text-white/20">
-                  <Share2 className="w-8 h-8" />
+            {(referralSubTab === 'requests' || referralSubTab === 'history') && (
+              <div className="space-y-3">
+                <div className="p-8 text-center glass-dark rounded-3xl border border-white/5">
+                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5 text-white/20">
+                    <Share2 className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-white font-bold mb-1">No Referrals Data</h4>
+                  <p className="text-xs text-muted-foreground">No records found for the selected view.</p>
                 </div>
-                <h4 className="text-white font-bold mb-1">No Referrals Data</h4>
-                <p className="text-xs text-muted-foreground">No records found for the selected view.</p>
               </div>
-            </div>
+            )}
           </div>
         )}
 
