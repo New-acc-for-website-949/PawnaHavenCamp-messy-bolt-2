@@ -157,7 +157,7 @@ const Properties = () => {
                   images={property.images}
                   title={property.title}
                   location={property.location}
-                  price={property.unit_starting_price || property.price}
+                  price={String(property.unit_starting_price || property.price || 'Price on Selection')}
                   priceNote={property.category === 'campings_cottages' ? 'person' : (property.price_note || property.priceNote)}
                   rating={property.rating}
                   amenities={property.amenities || []}

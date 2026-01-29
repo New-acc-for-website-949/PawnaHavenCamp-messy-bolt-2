@@ -659,7 +659,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">{formData.category === 'villa' ? 'Price *' : 'Starting Price (Reference) *'}</Label>
+                <Label htmlFor="price">{formData.category === 'villa' ? 'Price *' : 'Starting Price (Auto-calculated)'}</Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -672,6 +672,11 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     required={formData.category === 'villa'}
                   />
                 </div>
+                {formData.category === 'campings_cottages' && (
+                  <p className="text-[10px] text-primary mt-1 italic">
+                    * Minimum price from available units will be displayed automatically.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
