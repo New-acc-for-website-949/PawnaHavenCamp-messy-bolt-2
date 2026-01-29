@@ -118,7 +118,13 @@ const getPublicProperties = async (req, res) => {
           WHERE pu.property_id = p.id
           AND uc.date >= CURRENT_DATE
           AND uc.price IS NOT NULL AND uc.price != ''
-        ) as unit_starting_price
+        ) as unit_starting_price,
+        (
+          SELECT MIN(CAST(NULLIF(REGEXP_REPLACE(pu.price_per_person, '[^0-9.]', '', 'g'), '') AS NUMERIC))
+          FROM property_units pu
+          WHERE pu.property_id = p.id
+          AND pu.price_per_person IS NOT NULL AND pu.price_per_person != ''
+        ) as unit_base_starting_price
       FROM properties p
       WHERE p.is_active = true
       ORDER BY p.is_available DESC, p.is_top_selling DESC, p.created_at DESC
@@ -139,8 +145,8 @@ const getPublicProperties = async (req, res) => {
         }
       };
 
-      // Ensure starting price is used if available from units
-      const displayPrice = prop.unit_starting_price || prop.price || 'Price on Selection';
+      // Ensure starting price is used if available from units (either calendar or base unit price)
+      const displayPrice = prop.unit_starting_price || prop.unit_base_starting_price || prop.price || 'Price on Selection';
 
       return {
         ...prop,
