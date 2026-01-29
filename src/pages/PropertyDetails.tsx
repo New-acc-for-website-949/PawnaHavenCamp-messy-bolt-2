@@ -227,6 +227,10 @@ const PropertyDetails = () => {
   const displayPriceNote = (propertyData.category === 'campings_cottages' && selectedUnit)
     ? 'per person'
     : (propertyData.price_note || 'per night');
+  const displayCapacityValue = (propertyData.category === 'campings_cottages' && selectedUnit)
+    ? (selectedUnit.total_persons || 0)
+    : (propertyData.capacity || 0);
+
   const displayCapacity = (propertyData.category === 'campings_cottages' && selectedUnit)
     ? (
         <span className="flex items-center gap-2">
@@ -336,7 +340,7 @@ const PropertyDetails = () => {
                         propertyId={propertyData.id}
                         pricePerPerson={typeof displayPrice === 'string' ? (parseInt(displayPrice.replace(/[^\d]/g, "")) || 0) : (Number(displayPrice) || 0)}
                         propertyCategory={propertyData.category}
-                        maxCapacity={propertyData.category === 'campings_cottages' ? (selectedUnit?.total_persons || 0) : (typeof displayCapacity === 'number' ? displayCapacity : (parseInt(String(displayCapacity).split('/')[1]) || 0))}
+                        maxCapacity={displayCapacityValue}
                         selectedUnitId={selectedUnit?.id}
                       />
                     </DialogContent>
@@ -516,7 +520,7 @@ const PropertyDetails = () => {
                   propertyId={propertyData.id}
                   pricePerPerson={typeof displayPrice === 'string' ? (parseInt(displayPrice.replace(/[^\d]/g, "")) || 0) : (Number(displayPrice) || 0)}
                   propertyCategory={propertyData.category}
-                  maxCapacity={typeof displayCapacity === 'number' ? displayCapacity : (parseInt(String(displayCapacity).split('/')[1]) || 0)}
+                  maxCapacity={displayCapacityValue}
                   selectedUnitId={selectedUnit?.id}
                 />
               </DialogContent>
