@@ -480,11 +480,21 @@ const createProperty = async (req, res) => {
     console.log('Creating property with data:', { title, category, imageCount: images?.length });
 
     // Validate required fields
-    if (!title || !description || !category || !location || !price || !price_note || !capacity) {
+    if (!title || !description || !category || !location || !price_note || !capacity) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields.',
       });
+    }
+
+    // Ensure price is present for villa, or use a placeholder for campings_cottages if backend requires it
+    const finalPrice = price || (category === 'campings_cottages' ? 'Price on Selection' : null);
+    
+    if (!finalPrice && category === 'villa') {
+        return res.status(400).json({
+          success: false,
+          message: 'Price is required for villas.',
+        });
     }
 
     // Generate slug
@@ -520,7 +530,7 @@ const createProperty = async (req, res) => {
         category,
         location,
         rating || 4.5,
-        price,
+        finalPrice,
         weekday_price,
         weekend_price,
         price_note,

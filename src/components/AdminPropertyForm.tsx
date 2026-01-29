@@ -419,7 +419,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
 
     // For campings_cottages, we don't send individual prices as they come from units
     if (formData.category === 'campings_cottages') {
-      delete payload.price;
+      payload.price = payload.price || 'Price on Selection';
       delete payload.weekday_price;
       delete payload.weekend_price;
     }
