@@ -212,34 +212,19 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
                 <Input value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
               </div>
 
-              {category === 'campings_cottages' ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Price Per Person</Label>
-                    <Input type="number" value={unitForm.price_per_person} onChange={(e) => setUnitForm({ ...unitForm, price_per_person: e.target.value })} className="bg-white/5 border-white/10" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>
-                      <span className="text-[#00FF41]">Available</span> / <span className="text-[#FFA500]">Total persons capacity</span>
-                    </Label>
-                    <div className="flex gap-2">
-                      <Input type="number" placeholder="Available" value={unitForm.available_persons} onChange={(e) => setUnitForm({ ...unitForm, available_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#00FF41] font-bold" />
-                      <Input type="number" placeholder="Total" value={unitForm.total_persons} onChange={(e) => setUnitForm({ ...unitForm, total_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#FFA500] font-bold" />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <Label>Capacity</Label>
-                    <Input type="number" value={unitForm.capacity} onChange={(e) => setUnitForm({ ...unitForm, capacity: e.target.value })} className="bg-white/5 border-white/10" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Total Quantity</Label>
-                    <Input type="number" value={unitForm.total_quantity} onChange={(e) => setUnitForm({ ...unitForm, total_quantity: e.target.value })} className="bg-white/5 border-white/10" />
-                  </div>
-                </>
-              )}
+              <div className="space-y-2">
+                <Label>Price Per Person</Label>
+                <Input type="number" value={unitForm.price_per_person} onChange={(e) => setUnitForm({ ...unitForm, price_per_person: e.target.value })} className="bg-white/5 border-white/10" />
+              </div>
+              <div className="space-y-2">
+                <Label>
+                  <span className="text-[#00FF41]">Available</span> / <span className="text-[#FFA500]">Total persons capacity</span>
+                </Label>
+                <div className="flex gap-2">
+                  <Input type="number" placeholder="Available" value={unitForm.available_persons} onChange={(e) => setUnitForm({ ...unitForm, available_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#00FF41] font-bold" />
+                  <Input type="number" placeholder="Total" value={unitForm.total_persons} onChange={(e) => setUnitForm({ ...unitForm, total_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#FFA500] font-bold" />
+                </div>
+              </div>
             </div>
 
             {/* Unit Level Arrays */}
