@@ -130,18 +130,18 @@ const getPublicProperties = async (req, res) => {
           )) 
          FROM property_units pu WHERE pu.property_id = p.id) as units,
         (
-          SELECT MIN(CAST(NULLIF(REGEXP_REPLACE(uc.price, '[^0-9.]', '', 'g'), '') AS NUMERIC))
+          SELECT MIN(uc.price)
           FROM property_units pu
           JOIN unit_calendar uc ON uc.unit_id = pu.id
           WHERE pu.property_id = p.id
           AND uc.date >= CURRENT_DATE
-          AND uc.price IS NOT NULL AND uc.price != ''
+          AND uc.price IS NOT NULL
         ) as unit_starting_price,
         (
-          SELECT MIN(CAST(NULLIF(REGEXP_REPLACE(pu.price_per_person, '[^0-9.]', '', 'g'), '') AS NUMERIC))
+          SELECT MIN(pu.price_per_person)
           FROM property_units pu
           WHERE pu.property_id = p.id
-          AND pu.price_per_person IS NOT NULL AND pu.price_per_person != ''
+          AND pu.price_per_person IS NOT NULL
         ) as unit_base_starting_price
       FROM properties p
       WHERE p.is_active = true
