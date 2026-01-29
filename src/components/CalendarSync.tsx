@@ -107,8 +107,12 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
       const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
       const price = getPriceForDate(date);
       
-      const response = await fetch(`/api/properties/${propertyId}/calendar`, {
-        method: 'PUT',
+      const url = unitId 
+        ? `/api/properties/units/${unitId}/calendar`
+        : `/api/properties/${propertyId}/calendar`;
+
+      const response = await fetch(url, {
+        method: unitId ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

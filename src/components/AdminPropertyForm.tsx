@@ -44,21 +44,45 @@ import { CalendarSync } from "@/components/CalendarSync";
 
 const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, units: any[], onRefresh: () => void }) => {
   const [isAdding, setIsAdding] = useState(false);
-  const [editingUnit, setEditingProperty] = useState<any>(null);
-  const [unitForm, setUnitForm] = useState({ name: '', capacity: '2', total_quantity: '1' });
+  const [editingUnit, setEditingUnit] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [unitForm, setUnitForm] = useState({ 
+    name: '', 
+    capacity: '2', 
+    total_quantity: '1',
+    amenities: [''],
+    activities: [''],
+    highlights: [''],
+    policies: [''],
+    images: [] as string[]
+  });
   const { toast } = useToast();
 
   const handleSaveUnit = async () => {
     try {
+      const payload = {
+        ...unitForm,
+        capacity: parseInt(unitForm.capacity),
+        total_quantity: parseInt(unitForm.total_quantity),
+        amenities: unitForm.amenities.filter(a => a.trim()),
+        activities: unitForm.activities.filter(a => a.trim()),
+        highlights: unitForm.highlights.filter(h => h.trim()),
+        policies: unitForm.policies.filter(p => p.trim()),
+        images: unitForm.images.filter(i => i.trim()),
+      };
+
       const res = editingUnit 
-        ? await propertyAPI.updateUnit(editingUnit.id, unitForm)
-        : await propertyAPI.createUnit(propertyId, unitForm);
+        ? await propertyAPI.updateUnit(editingUnit.id, payload)
+        : await propertyAPI.createUnit(propertyId, payload);
       
       if (res.success) {
         toast({ title: editingUnit ? 'Unit updated' : 'Unit created' });
         setIsAdding(false);
-        setEditingProperty(null);
-        setUnitForm({ name: '', capacity: '2', total_quantity: '1' });
+        setEditingUnit(null);
+        setUnitForm({ 
+          name: '', capacity: '2', total_quantity: '1', 
+          amenities: [''], activities: [''], highlights: [''], policies: [''], images: [] 
+        });
         onRefresh();
       }
     } catch (e) {
@@ -66,13 +90,40 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
     }
   };
 
-  const handleDeleteUnit = async (id: number) => {
-    if (!confirm('Are you sure?')) return;
-    const res = await propertyAPI.deleteUnit(id);
-    if (res.success) {
-      toast({ title: 'Unit deleted' });
-      onRefresh();
+  const handleUnitImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+    const formDataUpload = new FormData();
+    formDataUpload.append('image', file);
+
+    try {
+      const response = await fetch('/api/properties/upload-image', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formDataUpload,
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setUnitForm(prev => ({ ...prev, images: [...prev.images, result.url] }));
+        toast({ title: 'Image uploaded' });
+      }
+    } catch (error) {
+      toast({ title: 'Upload error', variant: 'destructive' });
+    } finally {
+      setIsUploading(false);
     }
+  };
+
+  const parseJson = (val: any) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') {
+      try { return JSON.parse(val); } catch (e) { return [val]; }
+    }
+    return [];
   };
 
   return (
@@ -87,9 +138,16 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
       <div className="grid grid-cols-1 gap-3">
         {units.map((unit) => (
           <div key={unit.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group">
-            <div>
-              <p className="font-bold text-white">{unit.name}</p>
-              <p className="text-xs text-muted-foreground">Capacity: {unit.capacity} | Total: {unit.total_quantity}</p>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/5 border border-white/10">
+                {parseJson(unit.images)?.[0] ? (
+                  <img src={parseJson(unit.images)[0]} className="w-full h-full object-cover" />
+                ) : <ImageIcon className="w-full h-full p-3 text-white/20" />}
+              </div>
+              <div>
+                <p className="font-bold text-white">{unit.name}</p>
+                <p className="text-xs text-muted-foreground">Capacity: {unit.capacity} | Total: {unit.total_quantity}</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Dialog>
@@ -105,10 +163,23 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
                   <CalendarSync propertyId={propertyId} unitId={unit.id} isAdmin={true} />
                 </DialogContent>
               </Dialog>
-              <Button size="icon" variant="ghost" onClick={() => { setEditingProperty(unit); setUnitForm({ name: unit.name, capacity: unit.capacity.toString(), total_quantity: unit.total_quantity.toString() }); setIsAdding(true); }} className="h-8 w-8 text-white/40 hover:text-white">
+              <Button size="icon" variant="ghost" onClick={() => { 
+                setEditingUnit(unit); 
+                setUnitForm({ 
+                  name: unit.name, 
+                  capacity: unit.capacity.toString(), 
+                  total_quantity: unit.total_quantity.toString(),
+                  amenities: parseJson(unit.amenities).length ? parseJson(unit.amenities) : [''],
+                  activities: parseJson(unit.activities).length ? parseJson(unit.activities) : [''],
+                  highlights: parseJson(unit.highlights).length ? parseJson(unit.highlights) : [''],
+                  policies: parseJson(unit.policies).length ? parseJson(unit.policies) : [''],
+                  images: parseJson(unit.images)
+                }); 
+                setIsAdding(true); 
+              }} className="h-8 w-8 text-white/40 hover:text-white">
                 <Sparkles className="w-4 h-4" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={() => handleDeleteUnit(unit.id)} className="h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10">
+              <Button size="icon" variant="ghost" onClick={() => propertyAPI.deleteUnit(unit.id).then(onRefresh)} className="h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10">
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
@@ -116,17 +187,17 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
         ))}
       </div>
 
-      <Dialog open={isAdding} onOpenChange={(open) => { if(!open) { setIsAdding(false); setEditingProperty(null); } }}>
-        <DialogContent className="bg-charcoal border-white/10 rounded-3xl">
+      <Dialog open={isAdding} onOpenChange={(open) => { if(!open) { setIsAdding(false); setEditingUnit(null); } }}>
+        <DialogContent className="bg-charcoal border-white/10 rounded-3xl max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-gold font-display">{editingUnit ? 'Edit Unit' : 'Add New Unit'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Unit Name</Label>
-              <Input value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-6 py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2 md:col-span-2">
+                <Label>Unit Name</Label>
+                <Input value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
+              </div>
               <div className="space-y-2">
                 <Label>Capacity</Label>
                 <Input type="number" value={unitForm.capacity} onChange={(e) => setUnitForm({ ...unitForm, capacity: e.target.value })} className="bg-white/5 border-white/10" />
@@ -136,6 +207,61 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
                 <Input type="number" value={unitForm.total_quantity} onChange={(e) => setUnitForm({ ...unitForm, total_quantity: e.target.value })} className="bg-white/5 border-white/10" />
               </div>
             </div>
+
+            {/* Unit Level Arrays */}
+            {[
+              { label: 'Amenities', field: 'amenities' as const },
+              { label: 'Activities', field: 'activities' as const },
+              { label: 'What You\'ll Love', field: 'highlights' as const },
+              { label: 'Privacy Policy', field: 'policies' as const },
+            ].map(section => (
+              <div key={section.field} className="space-y-2">
+                <Label>{section.label}</Label>
+                <div className="space-y-2">
+                  {unitForm[section.field].map((val, idx) => (
+                    <div key={idx} className="flex gap-2">
+                      <Input 
+                        value={val} 
+                        onChange={(e) => {
+                          const newArr = [...unitForm[section.field]];
+                          newArr[idx] = e.target.value;
+                          setUnitForm({ ...unitForm, [section.field]: newArr });
+                        }} 
+                        className="bg-white/5 border-white/10 h-9" 
+                      />
+                      <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500/50 hover:text-red-500" onClick={() => {
+                        const newArr = unitForm[section.field].filter((_, i) => i !== idx);
+                        setUnitForm({ ...unitForm, [section.field]: newArr.length ? newArr : [''] });
+                      }}><Trash2 className="w-3 h-3" /></Button>
+                    </div>
+                  ))}
+                  <Button variant="outline" size="sm" className="w-full border-dashed" onClick={() => setUnitForm({ ...unitForm, [section.field]: [...unitForm[section.field], ''] })}>
+                    <Plus className="w-3 h-3 mr-1" /> Add {section.label}
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Unit Gallery</Label>
+                <input type="file" id="unit-img" className="hidden" onChange={handleUnitImageUpload} />
+                <Button size="sm" variant="outline" onClick={() => document.getElementById('unit-img')?.click()} disabled={isUploading}>
+                  {isUploading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />} Upload
+                </Button>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {unitForm.images.map((img, idx) => (
+                  <div key={idx} className="aspect-square rounded-lg overflow-hidden relative group border border-white/10">
+                    <img src={img} className="w-full h-full object-cover" />
+                    <button className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity" onClick={() => setUnitForm({ ...unitForm, images: unitForm.images.filter((_, i) => i !== idx) })}>
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <Button onClick={handleSaveUnit} className="w-full bg-gradient-gold text-black font-bold h-12 rounded-xl mt-4">
               {editingUnit ? 'Update Unit' : 'Create Unit'}
             </Button>

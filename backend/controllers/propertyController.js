@@ -683,12 +683,25 @@ const getPropertyUnits = async (req, res) => {
 const createPropertyUnit = async (req, res) => {
   try {
     const { propertyId } = req.params;
-    const { name, capacity, total_quantity } = req.body;
+    const { 
+      name, capacity, total_quantity, 
+      amenities, activities, highlights, policies, images 
+    } = req.body;
 
     const result = await query(
-      `INSERT INTO property_units (property_id, name, capacity, total_quantity)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [propertyId, name, capacity, total_quantity]
+      `INSERT INTO property_units (
+        property_id, name, capacity, total_quantity, 
+        amenities, activities, highlights, policies, images
+      )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [
+        propertyId, name, capacity, total_quantity,
+        Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || null),
+        Array.isArray(activities) ? JSON.stringify(activities) : (activities || null),
+        Array.isArray(highlights) ? JSON.stringify(highlights) : (highlights || null),
+        Array.isArray(policies) ? JSON.stringify(policies) : (policies || null),
+        Array.isArray(images) ? JSON.stringify(images) : (images || '[]')
+      ]
     );
 
     return res.status(201).json({
@@ -705,13 +718,32 @@ const createPropertyUnit = async (req, res) => {
 const updatePropertyUnit = async (req, res) => {
   try {
     const { unitId } = req.params;
-    const { name, capacity, total_quantity } = req.body;
+    const { 
+      name, capacity, total_quantity, 
+      amenities, activities, highlights, policies, images 
+    } = req.body;
 
     const result = await query(
       `UPDATE property_units 
-       SET name = $1, capacity = $2, total_quantity = $3
-       WHERE id = $4 RETURNING *`,
-      [name, capacity, total_quantity, unitId]
+       SET 
+         name = COALESCE($1, name),
+         capacity = COALESCE($2, capacity),
+         total_quantity = COALESCE($3, total_quantity),
+         amenities = COALESCE($4, amenities),
+         activities = COALESCE($5, activities),
+         highlights = COALESCE($6, highlights),
+         policies = COALESCE($7, policies),
+         images = COALESCE($8, images)
+       WHERE id = $9 RETURNING *`,
+      [
+        name, capacity, total_quantity,
+        Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || null),
+        Array.isArray(activities) ? JSON.stringify(activities) : (activities || null),
+        Array.isArray(highlights) ? JSON.stringify(highlights) : (highlights || null),
+        Array.isArray(policies) ? JSON.stringify(policies) : (policies || null),
+        Array.isArray(images) ? JSON.stringify(images) : (images || null),
+        unitId
+      ]
     );
 
     if (result.rowCount === 0) {
