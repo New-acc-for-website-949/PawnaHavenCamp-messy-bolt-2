@@ -130,7 +130,12 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground font-display italic">Stay Options (Units)</h3>
-        <Button size="sm" onClick={() => setIsAdding(true)} className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 h-8">
+        <Button 
+          type="button"
+          size="sm" 
+          onClick={() => setIsAdding(true)} 
+          className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 h-8"
+        >
           <Plus className="w-4 h-4 mr-1" /> Add Unit
         </Button>
       </div>
@@ -141,13 +146,13 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/5 border border-white/10">
                 {parseJson(unit.images)?.[0] ? (
-                  <img 
-                    src={parseJson(unit.images)[0]} 
-                    className="w-full h-full object-cover" 
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&q=80&w=400';
-                    }}
-                  />
+                    <img 
+                      src={parseJson(unit.images)[0]} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&q=80&w=400';
+                      }}
+                    />
                 ) : <ImageIcon className="w-full h-full p-3 text-white/20" />}
               </div>
               <div>
@@ -158,18 +163,19 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
             <div className="flex items-center gap-2">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 text-[10px] border-gold/30 text-gold hover:bg-gold/10">
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-[10px] border-gold/30 text-gold hover:bg-gold/10">
                     <Calendar className="w-3 h-3 mr-1" /> Calendar
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[450px] bg-charcoal border-white/10 rounded-3xl">
+                <DialogContent className="sm:max-w-[450px] bg-charcoal border-white/10 rounded-3xl" aria-describedby="calendar-desc">
                   <DialogHeader>
                     <DialogTitle className="text-gold font-display">Manage Unit Calendar: {unit.name}</DialogTitle>
+                    <p id="calendar-desc" className="text-xs text-muted-foreground">Select dates to manage availability and pricing.</p>
                   </DialogHeader>
                   <CalendarSync propertyId={propertyId} unitId={unit.id} isAdmin={true} />
                 </DialogContent>
               </Dialog>
-              <Button size="icon" variant="ghost" onClick={() => { 
+              <Button type="button" size="icon" variant="ghost" onClick={() => { 
                 setEditingUnit(unit); 
                 setUnitForm({ 
                   name: unit.name, 
@@ -185,7 +191,7 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
               }} className="h-8 w-8 text-white/40 hover:text-white">
                 <Sparkles className="w-4 h-4" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={() => propertyAPI.deleteUnit(unit.id).then(onRefresh)} className="h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10">
+              <Button type="button" size="icon" variant="ghost" onClick={() => propertyAPI.deleteUnit(unit.id).then(onRefresh)} className="h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10">
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
@@ -194,9 +200,10 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
       </div>
 
       <Dialog open={isAdding} onOpenChange={(open) => { if(!open) { setIsAdding(false); setEditingUnit(null); } }}>
-        <DialogContent className="bg-charcoal border-white/10 rounded-3xl max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+        <DialogContent className="bg-charcoal border-white/10 rounded-3xl max-h-[90vh] overflow-y-auto sm:max-w-[600px]" aria-describedby="unit-form-desc">
           <DialogHeader>
             <DialogTitle className="text-gold font-display">{editingUnit ? 'Edit Unit' : 'Add New Unit'}</DialogTitle>
+            <p id="unit-form-desc" className="text-xs text-muted-foreground">Specify the details for this accommodation unit.</p>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -235,13 +242,13 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
                         }} 
                         className="bg-white/5 border-white/10 h-9" 
                       />
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500/50 hover:text-red-500" onClick={() => {
+                      <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-red-500/50 hover:text-red-500" onClick={() => {
                         const newArr = unitForm[section.field].filter((_, i) => i !== idx);
                         setUnitForm({ ...unitForm, [section.field]: newArr.length ? newArr : [''] });
                       }}><Trash2 className="w-3 h-3" /></Button>
                     </div>
                   ))}
-                  <Button variant="outline" size="sm" className="w-full border-dashed" onClick={() => setUnitForm({ ...unitForm, [section.field]: [...unitForm[section.field], ''] })}>
+                  <Button type="button" variant="outline" size="sm" className="w-full border-dashed" onClick={() => setUnitForm({ ...unitForm, [section.field]: [...unitForm[section.field], ''] })}>
                     <Plus className="w-3 h-3 mr-1" /> Add {section.label}
                   </Button>
                 </div>
@@ -252,7 +259,7 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
               <div className="flex items-center justify-between">
                 <Label>Unit Gallery</Label>
                 <input type="file" id="unit-img" className="hidden" onChange={handleUnitImageUpload} />
-                <Button size="sm" variant="outline" onClick={() => document.getElementById('unit-img')?.click()} disabled={isUploading}>
+                <Button type="button" size="sm" variant="outline" onClick={() => document.getElementById('unit-img')?.click()} disabled={isUploading}>
                   {isUploading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />} Upload
                 </Button>
               </div>
@@ -260,7 +267,7 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
                 {unitForm.images.map((img, idx) => (
                   <div key={idx} className="aspect-square rounded-lg overflow-hidden relative group border border-white/10">
                     <img src={img} className="w-full h-full object-cover" />
-                    <button className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity" onClick={() => setUnitForm({ ...unitForm, images: unitForm.images.filter((_, i) => i !== idx) })}>
+                    <button type="button" className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity" onClick={() => setUnitForm({ ...unitForm, images: unitForm.images.filter((_, i) => i !== idx) })}>
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </button>
                   </div>
@@ -268,7 +275,7 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
               </div>
             </div>
 
-            <Button onClick={handleSaveUnit} className="w-full bg-gradient-gold text-black font-bold h-12 rounded-xl mt-4">
+            <Button type="button" onClick={handleSaveUnit} className="w-full bg-gradient-gold text-black font-bold h-12 rounded-xl mt-4">
               {editingUnit ? 'Update Unit' : 'Create Unit'}
             </Button>
           </div>
