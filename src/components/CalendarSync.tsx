@@ -37,12 +37,10 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
       
       // Fetch property/unit details for pricing settings
       const propUrl = unitId
-        ? `/api/properties/units/${unitId}` // Assuming unit details endpoint exists or is needed
+        ? `/api/properties/units/${unitId}` 
         : (token ? `/api/properties/${propertyId}` : `/api/properties/public/${propertyId}`);
       
-      // If unitId, we might just use the unit's specific calendar price directly or fetch unit details
-      // For now, let's stick to the property details for base fallback if not unit-specific
-      const propResponse = await fetch(token ? `/api/properties/${propertyId}` : `/api/properties/public/${propertyId}`, { headers: token ? headers : {} });
+      const propResponse = await fetch(propUrl, { headers: token ? headers : {} });
       const propResult = await propResponse.json();
       
       if (propResult.success) {

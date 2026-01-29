@@ -111,15 +111,13 @@ const getPublicProperties = async (req, res) => {
          FROM property_images pi WHERE pi.property_id = p.id) as images,
         (SELECT json_agg(json_build_object('id', pu.id, 'name', pu.name, 'available_persons', pu.available_persons, 'total_persons', pu.total_persons)) 
          FROM property_units pu WHERE pu.property_id = p.id) as units,
-        CASE 
-          WHEN p.category = 'campings_cottages' THEN (
-            SELECT MIN(uc.price)
-            FROM property_units pu
-            JOIN unit_calendar uc ON uc.unit_id = pu.id
-            WHERE pu.property_id = p.id
-          )
-          ELSE NULL
-        END as unit_starting_price
+        (
+          SELECT MIN(uc.price)
+          FROM property_units pu
+          JOIN unit_calendar uc ON uc.unit_id = pu.id
+          WHERE pu.property_id = p.id
+          AND uc.date >= CURRENT_DATE
+        ) as unit_starting_price
       FROM properties p
       WHERE p.is_active = true
       ORDER BY p.is_available DESC, p.is_top_selling DESC, p.created_at DESC
