@@ -89,8 +89,12 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
           available_persons: '0',
           total_persons: '0',
           price_per_person: '0',
+          weekday_price: '0',
+          weekend_price: '0',
+          special_price: '0',
           amenities: [''],
-          images: [] as string[]
+          images: [] as string[],
+          special_dates: [] as { date: string, price: string }[]
         });
         onRefresh();
       }
