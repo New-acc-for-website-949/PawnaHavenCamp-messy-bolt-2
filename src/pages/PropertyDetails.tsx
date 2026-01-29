@@ -661,23 +661,21 @@ const PropertyDetails = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent pointer-events-none" />
               
               {/* Floating Badges for Mobile */}
-              <div className="absolute top-20 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
-                <div className="flex flex-col gap-2">
-                  <Badge variant="outline" className="bg-black/60 backdrop-blur-md border-white/20 text-white px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-widest w-fit pointer-events-auto">
-                    {propertyData.category === 'campings_cottages' ? 'Camping & Cottages' : propertyData.category}
-                  </Badge>
-                  <Badge className={cn(
-                    "border-none px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-widest w-fit pointer-events-auto",
-                    (propertyData.category === 'campings_cottages' && selectedUnit) 
-                      ? ((selectedUnit.calendar?.[0]?.available_quantity ?? 0) > 0 ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
-                      : (propertyData.is_available ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
-                  )}>
-                    {displayAvailability}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 pointer-events-auto">
-                  <Star className="w-3.5 h-3.5 text-[#C5A021] fill-[#C5A021]" />
-                  <span className="text-xs font-bold text-white">{propertyData.rating}</span>
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 pointer-events-none w-max max-w-[60%] justify-center">
+                <Badge variant="outline" className="bg-black/70 backdrop-blur-md border-white/20 text-white px-2 py-0.5 rounded-full text-[8px] uppercase font-bold tracking-widest pointer-events-auto opacity-70 whitespace-nowrap">
+                  {propertyData.category === 'campings_cottages' ? 'Camping' : propertyData.category}
+                </Badge>
+                <Badge className={cn(
+                  "border-none px-2 py-0.5 rounded-full text-[8px] uppercase font-bold tracking-widest pointer-events-auto opacity-70 whitespace-nowrap",
+                  (propertyData.category === 'campings_cottages' && selectedUnit) 
+                    ? ((selectedUnit.calendar?.[0]?.available_quantity ?? 0) > 0 ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
+                    : (propertyData.is_available ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
+                )}>
+                  {displayAvailability}
+                </Badge>
+                <div className="flex items-center gap-1 bg-black/70 backdrop-blur-md px-2 py-1 rounded-full border border-white/20 pointer-events-auto opacity-70 whitespace-nowrap">
+                  <Star className="w-2.5 h-2.5 text-[#C5A021] fill-[#C5A021]" />
+                  <span className="text-[10px] font-bold text-white">{propertyData.rating}</span>
                 </div>
               </div>
             </div>
