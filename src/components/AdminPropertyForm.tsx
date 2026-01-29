@@ -951,15 +951,6 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
           </div>
 
           <div className="flex items-center justify-end gap-4 pt-4 animate-fade-up">
-            {formData.category === 'campings_cottages' && property?.id && (
-              <div className="flex-1">
-                <UnitManager 
-                  propertyId={property.id} 
-                  units={propertyUnits} 
-                  onRefresh={fetchUnits} 
-                />
-              </div>
-            )}
             <Button
               type="button"
               variant="outline"
@@ -984,10 +975,20 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                   <Save className="w-5 h-5 mr-2" />
                   {property ? 'Update Property' : 'Create Property'}
                 </>
-              )}
+              ) }
             </Button>
           </div>
         </form>
+
+        {formData.category === 'campings_cottages' && property?.id && (
+          <div className="mt-8 glass rounded-2xl border border-border/50 p-6 animate-fade-up">
+            <UnitManager 
+              propertyId={property.id} 
+              units={propertyUnits} 
+              onRefresh={fetchUnits} 
+            />
+          </div>
+        )}
       </main>
     </div>
   );
