@@ -52,6 +52,9 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
     available_persons: '0',
     total_persons: '0',
     price_per_person: '0',
+    weekday_price: '0',
+    weekend_price: '0',
+    special_price: '0',
     amenities: [''],
     images: [] as string[]
   });
@@ -62,6 +65,9 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
       const payload = {
         ...unitForm,
         price_per_person: parseFloat(unitForm.price_per_person),
+        weekday_price: parseFloat(unitForm.weekday_price),
+        weekend_price: parseFloat(unitForm.weekend_price),
+        special_price: parseFloat(unitForm.special_price),
         available_persons: parseInt(unitForm.available_persons),
         total_persons: parseInt(unitForm.total_persons),
         amenities: unitForm.amenities.filter(a => a.trim()),
@@ -185,6 +191,9 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
                   available_persons: (unit.available_persons || 0).toString(),
                   total_persons: (unit.total_persons || 0).toString(),
                   price_per_person: (unit.price_per_person || 0).toString(),
+                  weekday_price: (unit.weekday_price || 0).toString(),
+                  weekend_price: (unit.weekend_price || 0).toString(),
+                  special_price: (unit.special_price || 0).toString(),
                   amenities: parseJson(unit.amenities).length ? parseJson(unit.amenities) : [''],
                   images: parseJson(unit.images)
                 }); 
@@ -214,8 +223,16 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
               </div>
 
               <div className="space-y-2">
-                <Label>Price Per Person</Label>
-                <Input type="number" value={unitForm.price_per_person} onChange={(e) => setUnitForm({ ...unitForm, price_per_person: e.target.value })} className="bg-white/5 border-white/10" />
+                <Label>Weekday Price (Base)</Label>
+                <Input type="number" value={unitForm.weekday_price} onChange={(e) => setUnitForm({ ...unitForm, weekday_price: e.target.value })} className="bg-white/5 border-white/10" />
+              </div>
+              <div className="space-y-2">
+                <Label>Weekend Price</Label>
+                <Input type="number" value={unitForm.weekend_price} onChange={(e) => setUnitForm({ ...unitForm, weekend_price: e.target.value })} className="bg-white/5 border-white/10" />
+              </div>
+              <div className="space-y-2">
+                <Label>Special Price</Label>
+                <Input type="number" value={unitForm.special_price} onChange={(e) => setUnitForm({ ...unitForm, special_price: e.target.value })} className="bg-white/5 border-white/10" />
               </div>
               <div className="space-y-2">
                 <Label>
