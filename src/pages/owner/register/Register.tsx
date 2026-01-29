@@ -119,8 +119,7 @@ const OwnerRegister = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-background border-border/50">
                   <SelectItem value="Villa">Villa</SelectItem>
-                  <SelectItem value="Cottage">Cottage</SelectItem>
-                  <SelectItem value="Camping">Camping</SelectItem>
+                  <SelectItem value="campings_cottages">Camping & Cottage</SelectItem>
                 </SelectContent>
               </Select>
             </div>
