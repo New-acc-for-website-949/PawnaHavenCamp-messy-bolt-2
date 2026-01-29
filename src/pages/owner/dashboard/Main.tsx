@@ -34,13 +34,13 @@ const OwnerCalendar = () => {
   const isCampingsCottages = property?.category === 'campings_cottages';
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#D4AF37] font-display">Availability Calendar</h1>
+    <div className="space-y-6 px-4 sm:px-0 pb-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#D4AF37] font-display tracking-tight">Availability Calendar</h1>
         {isCampingsCottages && units.length > 0 && (
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
-              <SelectTrigger className="bg-[#1A1A1A] border-[#D4AF37]/30 text-white">
+              <SelectTrigger className="bg-[#1A1A1A] border-[#D4AF37]/30 text-white h-11">
                 <SelectValue placeholder="Select Unit" />
               </SelectTrigger>
               <SelectContent className="bg-charcoal border-white/10 text-white">
@@ -51,35 +51,37 @@ const OwnerCalendar = () => {
         )}
       </div>
 
-      <div className="glass rounded-3xl p-6 border border-[#D4AF37]/30">
-        <p className="text-xs text-gray-400 mb-4 italic">
+      <div className="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/20 bg-black/40 shadow-2xl">
+        <p className="text-[10px] sm:text-xs text-gray-400 mb-4 italic leading-relaxed">
           * Click on a date to toggle its booking status. This will update on the website and admin panel instantly.
         </p>
         {propertyId ? (
-          <CalendarSync 
-            propertyId={ownerData?.property_id || propertyId} 
-            unitId={selectedUnitId ? parseInt(selectedUnitId) : undefined} 
-            isAdmin={true} 
-          />
+          <div className="w-full overflow-hidden">
+            <CalendarSync 
+              propertyId={ownerData?.property_id || propertyId} 
+              unitId={selectedUnitId ? parseInt(selectedUnitId) : undefined} 
+              isAdmin={true} 
+            />
+          </div>
         ) : (
-          <div className="text-center p-8 text-gray-500">
+          <div className="text-center py-12 text-gray-500 italic">
             No property linked to this account.
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl flex items-center space-x-3">
-          <div className="w-3 h-3 bg-[#00FF00] rounded-full shadow-[0_0_10px_#00FF00]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Available</span>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="bg-[#1A1A1A]/80 border border-[#D4AF37]/10 p-4 rounded-xl sm:rounded-2xl flex items-center space-x-3 transition-colors hover:bg-[#1A1A1A]">
+          <div className="w-2.5 h-2.5 bg-[#00FF00] rounded-full shadow-[0_0_8px_#00FF00]" />
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-300">Available</span>
         </div>
-        <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl flex items-center space-x-3">
-          <div className="w-3 h-3 bg-red-500 rounded-full shadow-[0_0_10px_#ef4444]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Booked / Blocked</span>
+        <div className="bg-[#1A1A1A]/80 border border-[#D4AF37]/10 p-4 rounded-xl sm:rounded-2xl flex items-center space-x-3 transition-colors hover:bg-[#1A1A1A]">
+          <div className="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_8px_#ef4444]" />
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-300">Booked / Blocked</span>
         </div>
-        <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl flex items-center space-x-3">
-          <div className="w-3 h-3 bg-[#D4AF37] rounded-full shadow-[0_0_10px_#D4AF37]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Today</span>
+        <div className="bg-[#1A1A1A]/80 border border-[#D4AF37]/10 p-4 rounded-xl sm:rounded-2xl flex items-center space-x-3 transition-colors hover:bg-[#1A1A1A]">
+          <div className="w-2.5 h-2.5 bg-[#D4AF37] rounded-full shadow-[0_0_8px_#D4AF37]" />
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-300">Today</span>
         </div>
       </div>
     </div>

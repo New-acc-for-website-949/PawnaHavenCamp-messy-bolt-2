@@ -684,9 +684,21 @@ const togglePropertyStatus = async (req, res) => {
 const getPropertyUnits = async (req, res) => {
   try {
     const { propertyId } = req.params;
+    
+    // First find the property internal numeric ID
+    const propResult = await query(`
+      SELECT id FROM properties WHERE property_id = $1 OR id::text = $1
+    `, [propertyId]);
+
+    if (propResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    const internalId = propResult.rows[0].id;
+
     const result = await query(
       'SELECT * FROM property_units WHERE property_id = $1 ORDER BY id ASC',
-      [propertyId]
+      [internalId]
     );
     return res.status(200).json({
       success: true,
@@ -813,6 +825,17 @@ const updateUnitCalendarData = async (req, res) => {
     const { unitId } = req.params;
     const { date, price, available_quantity, is_weekend, is_special } = req.body;
 
+    // Fetch total capacity if available_quantity is not provided
+    let finalAvailableQuantity = available_quantity;
+    if (finalAvailableQuantity === undefined || finalAvailableQuantity === null) {
+      const unitResult = await query('SELECT total_persons FROM property_units WHERE id = $1', [unitId]);
+      if (unitResult.rows.length > 0) {
+        finalAvailableQuantity = unitResult.rows[0].total_persons;
+      } else {
+        finalAvailableQuantity = 0;
+      }
+    }
+
     await query(
       `INSERT INTO unit_calendar (unit_id, date, price, available_quantity, is_weekend, is_special)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -822,7 +845,7 @@ const updateUnitCalendarData = async (req, res) => {
          available_quantity = EXCLUDED.available_quantity,
          is_weekend = EXCLUDED.is_weekend,
          is_special = EXCLUDED.is_special`,
-      [unitId, date, price, available_quantity, is_weekend, is_special]
+      [unitId, date, price, finalAvailableQuantity, is_weekend, is_special]
     );
 
     return res.status(200).json({

@@ -55,19 +55,19 @@ const OwnerCalendar = () => {
   const isCampingsCottages = property?.category === 'campings_cottages';
 
   return (
-    <div className="space-y-6 w-full px-2 sm:px-0">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 w-full px-4 sm:px-0 pb-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col space-y-1">
-          <h1 className="text-2xl font-bold text-[#D4AF37] font-display">Availability</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#D4AF37] font-display">Availability</h1>
           <p className="text-[10px] text-gray-400 italic">
             * Toggle future dates. Past dates frozen.
           </p>
         </div>
         
         {isCampingsCottages && units.length > 0 && (
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
-              <SelectTrigger className="bg-[#1A1A1A] border-[#D4AF37]/30 text-white">
+              <SelectTrigger className="bg-[#1A1A1A] border-[#D4AF37]/30 text-white h-11">
                 <SelectValue placeholder="Select Unit" />
               </SelectTrigger>
               <SelectContent className="bg-charcoal border-white/10 text-white">
@@ -80,27 +80,29 @@ const OwnerCalendar = () => {
         )}
       </div>
 
-      <div className="w-full">
+      <div className="w-full glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#D4AF37]/20 bg-black/40 shadow-2xl">
         {property?.id ? (
-          <CalendarSync 
-            propertyId={property.id.toString()} 
-            unitId={selectedUnitId ? parseInt(selectedUnitId) : undefined}
-            isAdmin={true} 
-          />
+          <div className="w-full overflow-hidden">
+            <CalendarSync 
+              propertyId={property.id.toString()} 
+              unitId={selectedUnitId ? parseInt(selectedUnitId) : undefined}
+              isAdmin={true} 
+            />
+          </div>
         ) : (
-          <div className="p-12 text-center text-gray-500 glass rounded-3xl">
+          <div className="p-12 text-center text-gray-500 italic">
             No property linked to this account.
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-[10px] font-bold uppercase tracking-tighter">
-        <div className="flex items-center justify-center space-x-2 bg-black/40 p-2 rounded-xl border border-[#00FF00]/20">
-          <div className="w-2 h-2 bg-[#00FF00] rounded-full" />
+      <div className="grid grid-cols-2 gap-3 text-[10px] font-bold uppercase tracking-tighter">
+        <div className="flex items-center justify-center space-x-2 bg-[#1A1A1A]/80 p-3 rounded-xl border border-[#00FF00]/10">
+          <div className="w-2 h-2 bg-[#00FF00] rounded-full shadow-[0_0_8px_#00FF00]" />
           <span className="text-[#00FF00]">Available</span>
         </div>
-        <div className="flex items-center justify-center space-x-2 bg-black/40 p-2 rounded-xl border border-[#FF0000]/20">
-          <div className="w-2 h-2 bg-[#FF0000] rounded-full" />
+        <div className="flex items-center justify-center space-x-2 bg-[#1A1A1A]/80 p-3 rounded-xl border border-[#FF0000]/10">
+          <div className="w-2 h-2 bg-[#FF0000] rounded-full shadow-[0_0_8px_#ef4444]" />
           <span className="text-[#FF0000]">Booked</span>
         </div>
       </div>
