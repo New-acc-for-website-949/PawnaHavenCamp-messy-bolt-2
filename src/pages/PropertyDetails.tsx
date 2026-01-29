@@ -294,7 +294,7 @@ const PropertyDetails = () => {
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-[#C5A021]">
                       {typeof displayPrice === 'string' && displayPrice.startsWith('₹') ? '' : '₹'}
-                      {displayPrice === 'Price on Selection' ? (propertyData.unit_starting_price || propertyData.unit_base_starting_price || '0') : displayPrice}
+                      {displayPrice}
                     </span>
                     <span className="text-gray-400 text-sm">/{displayPriceNote}</span>
                   </div>

@@ -12,7 +12,6 @@ import { propertyAPI } from '@/lib/api';
 
 import { CalendarSync } from "@/components/CalendarSync";
 
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -32,7 +31,6 @@ const OwnerProfile = () => {
     highlights: [] as string[],
     policies: [] as string[],
     schedule: [] as {time: string, title: string}[],
-    units: [] as any[],
     description: ''
   });
 
@@ -123,7 +121,6 @@ const OwnerProfile = () => {
               }
               return { time: '', title: String(item) };
             }),
-            units: prop.units || [],
             description: prop.description || ''
           });
 
@@ -373,101 +370,6 @@ const OwnerProfile = () => {
             placeholder="Property description..."
           />
         </div>
-
-        {details.units && details.units.length > 0 && (
-          <div className="space-y-4">
-            <Label className="text-sm font-bold uppercase tracking-widest text-gray-400">Unit Management</Label>
-            <div className="grid grid-cols-1 gap-4">
-              {details.units.map((unit: any, idx: number) => (
-                <div key={unit.id} className="p-4 bg-black/40 border border-[#D4AF37]/20 rounded-2xl space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#D4AF37]">{unit.name}</span>
-                    <Badge variant="outline" className="text-[10px] border-[#D4AF37]/30 text-[#D4AF37]">
-                      {unit.available_persons} / {unit.total_persons} Pax
-                    </Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] text-gray-500 uppercase">Base Price (Per Person)</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]">₹</span>
-                        <Input 
-                          type="number"
-                          className="pl-7 bg-black/60 border-[#D4AF37]/20 text-white"
-                          value={unit.price_per_person || ''}
-                          onChange={(e) => {
-                            const newUnits = [...details.units];
-                            newUnits[idx] = { ...unit, price_per_person: e.target.value };
-                            setDetails({ ...details, units: newUnits });
-                          }}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="text-[10px] text-gray-500 uppercase">Availability (Available / Total)</Label>
-                      <div className="flex gap-2">
-                        <Input 
-                          type="number"
-                          className="bg-black/60 border-[#D4AF37]/20 text-[#00FF41] font-bold"
-                          value={unit.available_persons || ''}
-                          placeholder="Avail"
-                          onChange={(e) => {
-                            const newUnits = [...details.units];
-                            newUnits[idx] = { ...unit, available_persons: e.target.value };
-                            setDetails({ ...details, units: newUnits });
-                          }}
-                        />
-                        <Input 
-                          type="number"
-                          className="bg-black/60 border-[#D4AF37]/20 text-[#FFA500] font-bold"
-                          value={unit.total_persons || ''}
-                          placeholder="Total"
-                          onChange={(e) => {
-                            const newUnits = [...details.units];
-                            newUnits[idx] = { ...unit, total_persons: e.target.value };
-                            setDetails({ ...details, units: newUnits });
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button 
-                    className="w-full bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 hover:bg-[#D4AF37]/20 h-10"
-                    onClick={async () => {
-                      try {
-                        const token = localStorage.getItem('ownerToken');
-                        const res = await fetch(`/api/properties/units/${unit.id}`, {
-                          method: 'PUT',
-                          headers: { 
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          },
-                          body: JSON.stringify({ 
-                            price_per_person: parseFloat(unit.price_per_person),
-                            available_persons: parseInt(unit.available_persons),
-                            total_persons: parseInt(unit.total_persons)
-                          })
-                        });
-                        if (res.ok) {
-                          toast.success(`${unit.name} updated successfully`);
-                        } else {
-                          toast.error('Failed to update unit');
-                        }
-                      } catch (e) {
-                        toast.error('Error updating unit');
-                      }
-                    }}
-                  >
-                    Save {unit.name} Changes
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         
         <Button onClick={handleSave} disabled={loading} className="w-full bg-[#D4AF37] hover:bg-[#B8860B] text-black font-bold h-12 shadow-xl">
           {loading ? 'Saving...' : 'Save Profile'}
