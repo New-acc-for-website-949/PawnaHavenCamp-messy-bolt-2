@@ -37,7 +37,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
       
       // Fetch property/unit details for pricing settings
       const propUrl = unitId
-        ? `/api/properties/units/${unitId}` 
+        ? `/api/properties/${propertyId}` 
         : (token ? `/api/properties/${propertyId}` : `/api/properties/public/${propertyId}`);
       
       const propResponse = await fetch(propUrl, { headers: token ? headers : {} });

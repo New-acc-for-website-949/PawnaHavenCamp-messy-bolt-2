@@ -219,9 +219,11 @@ const OwnerUnits = () => {
       <Dialog open={isAdding} onOpenChange={(open) => { if(!open) { setIsAdding(false); setEditingUnit(null); } }}>
         <DialogContent className="bg-charcoal border-white/10 rounded-3xl max-h-[90vh] overflow-y-auto sm:max-w-[600px] w-[95vw] p-0" aria-describedby="unit-form-desc">
           <div className="p-6 sm:p-8">
-            <DialogHeader className="mb-6">
-              <DialogTitle className="text-gold font-display text-xl sm:text-2xl text-center">Edit Unit</DialogTitle>
-              <p id="unit-form-desc" className="text-xs text-muted-foreground text-center">Specify the details for this accommodation unit.</p>
+            <DialogHeader className="mb-6 text-center">
+              <DialogTitle className="text-gold font-display text-xl sm:text-2xl">Edit Unit</DialogTitle>
+              <DialogDescription id="unit-form-desc" className="text-xs text-muted-foreground">
+                Specify the details for this accommodation unit including name, capacity, and amenities.
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-6">
