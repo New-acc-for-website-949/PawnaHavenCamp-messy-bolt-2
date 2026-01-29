@@ -157,7 +157,9 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
               </div>
               <div>
                 <p className="font-bold text-white">{unit.name}</p>
-                <p className="text-xs text-muted-foreground">Persons: <span className="text-[#00FF41]">{unit.available_persons}</span> / <span className="text-[#FFA500]">{unit.total_persons}</span></p>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-[#00FF41]">{unit.available_persons}</span> / <span className="text-[#FFA500]">{unit.total_persons}</span>
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -218,7 +220,7 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
                   </div>
                   <div className="space-y-2">
                     <Label>
-                      Capacity (<span className="text-[#00FF41]">Available</span> / <span className="text-[#FFA500]">Total</span> Persons)
+                      <span className="text-[#00FF41]">Available</span> / <span className="text-[#FFA500]">Total persons capacity</span>
                     </Label>
                     <div className="flex gap-2">
                       <Input type="number" placeholder="Available" value={unitForm.available_persons} onChange={(e) => setUnitForm({ ...unitForm, available_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#00FF41] font-bold" />

@@ -461,6 +461,17 @@ const AdminDashboard = () => {
                               </div>
                             </div>
                             <h4 className="font-semibold text-foreground truncate text-sm xs:text-base leading-snug">{property.title}</h4>
+                            {property.units && property.units.length > 0 && (
+                              <div className="flex items-center gap-1 text-[10px] mt-1">
+                                <span className="text-[#00FF41] font-bold">
+                                  {property.units.reduce((acc: number, u: any) => acc + (parseInt(u.available_persons) || 0), 0)}
+                                </span>
+                                <span className="text-white/40">/</span>
+                                <span className="text-[#FFA500] font-bold">
+                                  {property.units.reduce((acc: number, u: any) => acc + (parseInt(u.total_persons) || 0), 0)}
+                                </span>
+                              </div>
+                            )}
                             <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-1">
                               <MapPin className="w-3 h-3 text-gold/60" />
                               <span className="truncate">{property.location}</span>
