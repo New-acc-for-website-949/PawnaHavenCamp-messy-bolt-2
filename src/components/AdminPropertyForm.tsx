@@ -22,8 +22,17 @@ import {
   Clock,
   Phone,
   Upload,
-  ImageIcon
+  ImageIcon,
+  Calendar
 } from 'lucide-react';
+import { propertyAPI } from "@/lib/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface AdminPropertyFormProps {
   property?: any;
@@ -33,13 +42,118 @@ interface AdminPropertyFormProps {
 
 import { CalendarSync } from "@/components/CalendarSync";
 
+const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, units: any[], onRefresh: () => void }) => {
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingUnit, setEditingProperty] = useState<any>(null);
+  const [unitForm, setUnitForm] = useState({ name: '', capacity: '2', total_quantity: '1' });
+  const { toast } = useToast();
+
+  const handleSaveUnit = async () => {
+    try {
+      const res = editingUnit 
+        ? await propertyAPI.updateUnit(editingUnit.id, unitForm)
+        : await propertyAPI.createUnit(propertyId, unitForm);
+      
+      if (res.success) {
+        toast({ title: editingUnit ? 'Unit updated' : 'Unit created' });
+        setIsAdding(false);
+        setEditingProperty(null);
+        setUnitForm({ name: '', capacity: '2', total_quantity: '1' });
+        onRefresh();
+      }
+    } catch (e) {
+      toast({ title: 'Error saving unit', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteUnit = async (id: number) => {
+    if (!confirm('Are you sure?')) return;
+    const res = await propertyAPI.deleteUnit(id);
+    if (res.success) {
+      toast({ title: 'Unit deleted' });
+      onRefresh();
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground font-display italic">Stay Options (Units)</h3>
+        <Button size="sm" onClick={() => setIsAdding(true)} className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 h-8">
+          <Plus className="w-4 h-4 mr-1" /> Add Unit
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3">
+        {units.map((unit) => (
+          <div key={unit.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group">
+            <div>
+              <p className="font-bold text-white">{unit.name}</p>
+              <p className="text-xs text-muted-foreground">Capacity: {unit.capacity} | Total: {unit.total_quantity}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-[10px] border-gold/30 text-gold hover:bg-gold/10">
+                    <Calendar className="w-3 h-3 mr-1" /> Calendar
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[450px] bg-charcoal border-white/10 rounded-3xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-gold font-display">Manage Unit Calendar: {unit.name}</DialogTitle>
+                  </DialogHeader>
+                  <CalendarSync propertyId={propertyId} unitId={unit.id} isAdmin={true} />
+                </DialogContent>
+              </Dialog>
+              <Button size="icon" variant="ghost" onClick={() => { setEditingProperty(unit); setUnitForm({ name: unit.name, capacity: unit.capacity.toString(), total_quantity: unit.total_quantity.toString() }); setIsAdding(true); }} className="h-8 w-8 text-white/40 hover:text-white">
+                <Sparkles className="w-4 h-4" />
+              </Button>
+              <Button size="icon" variant="ghost" onClick={() => handleDeleteUnit(unit.id)} className="h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Dialog open={isAdding} onOpenChange={(open) => { if(!open) { setIsAdding(false); setEditingProperty(null); } }}>
+        <DialogContent className="bg-charcoal border-white/10 rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-gold font-display">{editingUnit ? 'Edit Unit' : 'Add New Unit'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Unit Name</Label>
+              <Input value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Capacity</Label>
+                <Input type="number" value={unitForm.capacity} onChange={(e) => setUnitForm({ ...unitForm, capacity: e.target.value })} className="bg-white/5 border-white/10" />
+              </div>
+              <div className="space-y-2">
+                <Label>Total Quantity</Label>
+                <Input type="number" value={unitForm.total_quantity} onChange={(e) => setUnitForm({ ...unitForm, total_quantity: e.target.value })} className="bg-white/5 border-white/10" />
+              </div>
+            </div>
+            <Button onClick={handleSaveUnit} className="w-full bg-gradient-gold text-black font-bold h-12 rounded-xl mt-4">
+              {editingUnit ? 'Update Unit' : 'Create Unit'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
 const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [propertyUnits, setPropertyUnits] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'camping',
+    category: 'campings_cottages',
     location: '',
     map_link: '',
     rating: '4.5',
@@ -66,6 +180,18 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
     images: [] as string[],
   });
   const { toast } = useToast();
+
+  const fetchUnits = async () => {
+    if (!property?.id) return;
+    const res = await propertyAPI.getUnits(property.id);
+    if (res.success) setPropertyUnits(res.data);
+  };
+
+  useEffect(() => {
+    if (property) {
+      fetchUnits();
+    }
+  }, [property]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -164,6 +290,13 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
       schedule: formData.schedule.filter(s => s.time.trim() || s.title.trim()),
       images: formData.images.filter(i => i.trim()),
     };
+
+    // For campings_cottages, we don't send individual prices as they come from units
+    if (formData.category === 'campings_cottages') {
+      delete payload.price;
+      delete payload.weekday_price;
+      delete payload.weekend_price;
+    }
 
     try {
       const response = await fetch(url, {
@@ -314,10 +447,19 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
 
               <div className="space-y-2 md:col-span-2">
                 <Label>Availability Calendar (Syncs with Owner Dashboard)</Label>
-                {property && (
+                {property && formData.category === 'villa' && (
                   <CalendarSync propertyId={property.property_id || property.id} isAdmin={true} />
                 )}
-                {!property && <p className="text-sm text-muted-foreground italic">Save the property first to enable calendar sync.</p>}
+                {property && formData.category === 'campings_cottages' && (
+                  <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                    <UnitManager 
+                      propertyId={property.id} 
+                      units={propertyUnits} 
+                      onRefresh={fetchUnits} 
+                    />
+                  </div>
+                )}
+                {!property && <p className="text-sm text-muted-foreground italic">Save the property first to enable calendar/unit management.</p>}
               </div>
 
               <div className="space-y-2 md:col-span-2">
@@ -341,8 +483,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="camping">Camping</SelectItem>
-                    <SelectItem value="cottage">Cottage</SelectItem>
+                    <SelectItem value="campings_cottages">Campings & Cottages</SelectItem>
                     <SelectItem value="villa">Villa</SelectItem>
                   </SelectContent>
                 </Select>
@@ -375,7 +516,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">Price *</Label>
+                <Label htmlFor="price">{formData.category === 'villa' ? 'Price *' : 'Starting Price (Reference) *'}</Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -383,7 +524,8 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="h-12 pl-10 bg-secondary/50 rounded-xl"
-                    required
+                    placeholder={formData.category === 'campings_cottages' ? "Price from units will be used" : ""}
+                    required={formData.category === 'villa'}
                   />
                 </div>
               </div>
@@ -677,6 +819,15 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
           </div>
 
           <div className="flex items-center justify-end gap-4 pt-4 animate-fade-up">
+            {formData.category === 'campings_cottages' && property?.id && (
+              <div className="flex-1">
+                <UnitManager 
+                  propertyId={property.id} 
+                  units={propertyUnits} 
+                  onRefresh={fetchUnits} 
+                />
+              </div>
+            )}
             <Button
               type="button"
               variant="outline"

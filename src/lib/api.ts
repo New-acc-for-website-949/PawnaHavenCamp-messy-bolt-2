@@ -128,4 +128,81 @@ export const propertyAPI = {
       };
     }
   },
+  // Unit Management API
+  getUnits: async (propertyId: string) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const response = await fetch(`${API_BASE_URL}/api/properties/${propertyId}/units`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching units:', error);
+      return { success: false, data: [] };
+    }
+  },
+  createUnit: async (propertyId: string, data: any) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const response = await fetch(`${API_BASE_URL}/api/properties/${propertyId}/units`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating unit:', error);
+      return { success: false };
+    }
+  },
+  updateUnit: async (unitId: number, data: any) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const response = await fetch(`${API_BASE_URL}/api/properties/units/${unitId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating unit:', error);
+      return { success: false };
+    }
+  },
+  deleteUnit: async (unitId: number) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const response = await fetch(`${API_BASE_URL}/api/properties/units/${unitId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting unit:', error);
+      return { success: false };
+    }
+  },
+  updateUnitCalendar: async (unitId: number, data: any) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+      const response = await fetch(`${API_BASE_URL}/api/properties/units/${unitId}/calendar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating unit calendar:', error);
+      return { success: false };
+    }
+  }
 };
