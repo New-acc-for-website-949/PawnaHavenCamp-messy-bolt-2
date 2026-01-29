@@ -43,7 +43,16 @@ const getAllProperties = async (req, res) => {
       SELECT p.*,
         (SELECT json_agg(json_build_object('id', pi.id, 'image_url', pi.image_url, 'display_order', pi.display_order) ORDER BY pi.display_order)
          FROM property_images pi WHERE pi.property_id = p.id) as images,
-        (SELECT json_agg(json_build_object('id', pu.id, 'name', pu.name, 'available_persons', pu.available_persons, 'total_persons', pu.total_persons)) 
+        (SELECT json_agg(json_build_object(
+            'id', pu.id, 
+            'name', pu.name, 
+            'available_persons', pu.available_persons, 
+            'total_persons', pu.total_persons,
+            'weekday_price', pu.weekday_price,
+            'weekend_price', pu.weekend_price,
+            'special_price', pu.special_price,
+            'special_dates', pu.special_dates
+          )) 
          FROM property_units pu WHERE pu.property_id = p.id) as units
       FROM properties p
       ORDER BY p.created_at DESC
@@ -109,7 +118,16 @@ const getPublicProperties = async (req, res) => {
       SELECT p.*,
         (SELECT json_agg(json_build_object('id', pi.id, 'image_url', pi.image_url, 'display_order', pi.display_order) ORDER BY pi.display_order)
          FROM property_images pi WHERE pi.property_id = p.id) as images,
-        (SELECT json_agg(json_build_object('id', pu.id, 'name', pu.name, 'available_persons', pu.available_persons, 'total_persons', pu.total_persons)) 
+        (SELECT json_agg(json_build_object(
+            'id', pu.id, 
+            'name', pu.name, 
+            'available_persons', pu.available_persons, 
+            'total_persons', pu.total_persons,
+            'weekday_price', pu.weekday_price,
+            'weekend_price', pu.weekend_price,
+            'special_price', pu.special_price,
+            'special_dates', pu.special_dates
+          )) 
          FROM property_units pu WHERE pu.property_id = p.id) as units,
         (
           SELECT MIN(CAST(NULLIF(REGEXP_REPLACE(uc.price, '[^0-9.]', '', 'g'), '') AS NUMERIC))
