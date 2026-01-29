@@ -305,27 +305,47 @@ const PropertyDetails = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mb-4">
-                 <span className="text-[10px] uppercase tracking-widest font-bold text-gray-500">Capacity:</span>
-                 <div className="text-sm font-bold">{displayCapacity}</div>
-              </div>
-
-              <div className="flex items-center gap-3 mb-8">
-                <Badge variant="outline" className="bg-black/40 border-gray-800 text-gray-400 px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest">
-                  {propertyData.category === 'campings_cottages' ? 'Camping & Cottages' : propertyData.category}
-                </Badge>
-                <Badge className={cn(
-                  "border-none px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest",
-                  (propertyData.category === 'campings_cottages' && selectedUnit) 
-                    ? ((selectedUnit.calendar?.[0]?.available_quantity ?? 0) > 0 ? "bg-[#00FF41]/10 text-[#00FF41]" : "bg-[#FF4500]/10 text-[#FF4500]")
-                    : (propertyData.is_available ? "bg-[#00FF41]/10 text-[#00FF41]" : "bg-[#FF4500]/10 text-[#FF4500]")
-                )}>
-                  {displayAvailability}
-                </Badge>
-                <div className="flex items-center gap-1.5 ml-auto">
-                  <Star className="w-4 h-4 text-[#C5A021] fill-[#C5A021]" />
-                  <span className="text-sm font-bold text-white">{propertyData.rating}</span>
-                  <span className="text-gray-500 text-xs">(86)</span>
+              {/* Mobile Availability Section - Moved below price */}
+              <div className="bg-black/40 rounded-3xl p-4 border border-[#C5A021]/10 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center border border-[#C5A021]/20">
+                      <CalendarIcon className="w-4 h-4 text-[#C5A021]" />
+                    </div>
+                    <div>
+                      <p className="text-[8px] uppercase tracking-widest font-bold text-[#C5A021]">Availability</p>
+                      <p className="text-sm font-bold text-white">Check Dates</p>
+                    </div>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="h-10 rounded-xl bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] text-[9px] uppercase font-bold tracking-widest px-4 hover:bg-[#D4AF37]/10 transition-all active:translate-y-0.5 active:shadow-inner shadow-[0_3px_0_rgb(146,120,33)] group relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
+                             style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_162339_1769079675263.jpg")' }} />
+                        <span className="group-active:scale-95 transition-transform relative z-10">View Calendar</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl font-display text-[#D4AF37] px-4 pt-4">Availability Calendar</DialogTitle>
+                        <DialogDescription className="px-4 text-xs text-gray-400">
+                          Check available dates and seasonal pricing for {propertyData.title}{selectedUnit ? ` (${selectedUnit.name})` : ''}.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="p-4">
+                        <CalendarSync 
+                          propertyId={propertyData.property_id || propertyData.id} 
+                          unitId={selectedUnit?.id}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                
+                {/* Capacity Info - Added into availability section */}
+                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                  <span className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Capacity:</span>
+                  <div className="text-xs font-bold">{displayCapacity}</div>
                 </div>
               </div>
 
@@ -414,39 +434,41 @@ const PropertyDetails = () => {
             </div>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-[2.5rem] p-5 border border-[#C5A021]/10 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-[#C5A021]/20">
-                <CalendarIcon className="w-5 h-5 text-[#C5A021]" />
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-widest font-bold text-[#C5A021]">Availability</p>
-                <p className="text-lg font-bold text-white">Check Dates</p>
-              </div>
-            </div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="h-12 rounded-xl bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#D4AF37]/10 transition-all active:translate-y-0.5 active:shadow-inner shadow-[0_3px_0_rgb(146,120,33)] group relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
-                       style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_162339_1769079675263.jpg")' }} />
-                  <span className="group-active:scale-95 transition-transform relative z-10">View Calendar</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-display text-[#D4AF37] px-4 pt-4">Availability Calendar</DialogTitle>
-                  <DialogDescription className="px-4 text-xs text-gray-400">
-                    Check available dates and seasonal pricing for {propertyData.title}{selectedUnit ? ` (${selectedUnit.name})` : ''}.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="p-4">
-                  <CalendarSync 
-                    propertyId={propertyData.property_id || propertyData.id} 
-                    unitId={selectedUnit?.id}
-                  />
+          <div className="hidden">
+            <div className="bg-[#1A1A1A] rounded-[2.5rem] p-5 border border-[#C5A021]/10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-[#C5A021]/20">
+                  <CalendarIcon className="w-5 h-5 text-[#C5A021]" />
                 </div>
-              </DialogContent>
-            </Dialog>
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest font-bold text-[#C5A021]">Availability</p>
+                  <p className="text-lg font-bold text-white">Check Dates</p>
+                </div>
+              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="h-12 rounded-xl bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-widest px-4 hover:bg-[#D4AF37]/10 transition-all active:translate-y-0.5 active:shadow-inner shadow-[0_3px_0_rgb(146,120,33)] group relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity bg-center bg-no-repeat bg-cover pointer-events-none" 
+                         style={{ backgroundImage: 'url("/attached_assets/Screenshot_2026-01-22_162339_1769079675263.jpg")' }} />
+                    <span className="group-active:scale-95 transition-transform relative z-10">View Calendar</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[400px] rounded-[2rem] bg-[#0A0A0A] border-[#C5A021]/20">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-display text-[#D4AF37] px-4 pt-4">Availability Calendar</DialogTitle>
+                    <DialogDescription className="px-4 text-xs text-gray-400">
+                      Check available dates and seasonal pricing for {propertyData.title}{selectedUnit ? ` (${selectedUnit.name})` : ''}.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="p-4">
+                    <CalendarSync 
+                      propertyId={propertyData.property_id || propertyData.id} 
+                      unitId={selectedUnit?.id}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
       )}
@@ -637,6 +659,27 @@ const PropertyDetails = () => {
                 className="h-full rounded-none" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent pointer-events-none" />
+              
+              {/* Floating Badges for Mobile */}
+              <div className="absolute top-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
+                <div className="flex flex-col gap-2">
+                  <Badge variant="outline" className="bg-black/60 backdrop-blur-md border-white/20 text-white px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-widest w-fit pointer-events-auto">
+                    {propertyData.category === 'campings_cottages' ? 'Camping & Cottages' : propertyData.category}
+                  </Badge>
+                  <Badge className={cn(
+                    "border-none px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-widest w-fit pointer-events-auto",
+                    (propertyData.category === 'campings_cottages' && selectedUnit) 
+                      ? ((selectedUnit.calendar?.[0]?.available_quantity ?? 0) > 0 ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
+                      : (propertyData.is_available ? "bg-[#00FF41]/20 text-[#00FF41]" : "bg-[#FF4500]/20 text-[#FF4500]")
+                  )}>
+                    {displayAvailability}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 pointer-events-auto">
+                  <Star className="w-3.5 h-3.5 text-[#C5A021] fill-[#C5A021]" />
+                  <span className="text-xs font-bold text-white">{propertyData.rating}</span>
+                </div>
+              </div>
             </div>
           </div>
           
