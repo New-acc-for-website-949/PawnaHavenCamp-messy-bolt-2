@@ -478,7 +478,7 @@ const AdminDashboard = () => {
                             </div>
                           </div>
                           <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-2">
-                            <span className="font-bold text-gold text-sm xs:text-base">₹{property.price}</span>
+                            <span className="font-bold text-gold text-sm xs:text-base">₹{property.unit_starting_price || property.unit_base_starting_price || property.price}</span>
                             <div className="flex items-center gap-2">
                               <div className={cn("w-2 h-2 rounded-full", property.is_active ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-500")} />
                               <ChevronRight className="w-4 h-4 text-white/20" />
