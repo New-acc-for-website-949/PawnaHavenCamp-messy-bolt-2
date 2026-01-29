@@ -661,7 +661,7 @@ const PropertyDetails = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent pointer-events-none" />
               
               {/* Floating Badges for Mobile */}
-              <div className="absolute top-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
+              <div className="absolute top-20 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
                 <div className="flex flex-col gap-2">
                   <Badge variant="outline" className="bg-black/60 backdrop-blur-md border-white/20 text-white px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-widest w-fit pointer-events-auto">
                     {propertyData.category === 'campings_cottages' ? 'Camping & Cottages' : propertyData.category}

@@ -139,8 +139,8 @@ const getPublicProperties = async (req, res) => {
       };
 
       // For campings_cottages, update price if unit pricing is available
-      const displayPrice = (prop.category === 'campings_cottages' && prop.unit_starting_price) 
-        ? prop.unit_starting_price 
+      const displayPrice = (prop.category === 'campings_cottages') 
+        ? (prop.unit_starting_price || prop.price || 'Price on Selection') 
         : prop.price;
 
       return {
