@@ -141,7 +141,13 @@ const UnitManager = ({ propertyId, units, onRefresh }: { propertyId: string, uni
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/5 border border-white/10">
                 {parseJson(unit.images)?.[0] ? (
-                  <img src={parseJson(unit.images)[0]} className="w-full h-full object-cover" />
+                  <img 
+                    src={parseJson(unit.images)[0]} 
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&q=80&w=400';
+                    }}
+                  />
                 ) : <ImageIcon className="w-full h-full p-3 text-white/20" />}
               </div>
               <div>
@@ -419,9 +425,9 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
 
     // For campings_cottages, we don't send individual prices as they come from units
     if (formData.category === 'campings_cottages') {
-      payload.price = payload.price || 'Price on Selection';
-      delete payload.weekday_price;
-      delete payload.weekend_price;
+      (payload as any).price = payload.price || 'Price on Selection';
+      delete (payload as any).weekday_price;
+      delete (payload as any).weekend_price;
     }
 
     try {
