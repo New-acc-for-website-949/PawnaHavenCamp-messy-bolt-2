@@ -153,10 +153,28 @@ const PropertyDetails = () => {
           }
           
           // Ensure arrays are actually arrays
-          const ensureArray = (val: any) => Array.isArray(val) ? val : (typeof val === 'string' ? val.split(',').map(s => s.trim()) : []);
+          const ensureArray = (val: any) => {
+            if (Array.isArray(val)) return val;
+            if (typeof val === 'string' && val.trim().startsWith('[') && val.trim().endsWith(']')) {
+              try {
+                return JSON.parse(val);
+              } catch (e) {
+                return val.split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
+              }
+            }
+            if (typeof val === 'string') return val.split(',').map(s => s.trim());
+            return [];
+          };
+
+          const mappedUnits = (p.units || []).map((unit: any) => ({
+            ...unit,
+            images: ensureArray(unit.images),
+            amenities: ensureArray(unit.amenities)
+          }));
 
           const mappedProperty = {
             ...p,
+            units: mappedUnits,
             images: mappedImages,
             priceNote: p.price_note,
             is_available: p.is_available,
