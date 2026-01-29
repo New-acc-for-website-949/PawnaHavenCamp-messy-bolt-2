@@ -112,11 +112,12 @@ const getPublicProperties = async (req, res) => {
         (SELECT json_agg(json_build_object('id', pu.id, 'name', pu.name, 'available_persons', pu.available_persons, 'total_persons', pu.total_persons)) 
          FROM property_units pu WHERE pu.property_id = p.id) as units,
         (
-          SELECT MIN(uc.price)
+          SELECT MIN(CAST(NULLIF(REGEXP_REPLACE(uc.price, '[^0-9.]', '', 'g'), '') AS NUMERIC))
           FROM property_units pu
           JOIN unit_calendar uc ON uc.unit_id = pu.id
           WHERE pu.property_id = p.id
           AND uc.date >= CURRENT_DATE
+          AND uc.price IS NOT NULL AND uc.price != ''
         ) as unit_starting_price
       FROM properties p
       WHERE p.is_active = true
@@ -138,14 +139,12 @@ const getPublicProperties = async (req, res) => {
         }
       };
 
-      // For campings_cottages, update price if unit pricing is available
-      const displayPrice = (prop.category === 'campings_cottages') 
-        ? (prop.unit_starting_price || prop.price || 'Price on Selection') 
-        : prop.price;
+      // Ensure starting price is used if available from units
+      const displayPrice = prop.unit_starting_price || prop.price || 'Price on Selection';
 
       return {
         ...prop,
-        price: displayPrice,
+        price: String(displayPrice),
         amenities: parseField(prop.amenities),
         activities: parseField(prop.activities),
         highlights: parseField(prop.highlights),
