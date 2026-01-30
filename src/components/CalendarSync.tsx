@@ -171,6 +171,7 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
                 const isBooked = data?.is_booked;
                 const price = getPriceForDate(date);
                 const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
+                const availableQuantity = data?.available_quantity !== undefined ? data.available_quantity : null;
                 
                 return (
                   <div className={cn(
@@ -182,6 +183,11 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
                     {price && (
                       <span className="text-[8px] sm:text-[10px] font-black leading-none mt-0.5 sm:mt-1 scale-90 sm:scale-100 origin-center truncate w-full text-center px-0.5">
                         ₹{price.replace('₹', '').replace('/-', '').trim()}
+                      </span>
+                    )}
+                    {availableQuantity !== null && !isPast && (
+                      <span className="text-[7px] font-bold opacity-70 mt-0.5">
+                        {availableQuantity} left
                       </span>
                     )}
                   </div>
