@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS property_units (
   amenities TEXT,
   images TEXT,
   price_per_person VARCHAR(50),
+  -- weekday_price, weekend_price, special_price, special_dates removed as they are managed at property level
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
