@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { propertyAPI } from "@/lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CalendarSync } from '@/components/CalendarSync';
 
 const OwnerRates = () => {
   const [rates, setRates] = useState({
@@ -61,7 +62,9 @@ const OwnerRates = () => {
   const fetchUnitRates = async (unitId: string) => {
     setLoading(true);
     try {
-      const unitsRes = await propertyAPI.getUnits(property.id);
+      const id = property.id;
+      const response = await fetch(`/api/properties/units?property_id=${id}`);
+      const unitsRes = await response.json();
       if (unitsRes.success) {
         const unit = unitsRes.data.find((u: any) => u.id.toString() === unitId);
         if (unit) {
@@ -208,57 +211,73 @@ const OwnerRates = () => {
     <div className="space-y-6 max-w-full sm:max-w-2xl mx-auto px-0 sm:px-4 pb-10">
       <div className="flex items-center justify-between px-4 sm:px-0">
         <h1 className="text-xl sm:text-2xl font-bold text-[#D4AF37] font-display">Manage Prices & Rates</h1>
-        
-        {isCampingsCottages && units.length > 0 && (
-          <div className="w-48">
-            <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
-              <SelectTrigger className="bg-[#1A1A1A] border-[#D4AF37]/30 text-white">
-                <SelectValue placeholder="Select Unit" />
-              </SelectTrigger>
-              <SelectContent className="bg-charcoal border-white/10 text-white">
-                {units.map(u => (
-                  <SelectItem key={u.id} value={u.id.toString()}>{u.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 sm:px-0">
-        <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
-          <CardContent className="pt-6">
-            <Label className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
-              Weekdays (Base)
-            </Label>
-            <div className="text-2xl font-bold text-white">
-              {rates.weekday ? `₹${rates.weekday}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-1 uppercase">Mon-Thu Pricing</p>
-          </CardContent>
-        </Card>
-        <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
-          <CardContent className="pt-6">
-            <Label className="text-green-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
-              Weekends
-            </Label>
-            <div className="text-2xl font-bold text-white">
-              {rates.weekend ? `₹${rates.weekend}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-1 uppercase">Fri-Sun Pricing</p>
-          </CardContent>
-        </Card>
-        <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
-          <CardContent className="pt-6">
-            <Label className="text-purple-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
-              Special Days
-            </Label>
-            <div className="text-2xl font-bold text-white">
-              {specialDates.length > 0 ? `₹${specialDates[0].price}` : <span className="text-gray-500 text-sm font-normal italic">None</span>}
-            </div>
-            <p className="text-[10px] text-gray-500 mt-1 uppercase">Holidays & Events</p>
-          </CardContent>
-        </Card>
+      <div className="space-y-8">
+        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <h2 className="text-lg font-bold text-white uppercase tracking-wider">Availability Calendar</h2>
+            {isCampingsCottages && units.length > 0 && (
+              <div className="w-full sm:w-64">
+                <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
+                  <SelectTrigger className="bg-black/60 border-[#D4AF37]/30 text-white h-11">
+                    <SelectValue placeholder="Select Unit" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-charcoal border-white/10 text-white">
+                    {units.map((u: any) => (
+                      <SelectItem key={u.id} value={u.id.toString()}>{u.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          
+          <div className="bg-white/5 rounded-2xl p-4 sm:p-6 border border-white/10">
+            <CalendarSync 
+              propertyId={property.property_id} 
+              isAdmin={true} 
+              unitId={selectedUnitId ? parseInt(selectedUnitId) : undefined}
+              propertyName={isCampingsCottages && selectedUnitId ? units.find((u: any) => u.id.toString() === selectedUnitId)?.name : property.title}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 sm:px-0">
+          <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
+            <CardContent className="pt-6">
+              <Label className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
+                Weekdays (Base)
+              </Label>
+              <div className="text-2xl font-bold text-white">
+                {rates.weekday ? `₹${rates.weekday}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
+              </div>
+              <p className="text-[10px] text-gray-500 mt-1 uppercase">Mon-Thu Pricing</p>
+            </CardContent>
+          </Card>
+          <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
+            <CardContent className="pt-6">
+              <Label className="text-green-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
+                Weekends
+              </Label>
+              <div className="text-2xl font-bold text-white">
+                {rates.weekend ? `₹${rates.weekend}` : <span className="text-gray-500 text-sm font-normal italic">Not set</span>}
+              </div>
+              <p className="text-[10px] text-gray-500 mt-1 uppercase">Fri-Sun Pricing</p>
+            </CardContent>
+          </Card>
+          <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-xl">
+            <CardContent className="pt-6">
+              <Label className="text-purple-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">
+                Special Days
+              </Label>
+              <div className="text-2xl font-bold text-white">
+                {specialDates.length > 0 ? `₹${specialDates[0].price}` : <span className="text-gray-500 text-sm font-normal italic">None</span>}
+              </div>
+              <p className="text-[10px] text-gray-500 mt-1 uppercase">Holidays & Events</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-none sm:rounded-xl border-x-0 sm:border-x">

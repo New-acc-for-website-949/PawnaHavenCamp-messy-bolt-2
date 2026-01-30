@@ -169,9 +169,9 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
               DayContent: ({ date }) => {
                 const data = getDayData(date);
                 const isBooked = data?.is_booked;
-                const price = getPriceForDate(date);
                 const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
                 const availableQuantity = data?.available_quantity !== undefined ? data.available_quantity : null;
+                const totalCapacity = propertyPrices.maxCapacity || 0;
                 
                 return (
                   <div className={cn(
@@ -180,15 +180,12 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
                     isPast && "opacity-60 grayscale-[0.5]"
                   )}>
                     <span className="text-[11px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
-                    {price && (
-                      <span className="text-[8px] sm:text-[10px] font-black leading-none mt-0.5 sm:mt-1 scale-90 sm:scale-100 origin-center truncate w-full text-center px-0.5">
-                        ₹{price.replace('₹', '').replace('/-', '').trim()}
-                      </span>
-                    )}
                     {availableQuantity !== null && !isPast && (
-                      <span className="text-[7px] font-bold opacity-70 mt-0.5">
-                        {availableQuantity} left
-                      </span>
+                      <div className="flex items-center gap-0.5 mt-0.5 sm:mt-1 scale-90 sm:scale-100 font-black text-[8px] sm:text-[10px]">
+                        <span className="text-[#008000]">{availableQuantity}</span>
+                        <span className="text-gray-500">/</span>
+                        <span className="text-[#FF8C00]">{totalCapacity}</span>
+                      </div>
                     )}
                   </div>
                 );
