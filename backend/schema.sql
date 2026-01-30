@@ -176,6 +176,24 @@ CREATE INDEX IF NOT EXISTS idx_referral_users_code ON referral_users(referral_co
 CREATE INDEX IF NOT EXISTS idx_referral_transactions_user ON referral_transactions(referral_user_id);
 CREATE INDEX IF NOT EXISTS idx_otp_verifications_mobile ON otp_verifications(mobile_number);
 
+-- Create ledger_entries table for booking records
+CREATE TABLE IF NOT EXISTS ledger_entries (
+  id SERIAL PRIMARY KEY,
+  property_id TEXT NOT NULL,
+  unit_id INTEGER,
+  customer_name TEXT NOT NULL,
+  persons INTEGER NOT NULL,
+  check_in DATE NOT NULL,
+  check_out DATE NOT NULL,
+  payment_mode TEXT NOT NULL CHECK (payment_mode = ANY (ARRAY['online'::text, 'offline'::text])),
+  amount NUMERIC NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for ledger_entries
+CREATE INDEX IF NOT EXISTS idx_ledger_entries_property_id ON ledger_entries(property_id);
+CREATE INDEX IF NOT EXISTS idx_ledger_entries_check_in ON ledger_entries(check_in);
+
 -- Insert initial admin user
 INSERT INTO admins (email, password_hash)
 VALUES ('admin@looncamp.shop', '$2b$10$8k31lpb.NzzVqV0Pq5iJKuauiTJY2Bdnb4APYKM2MvLPsRYtV9WEu')
