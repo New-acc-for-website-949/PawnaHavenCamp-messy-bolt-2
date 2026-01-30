@@ -1,13 +1,19 @@
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Plus, User, Users, CreditCard, IndianRupee, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface LedgerPopupProps {
   isOpen: boolean;
   onClose: () => void;
   date: Date | null;
   propertyName: string;
+  propertyId: string;
+  unitId?: number;
   availablePersons: number;
   totalPersons: number;
 }
@@ -17,14 +23,96 @@ export const LedgerPopup = ({
   onClose,
   date,
   propertyName,
+  propertyId,
+  unitId,
   availablePersons,
   totalPersons,
 }: LedgerPopupProps) => {
+  const [entries, setEntries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    customer_name: "",
+    persons: "",
+    payment_mode: "offline",
+    amount: "",
+    check_in: "",
+    check_out: ""
+  });
+
+  useEffect(() => {
+    if (isOpen && date) {
+      fetchEntries();
+      setFormData(prev => ({
+        ...prev,
+        check_in: format(date, 'yyyy-MM-dd'),
+        check_out: format(date, 'yyyy-MM-dd')
+      }));
+    }
+  }, [isOpen, date]);
+
+  const fetchEntries = async () => {
+    if (!date) return;
+    setLoading(true);
+    try {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const url = `/api/bookings/ledger?property_id=${propertyId}&date=${dateStr}${unitId ? `&unit_id=${unitId}` : ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setEntries(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching entries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddEntry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/bookings/ledger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          property_id: propertyId,
+          unit_id: unitId || null,
+          persons: parseInt(formData.persons),
+          amount: parseFloat(formData.amount)
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Entry added successfully");
+        setShowAddForm(false);
+        fetchEntries();
+        setFormData({
+          customer_name: "",
+          persons: "",
+          payment_mode: "offline",
+          amount: "",
+          check_in: format(date!, 'yyyy-MM-dd'),
+          check_out: format(date!, 'yyyy-MM-dd')
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to add entry");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!date) return null;
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="bg-charcoal border-white/10 rounded-t-[2rem]">
+      <DrawerContent className="bg-charcoal border-white/10 rounded-t-[2rem] max-h-[90vh]">
         <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/10 my-4" />
         
         <DrawerHeader className="px-6">
@@ -45,8 +133,8 @@ export const LedgerPopup = ({
           </div>
         </DrawerHeader>
 
-        <div className="px-6 py-4">
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center justify-between">
+        <div className="px-6 overflow-y-auto pb-10">
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center justify-between mb-6">
             <div className="space-y-1">
               <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Availability Status</p>
               <div className="flex items-center gap-2">
@@ -56,10 +144,152 @@ export const LedgerPopup = ({
                 <span className="text-white/60 text-xs ml-1">Persons</span>
               </div>
             </div>
-            <div className="h-10 w-10 rounded-full border-2 border-[#00FF41]/20 flex items-center justify-center">
-                <div className="h-6 w-6 rounded-full bg-[#00FF41]/20 animate-pulse" />
-            </div>
+            <Button 
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="bg-gold hover:bg-gold/80 text-black font-bold rounded-full h-10 px-4 gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              {showAddForm ? "Cancel" : "Add Entry"}
+            </Button>
           </div>
+
+          {showAddForm ? (
+            <form onSubmit={handleAddEntry} className="space-y-4 bg-white/5 p-4 rounded-2xl border border-gold/20 animate-in fade-in slide-in-from-top-2">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-white/40 uppercase px-1">Customer Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                  <Input 
+                    required
+                    value={formData.customer_name}
+                    onChange={e => setFormData(f => ({...f, customer_name: e.target.value}))}
+                    className="bg-black/40 border-white/10 pl-10 h-11 text-white" 
+                    placeholder="Full Name"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/40 uppercase px-1">Persons</label>
+                  <div className="relative">
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <Input 
+                      required
+                      type="number"
+                      value={formData.persons}
+                      onChange={e => setFormData(f => ({...f, persons: e.target.value}))}
+                      className="bg-black/40 border-white/10 pl-10 h-11 text-white" 
+                      placeholder="Count"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/40 uppercase px-1">Amount</label>
+                  <div className="relative">
+                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <Input 
+                      required
+                      type="number"
+                      value={formData.amount}
+                      onChange={e => setFormData(f => ({...f, amount: e.target.value}))}
+                      className="bg-black/40 border-white/10 pl-10 h-11 text-white" 
+                      placeholder="Price"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-white/40 uppercase px-1">Payment Mode</label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 z-10" />
+                  <Select 
+                    value={formData.payment_mode}
+                    onValueChange={v => setFormData(f => ({...f, payment_mode: v}))}
+                  >
+                    <SelectTrigger className="bg-black/40 border-white/10 pl-10 h-11 text-white">
+                      <SelectValue placeholder="Mode" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-charcoal border-white/10 text-white">
+                      <SelectItem value="online">Online</SelectItem>
+                      <SelectItem value="offline">Offline (Cash/UPI)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/40 uppercase px-1">Check-in</label>
+                  <Input 
+                    type="date"
+                    value={formData.check_in}
+                    onChange={e => setFormData(f => ({...f, check_in: e.target.value}))}
+                    className="bg-black/40 border-white/10 h-11 text-white" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/40 uppercase px-1">Check-out</label>
+                  <Input 
+                    type="date"
+                    value={formData.check_out}
+                    onChange={e => setFormData(f => ({...f, check_out: e.target.value}))}
+                    className="bg-black/40 border-white/10 h-11 text-white" 
+                  />
+                </div>
+              </div>
+
+              <Button 
+                disabled={isSubmitting}
+                className="w-full bg-gold hover:bg-gold/80 text-black font-black h-12 rounded-xl mt-4"
+              >
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Entry"}
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-3">
+              <h3 className="text-xs font-black text-white/20 uppercase tracking-[0.2em] px-1">Bookings List</h3>
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <Loader2 className="w-8 h-8 text-gold animate-spin" />
+                </div>
+              ) : entries.length === 0 ? (
+                <div className="text-center py-10 bg-white/5 rounded-2xl border border-dashed border-white/10">
+                  <p className="text-white/40 text-sm italic">No bookings found for this date</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {entries.map((entry, i) => (
+                    <div key={entry.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-xl bg-gold/10 flex items-center justify-center text-gold font-bold">
+                          #{i + 1}
+                        </div>
+                        <div>
+                          <p className="text-white font-bold">{entry.customer_name}</p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-[10px] text-white/40 flex items-center gap-1">
+                              <Users className="w-3 h-3" /> {entry.persons}
+                            </span>
+                            <span className="text-[10px] text-white/40 flex items-center gap-1 uppercase tracking-wider">
+                              <CreditCard className="w-3 h-3" /> {entry.payment_mode}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gold font-black">₹{entry.amount}</p>
+                        <p className="text-[8px] text-white/20 uppercase font-bold tracking-tighter mt-1">
+                          {format(new Date(entry.check_in), 'dd MMM')} - {format(new Date(entry.check_out), 'dd MMM')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <DrawerFooter className="px-6 pb-10">

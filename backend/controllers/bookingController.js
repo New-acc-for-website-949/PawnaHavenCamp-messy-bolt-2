@@ -426,7 +426,46 @@ const processCancelledBooking = async (req, res) => {
   }
 };
 
+const getLedgerEntries = async (req, res) => {
+  try {
+    const { property_id, unit_id, date } = req.query;
+    let queryText = 'SELECT * FROM ledger_entries WHERE property_id = $1 AND check_in <= $2 AND check_out >= $2';
+    let params = [property_id, date];
+
+    if (unit_id && unit_id !== 'null' && unit_id !== 'undefined') {
+      queryText += ' AND unit_id = $3';
+      params.push(unit_id);
+    }
+
+    const result = await query(queryText, params);
+    res.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('Error fetching ledger entries:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const addLedgerEntry = async (req, res) => {
+  try {
+    const { property_id, unit_id, customer_name, persons, check_in, check_out, payment_mode, amount } = req.body;
+    
+    const result = await query(
+      `INSERT INTO ledger_entries 
+       (property_id, unit_id, customer_name, persons, check_in, check_out, payment_mode, amount) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [property_id, unit_id, customer_name, persons, check_in, check_out, payment_mode, amount]
+    );
+
+    res.json({ success: true, data: result.rows[0] });
+  } catch (error) {
+    console.error('Error adding ledger entry:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
+  getLedgerEntries,
+  addLedgerEntry,
   initiateBooking,
   getBooking,
   updateBookingStatus,

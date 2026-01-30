@@ -219,6 +219,8 @@ export const CalendarSync = ({ propertyId, isAdmin = false, onDateSelect, unitId
         onClose={() => setIsLedgerOpen(false)}
         date={selectedLedgerDate}
         propertyName={propertyName}
+        propertyId={propertyId}
+        unitId={unitId}
         availablePersons={propertyPrices.capacity || 0}
         totalPersons={propertyPrices.maxCapacity || 0}
       />
