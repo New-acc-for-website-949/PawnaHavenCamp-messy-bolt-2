@@ -4,6 +4,7 @@ const bookingController = require('../controllers/bookingController');
 
 router.post('/initiate', bookingController.initiateBooking);
 router.get('/ledger', bookingController.getLedgerEntries);
+router.get('/ledger/monthly', bookingController.getMonthlyLedger);
 router.post('/ledger', bookingController.addLedgerEntry);
 router.get('/:bookingId', bookingController.getBooking);
 router.put('/update-status', bookingController.updateBookingStatus);

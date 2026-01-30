@@ -2,10 +2,20 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { X, Plus, User, Users, CreditCard, IndianRupee, Loader2 } from "lucide-react";
+import { X, Plus, User, Users, CreditCard, IndianRupee, Loader2, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import ExcelJS from 'exceljs';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
+// Extend jsPDF type for autotable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+  }
+}
 
 interface LedgerPopupProps {
   isOpen: boolean;
@@ -32,6 +42,94 @@ export const LedgerPopup = ({
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const year = date?.getFullYear();
+      const month = (date?.getMonth() || 0) + 1;
+      const res = await fetch(`/api/bookings/ledger/monthly?property_id=${propertyId}&year=${year}&month=${month}${unitId ? `&unit_id=${unitId}` : ''}`);
+      const data = await res.json();
+      
+      if (!data.success) throw new Error("Failed to fetch data");
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Monthly Ledger');
+
+      worksheet.columns = [
+        { header: 'Date', key: 'date', width: 15 },
+        { header: 'Customer', key: 'customer', width: 25 },
+        { header: 'Persons', key: 'persons', width: 10 },
+        { header: 'Check-in', key: 'checkin', width: 15 },
+        { header: 'Check-out', key: 'checkout', width: 15 },
+        { header: 'Mode', key: 'mode', width: 12 },
+        { header: 'Amount', key: 'amount', width: 15 },
+      ];
+
+      data.data.forEach((entry: any) => {
+        worksheet.addRow({
+          date: format(new Date(entry.check_in), 'dd MMM yyyy'),
+          customer: entry.customer_name,
+          persons: entry.persons,
+          checkin: format(new Date(entry.check_in), 'dd MMM yyyy'),
+          checkout: format(new Date(entry.check_out), 'dd MMM yyyy'),
+          mode: entry.payment_mode.toUpperCase(),
+          amount: entry.amount
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ledger_${propertyName}_${format(date!, 'MMM_yyyy')}.xlsx`;
+      a.click();
+      toast.success("Excel exported successfully");
+    } catch (error) {
+      toast.error("Failed to export Excel");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportPDF = async () => {
+    setIsExporting(true);
+    try {
+      const year = date?.getFullYear();
+      const month = (date?.getMonth() || 0) + 1;
+      const res = await fetch(`/api/bookings/ledger/monthly?property_id=${propertyId}&year=${year}&month=${month}${unitId ? `&unit_id=${unitId}` : ''}`);
+      const data = await res.json();
+      
+      if (!data.success) throw new Error("Failed to fetch data");
+
+      const doc = new jsPDF();
+      doc.text(`Monthly Ledger: ${propertyName}`, 14, 15);
+      doc.text(`Month: ${format(date!, 'MMMM yyyy')}`, 14, 25);
+
+      const tableData = data.data.map((entry: any) => [
+        format(new Date(entry.check_in), 'dd MMM'),
+        entry.customer_name,
+        entry.persons,
+        entry.payment_mode.toUpperCase(),
+        `Rs. ${entry.amount}`
+      ]);
+
+      doc.autoTable({
+        startY: 30,
+        head: [['Date', 'Customer', 'Pax', 'Mode', 'Amount']],
+        body: tableData,
+      });
+
+      doc.save(`Ledger_${propertyName}_${format(date!, 'MMM_yyyy')}.pdf`);
+      toast.success("PDF exported successfully");
+    } catch (error) {
+      toast.error("Failed to export PDF");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -293,9 +391,31 @@ export const LedgerPopup = ({
         </div>
 
         <DrawerFooter className="px-6 pb-10">
-          <p className="text-center text-[10px] text-white/20 uppercase font-bold tracking-[0.2em]">
-            Daily Booking Ledger
-          </p>
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex gap-2 w-full">
+              <Button 
+                onClick={exportExcel}
+                disabled={isExporting}
+                variant="outline" 
+                className="flex-1 bg-white/5 border-white/10 text-white gap-2 hover:bg-white/10"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-[#217346]" />
+                Excel
+              </Button>
+              <Button 
+                onClick={exportPDF}
+                disabled={isExporting}
+                variant="outline" 
+                className="flex-1 bg-white/5 border-white/10 text-white gap-2 hover:bg-white/10"
+              >
+                <FileText className="w-4 h-4 text-[#E44032]" />
+                PDF
+              </Button>
+            </div>
+            <p className="text-center text-[10px] text-white/20 uppercase font-bold tracking-[0.2em]">
+              Daily Booking Ledger
+            </p>
+          </div>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

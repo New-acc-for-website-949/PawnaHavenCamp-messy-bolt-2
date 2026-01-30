@@ -463,9 +463,42 @@ const addLedgerEntry = async (req, res) => {
   }
 };
 
+const getMonthlyLedger = async (req, res) => {
+  try {
+    const { property_id, unit_id, month, year } = req.query;
+    const startDate = `${year}-${month}-01`;
+    const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
+    let queryText = `
+      SELECT * FROM ledger_entries 
+      WHERE property_id = $1 
+      AND (
+        (check_in BETWEEN $2 AND $3) OR 
+        (check_out BETWEEN $2 AND $3) OR
+        (check_in <= $2 AND check_out >= $3)
+      )
+    `;
+    let params = [property_id, startDate, endDate];
+
+    if (unit_id && unit_id !== 'null' && unit_id !== 'undefined') {
+      queryText += ' AND unit_id = $4';
+      params.push(unit_id);
+    }
+
+    queryText += ' ORDER BY check_in ASC';
+
+    const result = await query(queryText, params);
+    res.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error('Error fetching monthly ledger:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getLedgerEntries,
   addLedgerEntry,
+  getMonthlyLedger,
   initiateBooking,
   getBooking,
   updateBookingStatus,
