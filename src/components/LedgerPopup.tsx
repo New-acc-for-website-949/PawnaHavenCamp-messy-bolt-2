@@ -49,6 +49,10 @@ export const LedgerPopup = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Calculate current occupancy (total persons booked for the day)
+  const currentOccupancy = entries.reduce((sum, entry) => sum + (entry.persons || 0), 0);
+  const remainingCapacity = Math.max(0, totalPersons - currentOccupancy);
+
   const exportExcel = async () => {
     setIsExporting(true);
     try {
@@ -286,7 +290,7 @@ export const LedgerPopup = ({
                   )
                 ) : (
                   <>
-                    <span className="text-2xl font-black text-[#00FF41]">{availablePersons}</span>
+                    <span className="text-2xl font-black text-[#00FF41]">{remainingCapacity}</span>
                     <span className="text-white/20 text-xl font-light">/</span>
                     <span className="text-xl font-bold text-[#FFA500]">{totalPersons}</span>
                     <span className="text-white/60 text-xs ml-1">Persons</span>

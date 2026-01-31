@@ -26,7 +26,6 @@ const OwnerProfile = () => {
   const [loading, setLoading] = useState(false);
   const [newItem, setNewItem] = useState({ type: '', value: '', time: '' });
   const [details, setDetails] = useState({
-    amenities: [] as string[],
     activities: [] as string[],
     highlights: [] as string[],
     policies: [] as string[],
@@ -90,7 +89,6 @@ const OwnerProfile = () => {
           };
 
           setDetails({
-            amenities: parseData(prop.amenities),
             activities: parseData(prop.activities),
             highlights: parseData(prop.highlights),
             policies: parseData(prop.policies),
@@ -177,7 +175,7 @@ const OwnerProfile = () => {
         schedule: [...(details.schedule || []), { time: newItem.time.trim(), title: newItem.value.trim() }]
       });
     } else {
-      const t = type as 'amenities' | 'activities' | 'highlights' | 'policies';
+      const t = type as 'activities' | 'highlights' | 'policies';
       if (!newItem.value.trim()) return;
       setDetails({
         ...details,
@@ -193,14 +191,14 @@ const OwnerProfile = () => {
       newList.splice(index, 1);
       setDetails({ ...details, schedule: newList });
     } else {
-      const t = type as 'amenities' | 'activities' | 'highlights' | 'policies';
+      const t = type as 'activities' | 'highlights' | 'policies';
       const newList = [...details[t]];
       newList.splice(index, 1);
       setDetails({ ...details, [t]: newList });
     }
   };
 
-  const TagList = ({ type, items }: { type: 'amenities' | 'activities' | 'highlights' | 'policies', items: string[] }) => (
+  const TagList = ({ type, items }: { type: 'activities' | 'highlights' | 'policies', items: string[] }) => (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {items.map((item, idx) => (
