@@ -235,11 +235,11 @@ const OwnerProfile = () => {
   const TagList = ({ type, items }: { type: 'amenities' | 'activities' | 'highlights' | 'policies', items: string[] }) => (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        {items.map((item, idx) => (
+        {(items || []).map((item, idx) => (
           <div key={idx} className="flex items-center bg-black/40 border border-[#D4AF37]/30 px-3 py-1.5 rounded-md group">
             <span className="text-xs text-gray-200">{item}</span>
             <button 
-              onClick={() => removeItem(type, idx)}
+              onClick={(e) => { e.preventDefault(); removeItem(type, idx); }}
               className="ml-2 text-gray-500 hover:text-red-400 transition-colors"
             >
               <X className="w-3 h-3" />

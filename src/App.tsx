@@ -68,49 +68,50 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <ScrollRestoration />
-          <Routes>
-            <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
-            <Route path="/property/:propertyId" element={<PageWrapper><PropertyDetails /></PageWrapper>} />
-            <Route path="/videos" element={<PageWrapper><VideoGallery /></PageWrapper>} />
-            <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
-            <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
-            <Route path="/payment/demo" element={<PageWrapper><DemoPayment /></PageWrapper>} />
-            <Route path="/ticket/:ticketId" element={<PageWrapper><TicketPage /></PageWrapper>} />
-            <Route path="/info/:type" element={<PageWrapper><InformationPage /></PageWrapper>} />
-            <Route path="/referral" element={<PageWrapper><ReferralPage /></PageWrapper>} />
-            <Route path="/referral/generate" element={<PageWrapper><GenerateCodePage /></PageWrapper>} />
-            <Route path="/referral/check" element={<PageWrapper><CheckEarningPage /></PageWrapper>} />
-            
-            {/* Owner Routes */}
-            <Route path="/owner" element={<PageWrapper><OwnerEntry /></PageWrapper>} />
-            <Route path="/owner/register" element={<PageWrapper><OwnerRegister /></PageWrapper>} />
-            <Route path="/owner/register/otp" element={<PageWrapper><OwnerRegisterOTP /></PageWrapper>} />
-            <Route path="/owner/login" element={<PageWrapper><OwnerLogin /></PageWrapper>} />
-            
-            <Route element={<OwnerLayout />}>
-              <Route path="/owner/dashboard" element={<PageWrapper><OwnerMain /></PageWrapper>} />
-              <Route path="/owner/units" element={<PageWrapper><OwnerUnits /></PageWrapper>} />
-              <Route path="/owner/profile" element={<PageWrapper><OwnerProfile /></PageWrapper>} />
-              
-              {/* Villa Routes */}
-              <Route path="/owner/villas/dashboard" element={<PageWrapper><VillaOwnerMain /></PageWrapper>} />
-              <Route path="/owner/villas/profile" element={<PageWrapper><VillaOwnerProfile /></PageWrapper>} />
-            </Route>
+const App = () => {
+  const ownerDataString = localStorage.getItem('ownerData');
+  const ownerData = ownerDataString ? JSON.parse(ownerDataString) : null;
 
-            <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollRestoration />
+            <Routes>
+              <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+              <Route path="/property/:propertyId" element={<PageWrapper><PropertyDetails /></PageWrapper>} />
+              <Route path="/videos" element={<PageWrapper><VideoGallery /></PageWrapper>} />
+              <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+              <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+              <Route path="/payment/demo" element={<PageWrapper><DemoPayment /></PageWrapper>} />
+              <Route path="/ticket/:ticketId" element={<PageWrapper><TicketPage /></PageWrapper>} />
+              <Route path="/info/:type" element={<PageWrapper><InformationPage /></PageWrapper>} />
+              <Route path="/referral" element={<PageWrapper><ReferralPage /></PageWrapper>} />
+              <Route path="/referral/generate" element={<PageWrapper><GenerateCodePage /></PageWrapper>} />
+              <Route path="/referral/check" element={<PageWrapper><CheckEarningPage /></PageWrapper>} />
+              
+              {/* Owner Routes */}
+              <Route path="/owner" element={<PageWrapper><OwnerEntry /></PageWrapper>} />
+              <Route path="/owner/register" element={<PageWrapper><OwnerRegister /></PageWrapper>} />
+              <Route path="/owner/register/otp" element={<PageWrapper><OwnerRegisterOTP /></PageWrapper>} />
+              <Route path="/owner/login" element={<PageWrapper><OwnerLogin /></PageWrapper>} />
+              
+              <Route element={<OwnerLayout />}>
+                <Route path="/owner/dashboard" element={<PageWrapper>{ownerData?.propertyType?.toLowerCase() === 'villa' ? <VillaOwnerMain /> : <OwnerMain />}</PageWrapper>} />
+                <Route path="/owner/units" element={<PageWrapper><OwnerUnits /></PageWrapper>} />
+                <Route path="/owner/profile" element={<PageWrapper>{ownerData?.propertyType?.toLowerCase() === 'villa' ? <VillaOwnerProfile /> : <OwnerProfile />}</PageWrapper>} />
+              </Route>
+
+              <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
 
 export default App;
