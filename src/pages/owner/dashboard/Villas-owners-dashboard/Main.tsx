@@ -85,6 +85,27 @@ const OwnerCalendar = () => {
       </div>
       
       <div className="space-y-8">
+        {/* Availability Calendar First */}
+        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+            <span className="w-1.5 h-6 bg-[#D4AF37] rounded-full" />
+            Availability Calendar
+          </h2>
+          <div className="bg-white/5 rounded-2xl p-4 sm:p-6 border border-white/10">
+            {property && (
+              <div className="w-full overflow-hidden">
+                <CalendarSync 
+                  propertyId={propertyId} 
+                  isAdmin={true} 
+                  propertyName={property?.title}
+                  isVilla={true}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Prices Section Second */}
         <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8 space-y-6">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <span className="w-1.5 h-6 bg-[#D4AF37] rounded-full" />
@@ -179,25 +200,6 @@ const OwnerCalendar = () => {
           >
             Update Prices
           </Button>
-        </div>
-
-        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-6 bg-[#D4AF37] rounded-full" />
-            Availability Calendar
-          </h2>
-          <div className="bg-white/5 rounded-2xl p-4 sm:p-6 border border-white/10">
-            {property && (
-              <div className="w-full overflow-hidden">
-                <CalendarSync 
-                  propertyId={propertyId} 
-                  isAdmin={true} 
-                  propertyName={property?.title}
-                  isVilla={true}
-                />
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>
