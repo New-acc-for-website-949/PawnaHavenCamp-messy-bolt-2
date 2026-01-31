@@ -161,25 +161,25 @@ const OwnerCalendar = () => {
       </div>
       
       <div className="space-y-8">
-        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
-          <div className="mb-6">
+        {isCampingsCottages && units.length > 0 && (
+          <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white uppercase tracking-wider mb-4">Select Property Unit</h2>
-            {isCampingsCottages && units.length > 0 && (
-              <div className="w-full">
-                <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
-                  <SelectTrigger className="bg-black/60 border-[#D4AF37]/30 text-white h-11">
-                    <SelectValue placeholder="Select Unit" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-charcoal border-white/10 text-white">
-                    {units.map((u: any) => (
-                      <SelectItem key={u.id} value={u.id.toString()}>{u.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <div className="w-full max-w-sm">
+              <Select value={selectedUnitId || ""} onValueChange={setSelectedUnitId}>
+                <SelectTrigger className="bg-black/60 border-[#D4AF37]/30 text-white h-11">
+                  <SelectValue placeholder="Select Unit" />
+                </SelectTrigger>
+                <SelectContent className="bg-charcoal border-white/10 text-white">
+                  {units.map((u: any) => (
+                    <SelectItem key={u.id} value={u.id.toString()}>{u.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          
+        )}
+
+        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
           <div className="bg-white/5 rounded-2xl p-4 sm:p-6 border border-white/10">
             {isCampingsCottages && selectedUnitId && (
               <div className="mb-4 flex items-center gap-2">
