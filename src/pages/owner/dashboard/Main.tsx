@@ -239,8 +239,16 @@ const OwnerCalendar = () => {
           </Card>
         </div>
 
-        <Card className="glass border-[#D4AF37]/30 bg-black/40 rounded-none sm:rounded-xl border-x-0 sm:border-x">
-          <CardContent className="pt-6 space-y-4">
+        <div className="bg-black/40 border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8">
+          <CardContent className="pt-0 space-y-4 px-0">
+            {isCampingsCottages && selectedUnitId && (
+              <div className="mb-4 flex items-center gap-2">
+                <div className="w-2 h-2 bg-[#D4AF37] rounded-full" />
+                <span className="text-[#D4AF37] font-bold text-sm uppercase tracking-wider">
+                  {units.find((u: any) => u.id.toString() === selectedUnitId)?.name}
+                </span>
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">
@@ -330,7 +338,7 @@ const OwnerCalendar = () => {
               Update Rates & Sync Calendars
             </Button>
           </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
