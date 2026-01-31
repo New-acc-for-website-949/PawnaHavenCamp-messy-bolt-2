@@ -145,18 +145,22 @@ const OwnerProfile = () => {
       const propId = ownerData?.property_id || ownerData?.propertyId;
       const token = localStorage.getItem('ownerToken');
       if (propId) {
+        // Ensure images are included in the update payload
+        const payload = {
+          ...details,
+          images: details.images
+        };
         const response = await fetch(`/api/properties/update/${propId}`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(details)
+          body: JSON.stringify(payload)
         });
         const result = await response.json();
         if (result.success) {
           toast.success('Profile updated successfully');
-          // Trigger reload in other tabs
           localStorage.setItem('propertyUpdated', Date.now().toString());
         } else {
           toast.error(result.message || 'Update failed');

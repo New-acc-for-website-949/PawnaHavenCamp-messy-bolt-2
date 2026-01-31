@@ -213,11 +213,19 @@ export const CalendarSync = ({
                     isPast && "opacity-60 grayscale-[0.5]"
                   )}>
                     <span className="text-[11px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
-                    {!isVilla && availableQuantity !== null && !isPast && (
-                      <div className="flex items-center gap-0.5 mt-0.5 sm:mt-1 scale-90 sm:scale-100 font-black text-[8px] sm:text-[10px]">
-                        <span className="text-[#008000]">{availableQuantity}</span>
-                        <span className="text-gray-500">/</span>
-                        <span className="text-[#FF8C00]">{totalCapacity}</span>
+                    {!isPast && (
+                      <div className="flex flex-col items-center mt-0.5 sm:mt-1 scale-90 sm:scale-100 font-black text-[8px] sm:text-[10px]">
+                        {isVilla ? (
+                          <span className={isBooked ? "text-white/80" : "text-black/80 uppercase"}>
+                            {isBooked ? "Booked" : "Available"}
+                          </span>
+                        ) : availableQuantity !== null && (
+                          <div className="flex items-center gap-0.5">
+                            <span className="text-[#008000]">{availableQuantity}</span>
+                            <span className="text-gray-500">/</span>
+                            <span className="text-[#FF8C00]">{totalCapacity}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
