@@ -209,7 +209,9 @@ export const CalendarSync = ({
                 return (
                   <div className={cn(
                     "relative w-full h-full flex flex-col items-center justify-center p-0.5 rounded-md transition-all select-none",
-                    isBooked ? "bg-[#FF0000] text-white" : "bg-[#00FF00] text-black",
+                    isVilla 
+                      ? (isBooked ? "bg-[#FF0000] text-white" : "bg-[#00FF00] text-black")
+                      : (availableQuantity === 0 ? "bg-[#FF0000] text-white" : "bg-[#00FF00] text-black"),
                     isPast && "opacity-60 grayscale-[0.5]"
                   )}>
                     <span className="text-[11px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
@@ -221,9 +223,9 @@ export const CalendarSync = ({
                           </span>
                         ) : availableQuantity !== null && (
                           <div className="flex items-center gap-0.5">
-                            <span className="text-[#008000]">{availableQuantity}</span>
-                            <span className="text-gray-500">/</span>
-                            <span className="text-[#FF8C00]">{totalCapacity}</span>
+                            <span className={availableQuantity === 0 ? "text-white" : "text-[#008000]"}>{availableQuantity}</span>
+                            <span className={availableQuantity === 0 ? "text-white/40" : "text-gray-500"}>/</span>
+                            <span className={availableQuantity === 0 ? "text-white/80" : "text-[#FF8C00]"}>{totalCapacity}</span>
                           </div>
                         )}
                       </div>
