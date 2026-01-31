@@ -29,10 +29,15 @@ const OwnerRegister = lazy(() => import("./pages/owner/register/Register"));
 const OwnerRegisterOTP = lazy(() => import("./pages/owner/register/OTP"));
 const OwnerLogin = lazy(() => import("./pages/owner/login/Login"));
 const OwnerLayout = lazy(() => import("./components/owner/layout/OwnerLayout"));
-const OwnerMain = lazy(() => import("./pages/owner/dashboard/Main"));
-const OwnerProfile = lazy(() => import("./pages/owner/dashboard/Profile"));
-const OwnerUnits = lazy(() => import("./pages/owner/dashboard/Units"));
-const OwnerInfo = lazy(() => import("./pages/owner/dashboard/Info"));
+const OwnerMain = lazy(() => import("./pages/owner/dashboard/Campings_Cottages-owners-dashboard/Main"));
+const OwnerProfile = lazy(() => import("./pages/owner/dashboard/Campings_Cottages-owners-dashboard/Profile"));
+const OwnerUnits = lazy(() => import("./pages/owner/dashboard/Campings_Cottages-owners-dashboard/Units"));
+const OwnerInfo = lazy(() => import("./pages/owner/dashboard/Campings_Cottages-owners-dashboard/Info"));
+
+const VillaOwnerMain = lazy(() => import("./pages/owner/dashboard/Villas-owners-dashboard/Main"));
+const VillaOwnerProfile = lazy(() => import("./pages/owner/dashboard/Villas-owners-dashboard/Profile"));
+const VillaOwnerUnits = lazy(() => import("./pages/owner/dashboard/Villas-owners-dashboard/Units"));
+const VillaOwnerInfo = lazy(() => import("./pages/owner/dashboard/Villas-owners-dashboard/Info"));
 
 const queryClient = new QueryClient();
 
