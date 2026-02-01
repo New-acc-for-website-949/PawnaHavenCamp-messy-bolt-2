@@ -317,30 +317,22 @@ const getPropertyById = async (req, res) => {
             SELECT json_agg(json_build_object(
               'date', d.date,
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
-              'is_booked', COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
+              'is_booked', COALESCE((
+                SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
                 WHERE p_inner.id = p.id
                 AND le.check_in <= d.date 
                 AND le.check_out > d.date
-              ),
-              'available_quantity', CASE WHEN COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
+              ), 0) > 0,
+              'available_quantity', p.max_capacity - COALESCE((
+                SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
                 WHERE p_inner.id = p.id
                 AND le.check_in <= d.date 
                 AND le.check_out > d.date
-              ) THEN 0 ELSE p.max_capacity END,
-              'is_booked_villa', (COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
-                FROM ledger_entries le
-                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
-                WHERE p_inner.id = p.id
-                AND le.check_in <= d.date 
-                AND le.check_out > d.date
-              )) = true,
+              ), 0),
               'total_capacity', p.max_capacity,
               'weekday_price', p.weekday_price,
               'weekend_price', p.weekend_price,
@@ -538,30 +530,22 @@ const getPublicPropertyBySlug = async (req, res) => {
             SELECT json_agg(json_build_object(
               'date', d.date,
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
-              'is_booked', COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
+              'is_booked', COALESCE((
+                SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
                 WHERE p_inner.id = p.id
                 AND le.check_in <= d.date 
                 AND le.check_out > d.date
-              ),
-              'available_quantity', CASE WHEN COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
+              ), 0) > 0,
+              'available_quantity', p.max_capacity - COALESCE((
+                SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
                 WHERE p_inner.id = p.id
                 AND le.check_in <= d.date 
                 AND le.check_out > d.date
-              ) THEN 0 ELSE p.max_capacity END,
-              'is_booked_villa', (COALESCE(ac.is_booked, false) OR EXISTS (
-                SELECT 1 
-                FROM ledger_entries le
-                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
-                WHERE p_inner.id = p.id
-                AND le.check_in <= d.date 
-                AND le.check_out > d.date
-              )) = true,
+              ), 0),
               'total_capacity', p.max_capacity,
               'weekday_price', p.weekday_price,
               'weekend_price', p.weekend_price,

@@ -43,7 +43,6 @@ export const CalendarSync = ({
       const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-      console.log('Fetching calendar for:', { propertyId, unitId });
       const response = unitId 
         ? await fetch(`/api/properties/units/${unitId}/calendar`, { headers })
         : await fetch(`/api/properties/${propertyId}/calendar`, { headers });
@@ -206,30 +205,25 @@ export const CalendarSync = ({
             components={{
               DayContent: ({ date }) => {
                 const data = getDayData(date);
-                const isBooked = data?.is_booked_villa === true || data?.is_booked === true || String(data?.available_quantity) === "0";
+                const isBooked = data?.is_booked;
                 const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
                 const availableQuantity = data?.available_quantity !== undefined ? data.available_quantity : null;
-                const totalCapacity = data?.total_capacity || propertyPrices.maxCapacity || 0;
+                const totalCapacity = propertyPrices.maxCapacity || 0;
                 
-                // Force red color for villas if booked
-                const villaBookedStyle = (isVilla && isBooked) ? "!bg-[#FF0000] !text-white" : "!bg-[#00FF00] !text-black";
-                const campBookedStyle = (availableQuantity === 0) ? "!bg-[#FF0000] !text-white" : "!bg-[#00FF00] !text-black";
-
                 return (
                   <div className={cn(
                     "relative w-full h-full flex flex-col items-center justify-center p-0.5 rounded-md transition-all select-none",
-                    isVilla ? villaBookedStyle : campBookedStyle,
+                    isVilla 
+                      ? (isBooked ? "!bg-[#FF0000] !text-white" : "!bg-[#00FF00] !text-black")
+                      : (availableQuantity === 0 ? "!bg-[#FF0000] !text-white" : "!bg-[#00FF00] !text-black"),
                     isPast && "opacity-60 grayscale-[0.5]"
                   )}>
                     <span className="text-[11px] sm:text-xs font-bold leading-none">{format(date, 'd')}</span>
                     {!isPast && (
                       <div className="flex flex-col items-center mt-0.5 sm:mt-1 scale-90 sm:scale-100 font-black text-[8px] sm:text-[10px]">
                         {isVilla ? (
-                          <span className={cn(
-                            "uppercase",
-                            isBooked ? "text-white/90 drop-shadow-sm font-black tracking-widest" : "text-black/80"
-                          )}>
-                            {isVilla && isBooked ? "Booked" : ""}
+                          <span className={isBooked ? "text-white/80" : "text-black/80 uppercase"}>
+                            {isBooked ? "Booked" : ""}
                           </span>
                         ) : availableQuantity !== null && (
                           <div className="flex items-center gap-0.5">
