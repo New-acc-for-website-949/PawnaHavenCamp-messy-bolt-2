@@ -317,7 +317,7 @@ const getPropertyById = async (req, res) => {
             SELECT json_agg(json_build_object(
               'date', d.date,
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
-              'is_booked', COALESCE((
+              'is_booked', COALESCE(ac.is_booked, false) OR COALESCE((
                 SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
@@ -530,7 +530,7 @@ const getPublicPropertyBySlug = async (req, res) => {
             SELECT json_agg(json_build_object(
               'date', d.date,
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
-              'is_booked', COALESCE((
+              'is_booked', COALESCE(ac.is_booked, false) OR COALESCE((
                 SELECT SUM(persons) 
                 FROM ledger_entries le
                 JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
