@@ -47,7 +47,7 @@ const OwnerCalendar = () => {
       setPrices({
         weekday: property.weekday_price || '',
         weekend: property.weekend_price || '',
-        special: property.special_prices || []
+        special: property.special_dates ? (typeof property.special_dates === 'string' ? JSON.parse(property.special_dates) : property.special_dates) : []
       });
     }
   }, [property]);
@@ -64,7 +64,7 @@ const OwnerCalendar = () => {
         body: JSON.stringify({
           weekday_price: prices.weekday,
           weekend_price: prices.weekend,
-          special_prices: prices.special
+          special_dates: prices.special
         })
       });
       const data = await res.json();

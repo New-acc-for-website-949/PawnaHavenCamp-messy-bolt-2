@@ -375,7 +375,7 @@ const updateProperty = async (req, res) => {
     const { 
       amenities, activities, highlights, policies, schedule, 
       description, availability, weekday_price, weekend_price, 
-      price_note, price, special_dates 
+      price_note, price, special_dates, special_prices 
     } = req.body;
 
     console.log('Update property request received for ID:', id);
@@ -395,7 +395,7 @@ const updateProperty = async (req, res) => {
         weekend_price = COALESCE(NULLIF($9, ''), weekend_price),
         price_note = COALESCE($10, price_note),
         price = COALESCE(NULLIF($11, ''), price),
-        special_dates = $12,
+        special_dates = COALESCE($12, special_dates),
         updated_at = CURRENT_TIMESTAMP
       WHERE property_id = $13 OR id::text = $13
       RETURNING *
@@ -411,7 +411,7 @@ const updateProperty = async (req, res) => {
       weekend_price !== undefined ? String(weekend_price) : null,
       price_note || null,
       price !== undefined ? String(price) : null,
-      Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || null),
+      (Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || (Array.isArray(special_prices) ? JSON.stringify(special_prices) : null))),
       id
     ]);
 
