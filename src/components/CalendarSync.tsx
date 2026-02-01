@@ -43,6 +43,7 @@ export const CalendarSync = ({
       const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
+      console.log('Fetching calendar for:', { propertyId, unitId });
       const response = unitId 
         ? await fetch(`/api/properties/units/${unitId}/calendar`, { headers })
         : await fetch(`/api/properties/${propertyId}/calendar`, { headers });
@@ -205,7 +206,7 @@ export const CalendarSync = ({
             components={{
               DayContent: ({ date }) => {
                 const data = getDayData(date);
-                const isBooked = data?.is_booked_villa === true || data?.is_booked === true || data?.available_quantity === 0;
+                const isBooked = data?.is_booked_villa === true || data?.is_booked === true || String(data?.available_quantity) === "0";
                 const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
                 const availableQuantity = data?.available_quantity !== undefined ? data.available_quantity : null;
                 const totalCapacity = data?.total_capacity || propertyPrices.maxCapacity || 0;
