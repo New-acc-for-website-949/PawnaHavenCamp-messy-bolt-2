@@ -280,19 +280,21 @@ const getPropertyById = async (req, res) => {
               'price', COALESCE(uc.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
               'is_booked', COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = pu.property_id::text 
-                AND unit_id = pu.id 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = pu.property_id
+                AND le.unit_id = pu.id 
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0) >= pu.total_persons,
               'available_quantity', pu.total_persons - COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = pu.property_id::text 
-                AND unit_id = pu.id 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = pu.property_id
+                AND le.unit_id = pu.id 
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0),
               'total_capacity', pu.total_persons,
               'is_weekend', d.is_weekend,
@@ -317,17 +319,19 @@ const getPropertyById = async (req, res) => {
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
               'is_booked', COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = p.property_id::text 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = p.id
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0) > 0,
               'available_quantity', p.max_capacity - COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = p.property_id::text 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = p.id
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0),
               'total_capacity', p.max_capacity,
               'weekday_price', p.weekday_price,
@@ -489,19 +493,21 @@ const getPublicPropertyBySlug = async (req, res) => {
               'price', COALESCE(uc.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
               'is_booked', COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = pu.property_id::text 
-                AND unit_id = pu.id 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = pu.property_id
+                AND le.unit_id = pu.id 
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0) >= pu.total_persons,
               'available_quantity', pu.total_persons - COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = pu.property_id::text 
-                AND unit_id = pu.id 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = pu.property_id
+                AND le.unit_id = pu.id 
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0),
               'total_capacity', pu.total_persons,
               'is_weekend', d.is_weekend,
@@ -526,17 +532,19 @@ const getPublicPropertyBySlug = async (req, res) => {
               'price', COALESCE(ac.price, CASE WHEN d.is_weekend THEN p.weekend_price ELSE p.weekday_price END),
               'is_booked', COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = p.property_id::text 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = p.id
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0) > 0,
               'available_quantity', p.max_capacity - COALESCE((
                 SELECT SUM(persons) 
-                FROM ledger_entries 
-                WHERE property_id = p.property_id::text 
-                AND check_in <= d.date 
-                AND check_out > d.date
+                FROM ledger_entries le
+                JOIN properties p_inner ON (p_inner.id::text = le.property_id OR p_inner.property_id = le.property_id)
+                WHERE p_inner.id = p.id
+                AND le.check_in <= d.date 
+                AND le.check_out > d.date
               ), 0),
               'total_capacity', p.max_capacity,
               'weekday_price', p.weekday_price,

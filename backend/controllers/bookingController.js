@@ -429,11 +429,18 @@ const processCancelledBooking = async (req, res) => {
 const getLedgerEntries = async (req, res) => {
   try {
     const { property_id, unit_id, date } = req.query;
-    let queryText = 'SELECT * FROM ledger_entries WHERE property_id = $1 AND check_in <= $2 AND check_out > $2';
+    // Join with properties to match against either the auto-increment ID or the alphanumeric property_id
+    let queryText = `
+      SELECT le.* 
+      FROM ledger_entries le
+      JOIN properties p ON (p.id::text = le.property_id OR p.property_id = le.property_id)
+      WHERE (p.id::text = $1 OR p.property_id = $1)
+      AND le.check_in <= $2 AND le.check_out > $2
+    `;
     let params = [property_id, date];
 
     if (unit_id && unit_id !== 'null' && unit_id !== 'undefined') {
-      queryText += ' AND unit_id = $3';
+      queryText += ' AND le.unit_id = $3';
       params.push(unit_id);
     }
 
