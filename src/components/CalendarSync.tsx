@@ -136,8 +136,12 @@ export const CalendarSync = ({
     
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
-      const price = getPriceForDate(date);
+      const currentPrice = getPriceForDate(date);
       
+      // For villas, we can update the price directly on the calendar cell
+      const newPrice = isVilla ? window.prompt("Enter price for this date:", currentPrice) : currentPrice;
+      if (isVilla && newPrice === null) return; // Cancelled
+
       const url = unitId 
         ? `/api/properties/units/${unitId}/calendar`
         : `/api/properties/${propertyId}/calendar`;
@@ -151,7 +155,7 @@ export const CalendarSync = ({
         body: JSON.stringify({
           date: format(date, 'yyyy-MM-dd'),
           is_booked: isBooked,
-          price: price
+          price: isVilla ? newPrice : currentPrice
         })
       });
       
