@@ -411,6 +411,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
     policies: [''],
     schedule: [{ time: '', title: '' }],
     images: [] as string[],
+    special_dates: [] as { date: string, price: string }[],
   });
   const { toast } = useToast();
 
@@ -491,6 +492,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
         policies: property.policies?.length ? property.policies : [''],
         schedule: property.schedule?.length ? property.schedule : [{ time: '', title: '' }],
         images: property.images?.length ? property.images.map((img: any) => typeof img === 'string' ? img : img.image_url) : [],
+        special_dates: property.special_dates ? (typeof property.special_dates === 'string' ? JSON.parse(property.special_dates) : property.special_dates) : [],
       });
     } else {
       // Generate a new 5-digit property ID for new property
@@ -756,7 +758,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">{formData.category === 'villa' ? 'Price *' : 'Starting Price (Auto-calculated)'}</Label>
+                <Label htmlFor="price">{formData.category === 'villa' ? 'Base Price (Displayed) *' : 'Starting Price (Auto-calculated)'}</Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -764,7 +766,7 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="h-12 pl-10 bg-secondary/50 rounded-xl"
-                    placeholder={formData.category === 'campings_cottages' ? "Price from units will be used" : ""}
+                    placeholder={formData.category === 'campings_cottages' ? "Price from units will be used" : "e.g. ₹15,000"}
                     disabled={formData.category === 'campings_cottages'}
                     required={formData.category === 'villa'}
                   />
@@ -775,6 +777,71 @@ const AdminPropertyForm = ({ property, onSuccess, onCancel }: AdminPropertyFormP
                   </p>
                 )}
               </div>
+
+              {formData.category === 'villa' && (
+                <div className="md:col-span-2 space-y-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gold flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Special Day Prices
+                    </Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setFormData({
+                        ...formData,
+                        special_dates: [...formData.special_dates, { date: '', price: '' }]
+                      })}
+                      className="bg-gold/10 border-gold/20 text-gold hover:bg-gold/20"
+                    >
+                      <Plus className="w-3 h-3 mr-1" /> Add Special Day
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {formData.special_dates.map((sd, idx) => (
+                      <div key={idx} className="flex gap-2 items-center bg-white/5 p-3 rounded-xl border border-white/10">
+                        <Input 
+                          type="date" 
+                          value={sd.date} 
+                          onChange={(e) => {
+                            const newDates = [...formData.special_dates];
+                            newDates[idx].date = e.target.value;
+                            setFormData({ ...formData, special_dates: newDates });
+                          }}
+                          className="flex-1 bg-charcoal border-white/10 text-xs"
+                        />
+                        <div className="relative flex-1">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gold text-xs">₹</span>
+                          <Input 
+                            type="number" 
+                            value={sd.price} 
+                            onChange={(e) => {
+                              const newDates = [...formData.special_dates];
+                              newDates[idx].price = e.target.value;
+                              setFormData({ ...formData, special_dates: newDates });
+                            }}
+                            placeholder="Price"
+                            className="pl-5 bg-charcoal border-white/10 text-xs"
+                          />
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => {
+                            const newDates = formData.special_dates.filter((_, i) => i !== idx);
+                            setFormData({ ...formData, special_dates: newDates });
+                          }}
+                          className="text-red-500 hover:text-red-400 h-8 w-8"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="price_note">Price Note *</Label>
