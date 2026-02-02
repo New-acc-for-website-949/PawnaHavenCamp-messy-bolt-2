@@ -47,9 +47,10 @@ CREATE TABLE IF NOT EXISTS properties (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create availability_calendar table for real-time sync
+-- Create availability_calendar table for real-time sync (Villa calendar)
 CREATE TABLE IF NOT EXISTS availability_calendar (
   id SERIAL PRIMARY KEY,
+  calendar_id VARCHAR(50) UNIQUE,
   property_id INTEGER NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   date DATE NOT NULL,
   price VARCHAR(255),
@@ -149,9 +150,10 @@ VALUES
   ('villa', true, '₹8,999', 'Luxury private villa stays')
 ON CONFLICT (category) DO NOTHING;
 
--- Create unit_calendar table
+-- Create unit_calendar table (Camping/Cottages calendar)
 CREATE TABLE IF NOT EXISTS unit_calendar (
   id SERIAL PRIMARY KEY,
+  calendar_id VARCHAR(50) UNIQUE,
   unit_id INTEGER NOT NULL REFERENCES property_units(id) ON DELETE CASCADE,
   date DATE NOT NULL,
   price VARCHAR(255),

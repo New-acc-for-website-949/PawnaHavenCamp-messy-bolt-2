@@ -246,7 +246,7 @@ const getVillaCalendarData = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await query(
-      `SELECT ac.date, ac.price, ac.is_booked 
+      `SELECT ac.calendar_id, ac.date, ac.price, ac.is_booked 
        FROM availability_calendar ac
        JOIN properties p ON ac.property_id = p.id
        WHERE (p.property_id = $1 OR p.id::text = $1) AND p.category = 'villa'`,
@@ -260,6 +260,11 @@ const getVillaCalendarData = async (req, res) => {
     console.error('Get villa calendar data error:', error);
     return res.status(500).json({ success: false, message: 'Failed to fetch calendar data.' });
   }
+};
+
+const generateVillaCalendarId = (propertyId, date) => {
+  const dateStr = new Date(date).toISOString().split('T')[0].replace(/-/g, '');
+  return `VCAL-${propertyId}-${dateStr}`;
 };
 
 const updateVillaCalendarData = async (req, res) => {
@@ -279,17 +284,21 @@ const updateVillaCalendarData = async (req, res) => {
       });
     }
 
-    await query(
-      `INSERT INTO availability_calendar (property_id, date, price, is_booked, updated_at)
-       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+    const calendarId = generateVillaCalendarId(propertyCheck.rows[0].id, date);
+
+    const result = await query(
+      `INSERT INTO availability_calendar (property_id, date, price, is_booked, calendar_id, updated_at)
+       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
        ON CONFLICT (property_id, date) 
-       DO UPDATE SET price = EXCLUDED.price, is_booked = EXCLUDED.is_booked, updated_at = CURRENT_TIMESTAMP`,
-      [propertyCheck.rows[0].id, date, price, is_booked]
+       DO UPDATE SET price = EXCLUDED.price, is_booked = EXCLUDED.is_booked, calendar_id = EXCLUDED.calendar_id, updated_at = CURRENT_TIMESTAMP
+       RETURNING calendar_id`,
+      [propertyCheck.rows[0].id, date, price, is_booked, calendarId]
     );
 
     return res.status(200).json({
       success: true,
-      message: 'Villa calendar updated successfully.'
+      message: 'Villa calendar updated successfully.',
+      calendar_id: result.rows[0]?.calendar_id
     });
   } catch (error) {
     console.error('Update villa calendar data error:', error);

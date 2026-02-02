@@ -380,7 +380,7 @@ const getUnitCalendarData = async (req, res) => {
   try {
     const { unitId } = req.params;
     const result = await query(
-      'SELECT date, price, available_quantity, is_weekend, is_special FROM unit_calendar WHERE unit_id = $1',
+      'SELECT calendar_id, date, price, available_quantity, is_weekend, is_special FROM unit_calendar WHERE unit_id = $1',
       [unitId]
     );
     return res.status(200).json({
@@ -391,6 +391,11 @@ const getUnitCalendarData = async (req, res) => {
     console.error('Get unit calendar error:', error);
     return res.status(500).json({ success: false, message: 'Failed to fetch unit calendar.' });
   }
+};
+
+const generateUnitCalendarId = (unitId, date) => {
+  const dateStr = new Date(date).toISOString().split('T')[0].replace(/-/g, '');
+  return `UCAL-${unitId}-${dateStr}`;
 };
 
 const updateUnitCalendarData = async (req, res) => {
@@ -408,21 +413,26 @@ const updateUnitCalendarData = async (req, res) => {
       }
     }
 
-    await query(
-      `INSERT INTO unit_calendar (unit_id, date, price, available_quantity, is_weekend, is_special)
-       VALUES ($1, $2, $3, $4, $5, $6)
+    const calendarId = generateUnitCalendarId(unitId, date);
+
+    const result = await query(
+      `INSERT INTO unit_calendar (unit_id, date, price, available_quantity, is_weekend, is_special, calendar_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (unit_id, date) 
        DO UPDATE SET 
          price = EXCLUDED.price, 
          available_quantity = EXCLUDED.available_quantity,
          is_weekend = EXCLUDED.is_weekend,
-         is_special = EXCLUDED.is_special`,
-      [unitId, date, price, finalAvailableQuantity, is_weekend, is_special]
+         is_special = EXCLUDED.is_special,
+         calendar_id = EXCLUDED.calendar_id
+       RETURNING calendar_id`,
+      [unitId, date, price, finalAvailableQuantity, is_weekend, is_special, calendarId]
     );
 
     return res.status(200).json({
       success: true,
-      message: 'Unit calendar updated successfully.'
+      message: 'Unit calendar updated successfully.',
+      calendar_id: result.rows[0]?.calendar_id
     });
   } catch (error) {
     console.error('Update unit calendar error:', error);
