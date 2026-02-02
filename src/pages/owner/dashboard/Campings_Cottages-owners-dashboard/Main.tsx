@@ -25,20 +25,40 @@ const OwnerCalendar = () => {
     if (!propertyId) return;
     setLoading(true);
     try {
+      // Try both property_id (alphanumeric) and id (numeric)
+      const propId = ownerData?.property_id || propertyId;
+      const numericId = ownerData?.id;
+
       // Use camping-specific API routes
-      const unitsRes = await campingAPI.getUnits(propertyId);
+      const unitsRes = await campingAPI.getUnits(propId);
       if (unitsRes.success) {
         setUnits(unitsRes.data);
         if (unitsRes.data.length > 0 && !selectedUnitId) {
           setSelectedUnitId(unitsRes.data[0].id.toString());
         }
+      } else if (numericId && numericId.toString() !== propId.toString()) {
+        const unitsResFallback = await campingAPI.getUnits(numericId.toString());
+        if (unitsResFallback.success) {
+          setUnits(unitsResFallback.data);
+          if (unitsResFallback.data.length > 0 && !selectedUnitId) {
+            setSelectedUnitId(unitsResFallback.data[0].id.toString());
+          }
+        }
       }
 
-      const data = await campingAPI.getById(propertyId);
+      const data = await campingAPI.getById(propId);
       if (data.success) {
         setProperty(data.data);
         if (data.data.category === 'villa' || !selectedUnitId) {
           applyPropertyRates(data.data);
+        }
+      } else if (numericId && numericId.toString() !== propId.toString()) {
+        const dataFallback = await campingAPI.getById(numericId.toString());
+        if (dataFallback.success) {
+          setProperty(dataFallback.data);
+          if (dataFallback.data.category === 'villa' || !selectedUnitId) {
+            applyPropertyRates(dataFallback.data);
+          }
         }
       }
     } catch (error) {

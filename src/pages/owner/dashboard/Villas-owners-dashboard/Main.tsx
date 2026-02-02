@@ -25,14 +25,17 @@ const OwnerCalendar = () => {
     setLoading(true);
     try {
       // Use villa-specific API route
-      const data = await villaAPI.getById(propertyId);
+      // Try with alphanumeric propertyId (property_id field) first
+      const propId = ownerData?.property_id || propertyId;
+      const data = await villaAPI.getById(propId);
+      
       if (data.success) {
         setProperty(data.data);
       } else {
-        // Fallback for numeric ID if alphanumeric fails
+        // Fallback for numeric ID (id field) if alphanumeric fails
         const numericId = ownerData?.id;
-        if (numericId && numericId !== propertyId) {
-          const dataFallback = await villaAPI.getById(numericId);
+        if (numericId && numericId.toString() !== propId.toString()) {
+          const dataFallback = await villaAPI.getById(numericId.toString());
           if (dataFallback.success) {
             setProperty(dataFallback.data);
           }
