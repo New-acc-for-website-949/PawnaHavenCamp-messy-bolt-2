@@ -13,6 +13,7 @@ const bookingRoutes = require('./routes/bookings');
 const paymentRoutes = require('./routes/payments');
 const referralRoutes = require('./routes/referralRoutes');
 const { pool } = require('./db');
+const { errorMiddleware } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -101,20 +102,37 @@ app.use(/^\/api.*/, (req, res) => {
   });
 });
 
-// Error handling middleware
+// Error handling middleware (structured)
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
   
   if (err.message && err.message.includes('File size too large')) {
     return res.status(400).json({
       success: false,
-      message: 'Image file size is too large (max 50MB). Please compress the image or use a smaller file.',
+      error: {
+        code: 'FILE_TOO_LARGE',
+        message: 'Image file size is too large (max 50MB). Please compress the image or use a smaller file.'
+      }
+    });
+  }
+
+  if (err.isOperational) {
+    return res.status(err.status).json({
+      success: false,
+      error: {
+        code: err.code,
+        message: err.message,
+        details: err.details
+      }
     });
   }
 
   res.status(500).json({
     success: false,
-    message: 'Internal server error',
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'Internal server error'
+    }
   });
 });
 

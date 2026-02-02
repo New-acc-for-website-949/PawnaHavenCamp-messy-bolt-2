@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { villaAPI } from '@/lib/api';
 
 const OwnerCalendar = () => {
   const ownerDataString = localStorage.getItem('ownerData');
@@ -23,22 +24,15 @@ const OwnerCalendar = () => {
     if (!propertyId) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      // Try fetching by property_id (alphanumeric) first, then by numeric id
-      const res = await fetch(`/api/properties/${propertyId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      // Use villa-specific API route
+      const data = await villaAPI.getById(propertyId);
       if (data.success) {
         setProperty(data.data);
       } else {
         // Fallback for numeric ID if alphanumeric fails
         const numericId = ownerData?.id;
         if (numericId && numericId !== propertyId) {
-          const resFallback = await fetch(`/api/properties/${numericId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          const dataFallback = await resFallback.json();
+          const dataFallback = await villaAPI.getById(numericId);
           if (dataFallback.success) {
             setProperty(dataFallback.data);
           }
@@ -67,20 +61,12 @@ const OwnerCalendar = () => {
 
   const handlePriceUpdate = async () => {
     try {
-      const token = localStorage.getItem('ownerToken');
-      const res = await fetch(`/api/properties/update/${propertyId}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          weekday_price: prices.weekday,
-          weekend_price: prices.weekend,
-          special_dates: prices.special
-        })
+      // Use villa-specific API route
+      const data = await villaAPI.update(propertyId, {
+        weekday_price: prices.weekday,
+        weekend_price: prices.weekend,
+        special_dates: prices.special
       });
-      const data = await res.json();
       if (data.success) {
         toast.success('Prices updated successfully');
       }

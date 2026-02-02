@@ -8,7 +8,7 @@ import { LogOut, User, Plus, X, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import PWAInstallButton from '@/components/owner/pwa/PWAInstallButton';
-import { propertyAPI } from '@/lib/api';
+import { campingAPI } from '@/lib/api';
 
 import { CalendarSync } from "@/components/CalendarSync";
 
@@ -137,20 +137,11 @@ const OwnerProfile = () => {
     setLoading(true);
     try {
       const propId = ownerData?.property_id || ownerData?.propertyId;
-      const token = localStorage.getItem('ownerToken');
       if (propId) {
-        const response = await fetch(`/api/properties/update/${propId}`, {
-          method: 'PUT',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(details)
-        });
-        const result = await response.json();
+        // Use camping-specific API route
+        const result = await campingAPI.update(propId, details);
         if (result.success) {
           toast.success('Profile updated successfully');
-          // Trigger reload in other tabs
           localStorage.setItem('propertyUpdated', Date.now().toString());
         } else {
           toast.error(result.message || 'Update failed');

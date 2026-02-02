@@ -2,18 +2,20 @@ const express = require('express');
 const router = express.Router();
 const campingController = require('../controllers/camping/camping_CottagesController');
 const authMiddleware = require('../middleware/auth');
+const { validatePropertyId, validateUnitId, validateCalendarData, validateUnitData, validatePropertyUpdate } = require('../middleware/validation');
 
 router.get('/public/:slug', campingController.getPublicCampingBySlug);
 
-router.get('/:id', authMiddleware, campingController.getCampingById);
-router.put('/update/:id', authMiddleware, campingController.updateCamping);
+router.get('/:id', authMiddleware, validatePropertyId, campingController.getCampingById);
+router.put('/update/:id', authMiddleware, validatePropertyId, validatePropertyUpdate, campingController.updateCamping);
+router.put('/:id', authMiddleware, validatePropertyId, validatePropertyUpdate, campingController.updateCamping);
 
 router.get('/:propertyId/units', authMiddleware, campingController.getPropertyUnits);
-router.post('/:propertyId/units', authMiddleware, campingController.createPropertyUnit);
-router.put('/units/:unitId', authMiddleware, campingController.updatePropertyUnit);
-router.delete('/units/:unitId', authMiddleware, campingController.deletePropertyUnit);
+router.post('/:propertyId/units', authMiddleware, validateUnitData, campingController.createPropertyUnit);
+router.put('/units/:unitId', authMiddleware, validateUnitId, campingController.updatePropertyUnit);
+router.delete('/units/:unitId', authMiddleware, validateUnitId, campingController.deletePropertyUnit);
 
-router.get('/units/:unitId/calendar', authMiddleware, campingController.getUnitCalendarData);
-router.post('/units/:unitId/calendar', authMiddleware, campingController.updateUnitCalendarData);
+router.get('/units/:unitId/calendar', authMiddleware, validateUnitId, campingController.getUnitCalendarData);
+router.post('/units/:unitId/calendar', authMiddleware, validateUnitId, validateCalendarData, campingController.updateUnitCalendarData);
 
 module.exports = router;

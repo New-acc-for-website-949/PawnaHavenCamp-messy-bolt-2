@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { propertyAPI } from "@/lib/api";
+import { campingAPI } from "@/lib/api";
 
 const OwnerPropertyInfo = () => {
   const [loading, setLoading] = useState(true);
@@ -26,11 +26,8 @@ const OwnerPropertyInfo = () => {
     const id = ownerData.property_id || ownerData.propertyId;
 
     try {
-      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      const response = await fetch(`/api/properties/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
+      // Use camping-specific API route
+      const result = await campingAPI.getById(id);
       
       if (result.success && result.data) {
         setProperty(result.data);
@@ -60,10 +57,11 @@ const OwnerPropertyInfo = () => {
         activities: formData.activities.split(',').map(s => s.trim()).filter(Boolean),
         highlights: formData.highlights.split(',').map(s => s.trim()).filter(Boolean),
         policies: formData.policies.split('\n').map(s => s.trim()).filter(Boolean),
-        images: formData.images // Note: In a real app, this would handle actual image uploads
+        images: formData.images
       };
 
-      const result = await propertyAPI.update(property.id, payload);
+      // Use camping-specific API route
+      const result = await campingAPI.update(property.id, payload);
       if (result.success) {
         toast.success('Property information updated successfully');
       } else {

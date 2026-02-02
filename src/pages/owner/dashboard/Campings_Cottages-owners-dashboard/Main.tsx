@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarSync } from "@/components/CalendarSync";
-import { propertyAPI } from "@/lib/api";
+import { campingAPI } from "@/lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,8 @@ const OwnerCalendar = () => {
     if (!propertyId) return;
     setLoading(true);
     try {
-      const unitsRes = await propertyAPI.getUnits(propertyId);
+      // Use camping-specific API routes
+      const unitsRes = await campingAPI.getUnits(propertyId);
       if (unitsRes.success) {
         setUnits(unitsRes.data);
         if (unitsRes.data.length > 0 && !selectedUnitId) {
@@ -33,11 +34,7 @@ const OwnerCalendar = () => {
         }
       }
 
-      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      const res = await fetch(`/api/properties/${propertyId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await campingAPI.getById(propertyId);
       if (data.success) {
         setProperty(data.data);
         if (data.data.category === 'villa' || !selectedUnitId) {
@@ -110,8 +107,7 @@ const OwnerCalendar = () => {
     if (!property) return;
     
     try {
-      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      
+      // Use camping-specific API routes
       if (property.category === 'campings_cottages' && selectedUnitId) {
         const unitId = parseInt(selectedUnitId);
         const payload = {
@@ -119,7 +115,7 @@ const OwnerCalendar = () => {
           weekend_price: rates.weekend,
           special_dates: specialDates
         };
-        const res = await propertyAPI.updateUnit(unitId, payload);
+        const res = await campingAPI.updateUnit(unitId, payload);
         if (res.success) {
           toast.success('Rates updated successfully.');
         } else {
@@ -132,15 +128,8 @@ const OwnerCalendar = () => {
           price: rates.weekday,
           special_dates: specialDates
         };
-        const response = await fetch(`/api/properties/update/${property.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-        if (!response.ok) throw new Error('Failed to update rates');
+        const res = await campingAPI.update(property.id, payload);
+        if (!res.success) throw new Error('Failed to update rates');
         toast.success('Rates updated successfully.');
       }
       await fetchData();

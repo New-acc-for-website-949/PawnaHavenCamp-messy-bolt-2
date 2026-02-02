@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LayoutGrid, Plus, Trash2, Upload, ImageIcon, Loader2, Sparkles, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { propertyAPI } from "@/lib/api";
+import { campingAPI } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -41,16 +41,13 @@ const OwnerUnits = () => {
     const id = ownerData.property_id || ownerData.propertyId;
 
     try {
-      const token = localStorage.getItem('ownerToken') || localStorage.getItem('adminToken');
-      const response = await fetch(`/api/properties/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
+      // Use camping-specific API routes
+      const result = await campingAPI.getById(id);
       
       if (result.success && result.data) {
         setProperty(result.data);
         if (result.data.category === 'campings_cottages') {
-          const unitsRes = await propertyAPI.getUnits(id);
+          const unitsRes = await campingAPI.getUnits(id);
           if (unitsRes.success) {
             setUnits(unitsRes.data);
           }
@@ -112,7 +109,8 @@ const OwnerUnits = () => {
         special_dates: unitForm.special_dates
       };
 
-      const res = await propertyAPI.updateUnit(editingUnit.id, payload);
+      // Use camping-specific API route
+      const res = await campingAPI.updateUnit(editingUnit.id, payload);
       
       if (res.success) {
         toast.success('Unit updated successfully');

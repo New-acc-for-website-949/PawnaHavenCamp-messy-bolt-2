@@ -8,7 +8,7 @@ import { LogOut, User, Plus, X, Clock, Trash2, ImageIcon, Loader2, Upload } from
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import PWAInstallButton from '@/components/owner/pwa/PWAInstallButton';
-import { propertyAPI } from '@/lib/api';
+import { villaAPI } from '@/lib/api';
 
 import { CalendarSync } from "@/components/CalendarSync";
 
@@ -143,22 +143,13 @@ const OwnerProfile = () => {
     setLoading(true);
     try {
       const propId = ownerData?.property_id || ownerData?.propertyId;
-      const token = localStorage.getItem('ownerToken');
       if (propId) {
-        // Ensure images are included in the update payload
+        // Use villa-specific API route
         const payload = {
           ...details,
           images: details.images
         };
-        const response = await fetch(`/api/properties/update/${propId}`, {
-          method: 'PUT',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-        const result = await response.json();
+        const result = await villaAPI.update(propId, payload);
         if (result.success) {
           toast.success('Profile updated successfully');
           localStorage.setItem('propertyUpdated', Date.now().toString());

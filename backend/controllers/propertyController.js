@@ -1,5 +1,20 @@
 const { query, getClient } = require('../db');
 
+/**
+ * @deprecated This controller is scheduled for removal post-launch.
+ * 
+ * PHASE 3 DEPRECATION NOTICE (Feb 2026):
+ * - Villa operations should use: backend/controllers/villa/villaController.js
+ * - Camping operations should use: backend/controllers/camping/camping_CottagesController.js
+ * 
+ * This mixed controller is kept for backward compatibility during transition.
+ * All new dashboard components now use type-specific API routes:
+ * - /api/villa/* for villa properties
+ * - /api/camping_Cottages/* for camping/cottage properties
+ * 
+ * DO NOT add new functionality here. Add to type-specific controllers instead.
+ */
+
 // Helper function to generate slug from title
 const generateSlug = (title) => {
   return title

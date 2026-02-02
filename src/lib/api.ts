@@ -1,5 +1,121 @@
 const API_BASE_URL = window.location.origin;
 
+// Helper to get auth token
+const getAuthToken = () => localStorage.getItem('adminToken') || localStorage.getItem('ownerToken');
+
+// Villa-specific API (uses /api/villa/* routes)
+export const villaAPI = {
+  getById: async (id: string) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/villa/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  getPublicBySlug: async (slug: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/villa/public/${slug}`);
+    return response.json();
+  },
+  update: async (id: string, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/villa/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+  getCalendar: async (id: string) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/villa/${id}/calendar`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  updateCalendar: async (id: string, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/villa/${id}/calendar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  }
+};
+
+// Camping/Cottages-specific API (uses /api/camping_Cottages/* routes)
+export const campingAPI = {
+  getById: async (id: string) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  getPublicBySlug: async (slug: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/public/${slug}`);
+    return response.json();
+  },
+  update: async (id: string, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+  getUnits: async (propertyId: string) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/${propertyId}/units`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  createUnit: async (propertyId: string, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/${propertyId}/units`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+  updateUnit: async (unitId: number, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/units/${unitId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+  deleteUnit: async (unitId: number) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/units/${unitId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  getUnitCalendar: async (unitId: number) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/units/${unitId}/calendar`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+  updateUnitCalendar: async (unitId: number, data: any) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/camping_Cottages/units/${unitId}/calendar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  }
+};
+
 const parseJsonField = (field: any) => {
   if (typeof field === 'string') {
     try {
