@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const propertyRoutes = require('./routes/properties');
+const villaRoutes = require('./routes/villa');
+const campingRoutes = require('./routes/camping_Cottages');
 const ownerRoutes = require('./routes/ownerRoutes');
 const eticketRoutes = require('./routes/etickets');
 const bookingRoutes = require('./routes/bookings');
@@ -59,6 +61,8 @@ app.use(express.static(frontendPath));
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/villa', villaRoutes);
+app.use('/api/camping_Cottages', campingRoutes);
 app.use('/api/owners', ownerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
