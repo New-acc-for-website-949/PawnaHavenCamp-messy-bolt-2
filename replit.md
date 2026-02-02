@@ -11,14 +11,34 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Backend Architecture (Refactored Feb 2026)
+- **Port Configuration**: Backend runs on port 5001, Frontend on port 5000 with proxy
 - **Controller Structure**: Separated by property type to prevent cross-contamination
-  - `controllers/shared/basePropertyController.js` - Common helper functions
+  - `controllers/shared/basePropertyController.js` - Common helper functions (parsePostgresArray, etc.)
   - `controllers/villa/villaController.js` - Villa-only logic (NO units)
   - `controllers/camping/camping_CottagesController.js` - Camping/cottage logic (unit-based)
+  - `controllers/propertyController.js` - SHARED ADMIN FUNCTIONS (keep - not deprecated)
+
+#### propertyController.js Migration Status (Feb 2026)
+**MUST KEEP in propertyController.js** (Admin/shared functions):
+- `getAllProperties` - Admin property listing
+- `getPublicProperties` - Public listing with category settings
+- `getCategorySettings/updateCategorySettings` - Category management
+- `createProperty` - Create new property (both types)
+- `deleteProperty` - Delete any property
+- `togglePropertyStatus` - Toggle active/top-selling
+- `getCalendarData/updateCalendarData` - General calendar fallback
+
+**MIGRATED to type-specific controllers**:
+- `getPropertyById` → villa/camping controllers
+- `updateProperty` → villa/camping controllers  
+- `getPublicPropertyBySlug` → villa/camping controllers
+- `getPropertyUnits/*` → camping controller
+- `getUnitCalendarData/*` → camping controller
+
 - **API Routes**: 
   - `/api/villa/*` - Villa-specific endpoints
   - `/api/camping_Cottages/*` - Camping/cottages-specific endpoints
-  - `/api/properties/*` - Shared/legacy endpoints
+  - `/api/properties/*` - Shared/admin endpoints (keep for admin panel)
 - **Database**: PostgreSQL with separate calendar tables
   - `availability_calendar` - Villa property-level availability
   - `unit_calendar` - Camping/cottage unit-level availability

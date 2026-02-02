@@ -1,18 +1,28 @@
 const { query, getClient } = require('../db');
 
 /**
- * @deprecated This controller is scheduled for removal post-launch.
+ * SHARED/ADMIN CONTROLLER - DO NOT DELETE
  * 
- * PHASE 3 DEPRECATION NOTICE (Feb 2026):
- * - Villa operations should use: backend/controllers/villa/villaController.js
- * - Camping operations should use: backend/controllers/camping/camping_CottagesController.js
+ * STATUS (Feb 2026): This controller contains essential shared/admin functions.
  * 
- * This mixed controller is kept for backward compatibility during transition.
- * All new dashboard components now use type-specific API routes:
- * - /api/villa/* for villa properties
- * - /api/camping_Cottages/* for camping/cottage properties
+ * FUNCTIONS TO KEEP HERE (not type-specific):
+ * - getAllProperties - Admin listing (all property types)
+ * - getPublicProperties - Public listing with category settings
+ * - getCategorySettings/updateCategorySettings - Category management
+ * - createProperty - Creates both villa & camping properties
+ * - deleteProperty - Deletes any property
+ * - togglePropertyStatus - Toggle active/top-selling status
+ * - getCalendarData/updateCalendarData - General calendar fallback
  * 
- * DO NOT add new functionality here. Add to type-specific controllers instead.
+ * MIGRATED TO TYPE-SPECIFIC CONTROLLERS:
+ * - getPropertyById → villa/camping controllers
+ * - updateProperty → villa/camping controllers  
+ * - getPublicPropertyBySlug → villa/camping controllers
+ * - Unit management → camping controller
+ * 
+ * For type-specific operations use:
+ * - /api/villa/* endpoints (villaController.js)
+ * - /api/camping_Cottages/* endpoints (camping_CottagesController.js)
  */
 
 // Helper function to generate slug from title
