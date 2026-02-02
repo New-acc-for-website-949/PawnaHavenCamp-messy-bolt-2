@@ -172,7 +172,7 @@ const updateVilla = async (req, res) => {
     const { 
       amenities, activities, highlights, policies, schedule, 
       description, availability, weekday_price, weekend_price, 
-      price_note, price, special_dates, special_prices,
+      price_note, price, special_dates, special_prices, images,
       owner_name, owner_mobile
     } = req.body;
 
@@ -217,6 +217,22 @@ const updateVilla = async (req, res) => {
         success: false,
         message: 'Villa not found.',
       });
+    }
+
+    const propertyId = result.rows[0].id;
+
+    if (images && Array.isArray(images)) {
+      await query('DELETE FROM property_images WHERE property_id = $1', [propertyId]);
+      for (let i = 0; i < images.length; i++) {
+        const imgUrl = typeof images[i] === 'string' ? images[i] : images[i].image_url;
+        if (imgUrl) {
+          await query(
+            'INSERT INTO property_images (property_id, image_url, display_order) VALUES ($1, $2, $3)',
+            [propertyId, imgUrl, i]
+          );
+        }
+      }
+      console.log('Updated villa images:', images.length);
     }
 
     if (owner_name || owner_mobile) {

@@ -31,11 +31,23 @@ const OwnerPropertyInfo = () => {
       
       if (result.success && result.data) {
         setProperty(result.data);
+        const parseImages = (images: any) => {
+          if (!images) return [];
+          if (Array.isArray(images)) {
+            return images.map((img: any) => {
+              if (typeof img === 'string') return img;
+              if (img && typeof img === 'object' && img.image_url) return img.image_url;
+              return null;
+            }).filter(Boolean);
+          }
+          return [];
+        };
+        
         setFormData({
           activities: Array.isArray(result.data.activities) ? result.data.activities.join(', ') : (result.data.activities || ''),
           highlights: Array.isArray(result.data.highlights) ? result.data.highlights.join(', ') : (result.data.highlights || ''),
           policies: Array.isArray(result.data.policies) ? result.data.policies.join('\n') : (result.data.policies || ''),
-          images: Array.isArray(result.data.images) ? result.data.images.map((img: any) => img.image_url) : []
+          images: parseImages(result.data.images)
         });
       }
     } catch (error) {

@@ -92,6 +92,18 @@ const OwnerProfile = () => {
             return [];
           };
 
+          const parseImages = (images: any) => {
+            if (!images) return [];
+            if (Array.isArray(images)) {
+              return images.map((img: any) => {
+                if (typeof img === 'string') return img;
+                if (img && typeof img === 'object' && img.image_url) return img.image_url;
+                return null;
+              }).filter(Boolean);
+            }
+            return [];
+          };
+
           setDetails({
             amenities: parseData(prop.amenities),
             activities: parseData(prop.activities),
@@ -125,7 +137,7 @@ const OwnerProfile = () => {
               return { time: '', title: String(item) };
             }),
             description: prop.description || '',
-            images: parseData(prop.images)
+            images: parseImages(prop.images)
           });
 
           localStorage.setItem('linkedProperty', JSON.stringify(prop));
