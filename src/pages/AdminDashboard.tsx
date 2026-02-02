@@ -526,23 +526,6 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] text-muted-foreground uppercase block">Booked Dates (Availability)</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {Array.isArray(property.availability) && property.availability.length > 0 ? (
-                            property.availability.map((date: string) => (
-                              <Badge key={date} variant="outline" className="text-[9px] px-1.5 py-0 border-red-500/30 text-red-400 bg-red-500/5">
-                                {date}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-[10px] text-white/30 italic">No booked dates</span>
-                          )}
-                        </div>
-                      </div>
-
                       <div className="space-y-3">
                         <h5 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Status & Actions</h5>
                         <div className="grid grid-cols-2 gap-2">
