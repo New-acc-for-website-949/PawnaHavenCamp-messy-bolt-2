@@ -955,7 +955,7 @@ const updatePropertyUnit = async (req, res) => {
         price_per_person !== undefined ? String(price_per_person) : null,
         weekday_price !== undefined ? String(weekday_price) : null,
         weekend_price !== undefined ? String(weekend_price) : null,
-        Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || null),
+        (Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || null)),
         unitId
       ]
     );

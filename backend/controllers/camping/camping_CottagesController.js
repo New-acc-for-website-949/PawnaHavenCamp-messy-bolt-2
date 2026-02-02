@@ -68,9 +68,16 @@ const getCampingById = async (req, res) => {
       policies: parsePostgresArray(propData.policies),
       schedule: parsePostgresArray(propData.schedule),
       availability: parsePostgresArray(propData.availability),
+      weekday_price: propData.weekday_price || '',
+      weekend_price: propData.weekend_price || '',
       special_dates: propData.special_dates ? (typeof propData.special_dates === 'string' ? JSON.parse(propData.special_dates) : propData.special_dates) : [],
       images: propData.images || [],
-      units: unitsResult.rows
+      units: unitsResult.rows.map(unit => ({
+        ...unit,
+        amenities: parsePostgresArray(unit.amenities),
+        images: parsePostgresArray(unit.images),
+        special_dates: unit.special_dates ? (typeof unit.special_dates === 'string' ? JSON.parse(unit.special_dates) : unit.special_dates) : []
+      }))
     };
 
     return res.status(200).json({
@@ -154,9 +161,16 @@ const getPublicCampingBySlug = async (req, res) => {
       policies: parsePostgresArray(propData.policies),
       schedule: parsePostgresArray(propData.schedule),
       availability: parsePostgresArray(propData.availability),
+      weekday_price: propData.weekday_price || '',
+      weekend_price: propData.weekend_price || '',
       special_dates: propData.special_dates ? (typeof propData.special_dates === 'string' ? JSON.parse(propData.special_dates) : propData.special_dates) : [],
       images: propData.images || [],
-      units: unitsResult.rows
+      units: unitsResult.rows.map(unit => ({
+        ...unit,
+        amenities: parsePostgresArray(unit.amenities),
+        images: parsePostgresArray(unit.images),
+        special_dates: unit.special_dates ? (typeof unit.special_dates === 'string' ? JSON.parse(unit.special_dates) : unit.special_dates) : []
+      }))
     };
 
     return res.status(200).json({

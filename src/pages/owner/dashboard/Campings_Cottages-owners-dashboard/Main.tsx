@@ -96,12 +96,12 @@ const OwnerCalendar = () => {
       const unit = units.find((u: any) => u.id.toString() === selectedUnitId);
       if (unit) {
         setRates({
-          weekday: unit.weekday_price !== null && unit.weekday_price !== undefined ? String(unit.weekday_price) : '',
-          weekend: unit.weekend_price !== null && unit.weekend_price !== undefined ? String(unit.weekend_price) : '',
+          weekday: unit.weekday_price !== null && unit.weekday_price !== undefined && unit.weekday_price !== '' ? String(unit.weekday_price) : (property.weekday_price || ''),
+          weekend: unit.weekend_price !== null && unit.weekend_price !== undefined && unit.weekend_price !== '' ? String(unit.weekend_price) : (property.weekend_price || ''),
         });
         const sd = typeof unit.special_dates === 'string'
           ? JSON.parse(unit.special_dates)
-          : (Array.isArray(unit.special_dates) ? unit.special_dates : []);
+          : (Array.isArray(unit.special_dates) ? unit.special_dates : (property.special_dates || []));
         setSpecialDates(sd);
       }
     } else if (property?.category === 'villa') {
