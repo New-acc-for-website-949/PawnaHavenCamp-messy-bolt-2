@@ -315,14 +315,14 @@ const createPropertyUnit = async (req, res) => {
       [
         propertyCheck.rows[0].id, 
         name, 
-        available_persons, 
-        total_persons || available_persons, 
-        Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || null), 
-        Array.isArray(images) ? JSON.stringify(images) : (images || null), 
-        price_per_person,
-        weekday_price,
-        weekend_price,
-        special_price,
+        parseInt(available_persons) || 0, 
+        parseInt(total_persons) || parseInt(available_persons) || 0, 
+        Array.isArray(amenities) ? JSON.stringify(amenities) : (amenities || '[]'), 
+        Array.isArray(images) ? JSON.stringify(images) : (images || '[]'), 
+        String(price_per_person || '0'),
+        String(weekday_price || '0'),
+        String(weekend_price || '0'),
+        String(special_price || '0'),
         Array.isArray(special_dates) ? JSON.stringify(special_dates) : (special_dates || '[]')
       ]
     );

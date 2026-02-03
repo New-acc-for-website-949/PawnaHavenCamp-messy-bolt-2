@@ -230,25 +230,25 @@ const UnitManager = ({ propertyId, category, units, onRefresh }: { propertyId: s
           <div className="space-y-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
-                <Label>Unit Name</Label>
-                <Input value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
+                <Label htmlFor="unit-name">Unit Name</Label>
+                <Input id="unit-name" name="name" value={unitForm.name} onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })} placeholder="e.g. Deluxe Tent" className="bg-white/5 border-white/10" />
               </div>
 
               <div className="space-y-2">
-                <Label>Weekday Price (Base)</Label>
-                <Input type="number" value={unitForm.weekday_price} onChange={(e) => setUnitForm({ ...unitForm, weekday_price: e.target.value })} className="bg-white/5 border-white/10" />
+                <Label htmlFor="weekday-price">Weekday Price (Base)</Label>
+                <Input id="weekday-price" name="weekday_price" type="number" value={unitForm.weekday_price} onChange={(e) => setUnitForm({ ...unitForm, weekday_price: e.target.value })} className="bg-white/5 border-white/10" />
               </div>
               <div className="space-y-2">
-                <Label>Weekend Price</Label>
-                <Input type="number" value={unitForm.weekend_price} onChange={(e) => setUnitForm({ ...unitForm, weekend_price: e.target.value })} className="bg-white/5 border-white/10" />
+                <Label htmlFor="weekend-price">Weekend Price</Label>
+                <Input id="weekend-price" name="weekend_price" type="number" value={unitForm.weekend_price} onChange={(e) => setUnitForm({ ...unitForm, weekend_price: e.target.value })} className="bg-white/5 border-white/10" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>
                   <span className="text-[#00FF41]">Available</span> / <span className="text-[#FFA500]">Total persons capacity</span>
                 </Label>
                 <div className="flex gap-2">
-                  <Input type="number" placeholder="Available" value={unitForm.available_persons} onChange={(e) => setUnitForm({ ...unitForm, available_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#00FF41] font-bold" />
-                  <Input type="number" placeholder="Total" value={unitForm.total_persons} onChange={(e) => setUnitForm({ ...unitForm, total_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#FFA500] font-bold" />
+                  <Input id="available-persons" name="available_persons" type="number" placeholder="Available" value={unitForm.available_persons} onChange={(e) => setUnitForm({ ...unitForm, available_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#00FF41] font-bold" />
+                  <Input id="total-persons" name="total_persons" type="number" placeholder="Total" value={unitForm.total_persons} onChange={(e) => setUnitForm({ ...unitForm, total_persons: e.target.value })} className="bg-white/5 border-white/10 text-[#FFA500] font-bold" />
                 </div>
               </div>
             </div>
